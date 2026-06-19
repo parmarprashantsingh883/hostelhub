@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Brand — emerald ("fresh living"), HostelHub's own identity */
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+
+  /* Warm accent (sunshine) for highlights */
+  --color-sun-400: #fbbf24;
+  --color-sun-500: #f59e0b;
+
+  /* Warm ink/neutrals (instead of cool slate) */
+  --color-ink-50: #faf9f7;
+  --color-ink-100: #f3f1ec;
+  --color-ink-200: #e7e3da;
+
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Soft, warm-tinted shadows — layered for real depth on the warm canvas */
+  --shadow-card: 0 1px 2px 0 rgb(20 50 40 / 0.05), 0 2px 6px -1px rgb(20 50 40 / 0.06);
+  --shadow-soft: 0 8px 24px -6px rgb(16 60 45 / 0.12), 0 3px 10px -3px rgb(16 60 45 / 0.07);
+  --shadow-pop: 0 18px 44px -12px rgb(16 60 45 / 0.22), 0 6px 16px -6px rgb(16 60 45 / 0.12);
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  @apply text-slate-900;
+  background-color: #faf9f6; /* warm off-white canvas */
+  font-feature-settings: 'ss01';
+}
+
+/* Friendly, confident headings */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: var(--color-brand-200);
+  color: var(--color-brand-900);
+}
+
+/* Light scrollbars */
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #d6d3cc; border-radius: 9999px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #b8b3a8; }
+
+/* Subtle motion */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fade-in-up 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.97) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-pop-in { animation: pop-in 0.16s cubic-bezier(0.16, 1, 0.3, 1); }

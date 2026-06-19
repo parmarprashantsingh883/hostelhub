@@ -1,0 +1,83 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import toast from 'react-hot-toast';
+import AuthShell from './AuthShell';
+import { Button, Field, Input } from '../../components/ui';
+import { useAuth } from '../../context/AuthContext';
+import { errMsg } from '../../api/client';
+
+const schema = z
+  .object({
+    name: z.string().min(2, 'Name is required'),
+    email: z.string().email('Enter a valid email'),
+    phone: z.string().optional(),
+    password: z
+      .string()
+      .min(8, 'At least 8 characters')
+      .regex(/[A-Z]/, 'Add an uppercase letter')
+      .regex(/[a-z]/, 'Add a lowercase letter')
+      .regex(/[0-9]/, 'Add a digit'),
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, { path: ['confirm'], message: 'Passwords do not match' });
+
+export default function Register() {
+  const { register: signup } = useAuth();
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(schema) });
+
+  const onSubmit = async ({ name, email, phone, password }) => {
+    setBusy(true);
+    try {
+      await signup({ name, email, phone, password });
+      toast.success('Account created — welcome to HostelHub!');
+      navigate('/tenant');
+    } catch (e) {
+      toast.error(errMsg(e, 'Registration failed'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <AuthShell
+      title="Create your account"
+      subtitle="Sign up as a tenant — admins create staff accounts from the dashboard"
+      footer={
+        <>
+          Already have an account?{' '}
+          <Link to="/login" className="text-brand-600 font-medium hover:underline">Log in</Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <Field label="Full name" error={errors.name?.message} required>
+          <Input placeholder="Your full name" autoComplete="name" error={errors.name} {...register('name')} />
+        </Field>
+        <Field label="Email address" error={errors.email?.message} required>
+          <Input type="email" placeholder="you@example.com" autoComplete="email" error={errors.email} {...register('email')} />
+        </Field>
+        <Field label="Phone" error={errors.phone?.message}>
+          <Input placeholder="+91 98XXXXXXXX" autoComplete="tel" error={errors.phone} {...register('phone')} />
+        </Field>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Password" error={errors.password?.message} required>
+            <Input type="password" placeholder="••••••••" autoComplete="new-password" error={errors.password} {...register('password')} />
+          </Field>
+          <Field label="Confirm" error={errors.confirm?.message} required>
+            <Input type="password" placeholder="••••••••" autoComplete="new-password" error={errors.confirm} {...register('confirm')} />
+          </Field>
+        </div>
+        <Button type="submit" loading={busy} className="w-full" size="lg">Create account</Button>
+      </form>
+    </AuthShell>
+  );
+}
