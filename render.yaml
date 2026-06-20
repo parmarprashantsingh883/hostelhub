@@ -1,0 +1,44 @@
+# Render blueprint — deploy the API (web service) + web (static site).
+# MongoDB: use a free MongoDB Atlas cluster and paste its URI into MONGO_URI.
+services:
+  - type: web
+    name: hostelhub-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_MEMORY_DB
+        value: 'false'
+      - key: SEED_ON_BOOT
+        value: 'true'
+      - key: MONGO_URI
+        sync: false # paste your Atlas connection string
+      - key: CLIENT_URL
+        sync: false # the hostelhub-web URL, e.g. https://hostelhub-web.onrender.com
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRES
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES
+        value: 7d
+
+  - type: web
+    name: hostelhub-web
+    runtime: static
+    rootDir: client
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false # the API URL + /api, e.g. https://hostelhub-api.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

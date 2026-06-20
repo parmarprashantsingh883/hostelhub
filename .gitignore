@@ -8,6 +8,9 @@ client/dist/
 dist/
 build/
 
+# Runtime-generated uploads (receipts, documents) — not source
+server/src/uploads/
+
 # Environment / secrets
 .env
 .env.*

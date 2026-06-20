@@ -1,181 +1,137 @@
-# 🏠 HostelHub — Smart PG & Hostel Management
+<div align="center">
 
-A full-stack (MERN) platform for running a PG or hostel: rooms & beds, tenants, staff, rent
-collection (with online payments), complaints, visitors, food menu, notices, documents and
-reports — with role-based dashboards for **Admin**, **Tenant** and **Staff**.
+# 🏠 HostelHub
+
+### Smart PG &amp; Hostel Management — run your entire property from one dashboard
+
+Rooms &amp; beds · online rent collection · complaints · visitors · food menu · notices · documents · analytics
+— with dedicated **Admin**, **Resident** and **Staff** portals.
+
+[![CI](https://github.com/prashant1234568/hostelhub/actions/workflows/ci.yml/badge.svg)](https://github.com/prashant1234568/hostelhub/actions/workflows/ci.yml)
+![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)
+![Node](https://img.shields.io/badge/Node-20-339933?logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-059669.svg)
+
+</div>
+
+<p align="center">
+  <img src="client/public/preview-admin.png" alt="HostelHub admin dashboard" width="800" />
+</p>
 
 ---
 
 ## ✨ Features
 
-### Admin
-- **Dashboard** — occupancy, monthly collection vs. pending, complaint trends, revenue charts
-- **Rooms** — rooms, bed capacity, facilities, occupancy status
-- **Tenants** — onboard, assign rooms, deactivate (move-out)
-- **Staff** — manage staff and their type (maintenance, security, cleaning…)
-- **Rent & Payments** — generate monthly rent, track paid/pending, late fees & discounts
-- **Complaints** — assign to staff, set priority, resolve/reject, see ratings
-- **Notices** — publish announcements (pin, category, priority, target audience)
-- **Visitors** — check guests in/out, reject entries
-- **Food Menu** — plan the weekly mess menu
-- **Reports** — revenue, pending rent, occupancy, complaints, staff tasks (with **CSV export**)
+| Module | What it does |
+|--------|--------------|
+| **Rooms &amp; beds** | Floors, rooms, bed-level occupancy, room types, one-click tenant assignment |
+| **Rent &amp; payments** | Auto-generate monthly rent, online payment via **Razorpay**, GST-ready **PDF receipts**, manual cash/bank entry |
+| **Complaints** | Residents raise → staff resolve → live status, priority, ratings &amp; feedback |
+| **Visitors** | Pre-registration, gate check-in/out, full audit log |
+| **Notices** | Category-coded notice board with pin &amp; urgent email blasts |
+| **Food menu** | Weekly mess menu with per-meal resident feedback |
+| **Documents** | Agreements &amp; verification docs per resident |
+| **Reports** | Revenue, occupancy, pending rent &amp; complaint analytics, **CSV export** |
+| **Auth &amp; roles** | JWT (access + httpOnly refresh), role-based access for Admin / Resident / Staff |
 
-### Tenant
-- **Dashboard** — rent due, room summary, open complaints, upcoming visitors
-- **My Room** — room details, facilities, tenancy info
-- **My Rent** — pay online (Razorpay), download receipts
-- **Complaints** — raise and track, rate resolutions
-- **Visitors** — pre-register expected guests
-- **Food Menu** — view the weekly menu and rate meals
-- **Notices** — read announcements
-- **Documents** — download agreements / verification docs shared by admin
+## 🧱 Tech stack
 
-### Staff
-- **Dashboard** — assigned / in-progress / resolved-today task counts
-- **My Tasks** — complaints assigned to you, add work notes, update status
-- **Visitor Log** — check visitors in/out at the gate
-- **Notices** — read announcements
+- **Frontend** — React 18 · Vite 5 · React Router 6 · Tailwind CSS v4 · framer-motion · Recharts · Axios · react-hot-toast
+- **Backend** — Node/Express · MongoDB (Mongoose) · JWT · Zod · Nodemailer · Razorpay · PDFKit
+- **Tooling** — Vitest + Testing Library (web) · Vitest + Supertest (API) · ESLint · GitHub Actions CI · Docker
 
----
-
-## 🧱 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 · Vite 5 · React Router 6 · Tailwind CSS · Axios · lucide-react · react-hot-toast |
-| Backend | Node.js · Express · Mongoose (MongoDB) · JWT (access + refresh) · Zod validation |
-| Database | MongoDB — or zero-setup **in-memory MongoDB** for local dev (`mongodb-memory-server`) |
-| Payments | Razorpay (with a dev **mock mode** that completes instantly — no keys needed) |
-
----
-
-## 📁 Project Structure
+## 📁 Structure
 
 ```
-HostelHub/
-├── client/                 # React + Vite SPA
-│   └── src/
-│       ├── api/            # axios instance (token injection + refresh-on-401)
-│       ├── components/ui/  # shared UI kit (Button, Card, Table, Modal, StatCard…)
-│       ├── context/        # AuthContext (useAuth)
-│       ├── layouts/        # DashboardLayout (role-aware sidebar + topbar)
-│       ├── pages/          # public / admin / tenant / staff / shared
-│       └── routes/         # Protected + GuestOnly route guards
-└── server/                 # Express REST API
-    └── src/
-        ├── config/         # db (in-memory or real Mongo)
-        ├── controllers/    # one per resource
-        ├── middleware/     # auth, error, upload, validate
-        ├── models/         # Mongoose schemas
-        ├── routes/         # 13 route groups (see below)
-        └── seed/           # demo-data seeder
+hostelhub/
+├─ client/            # React + Vite SPA
+│  ├─ src/
+│  │  ├─ api/         # axios instance (token + refresh-on-401)
+│  │  ├─ components/ui/   # shared UI kit + motion + charts theme
+│  │  ├─ context/     # AuthContext
+│  │  ├─ layouts/     # role-aware dashboard shell
+│  │  └─ pages/       # public | admin | tenant | staff | shared
+│  └─ test/           # Vitest unit/component tests
+├─ server/            # Express API
+│  ├─ src/
+│  │  ├─ config/      # db + env validation
+│  │  ├─ controllers/ models/ routes/ middleware/ services/  validators/
+│  │  └─ seed/        # demo data
+│  └─ test/           # Vitest + Supertest API tests
+├─ docker-compose.yml # one-command stack (mongo + api + web)
+├─ render.yaml        # Render blueprint
+└─ .github/workflows/ # CI
 ```
 
----
+## 🚀 Quick start (local dev)
 
-## 🚀 Quick Start
-
-> **Prerequisites:** Node.js 18+ and npm. No local MongoDB required for dev — the server
-> spins up an in-memory database automatically.
-
-### 1. Backend (port **5000**)
+> Requires Node 20+. No MongoDB install needed — dev uses an **in-memory MongoDB** that auto-seeds demo data.
 
 ```bash
-cd server
-npm install
-cp .env.example .env      # defaults already work for dev (USE_MEMORY_DB=true)
-npm run dev
+# 1) API → http://localhost:5000
+cd server && npm install && cp .env.example .env && npm run dev
+
+# 2) Web → http://localhost:8080  (new terminal)
+cd client && npm install && npm run dev
 ```
 
-On boot it starts an in-memory MongoDB, **auto-seeds demo data**, and prints the API URL.
+Open **http://localhost:8080**.
 
-### 2. Frontend (port **5173**)
-
-```bash
-cd client
-npm install               # if your global npm cache is root-owned, use:
-                          # npm install --cache /tmp/npm-cache-hostelhub
-npm run dev
-```
-
-Open **http://localhost:5173**. Vite proxies `/api` and `/uploads` to the backend on `:5000`.
-
----
-
-## 🔑 Demo Credentials
-
-Seeded automatically when `USE_MEMORY_DB=true`:
+### 🔑 Demo logins
 
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | `admin@hostelhub.com` | `Admin@123` |
-| Tenant | `tenant@hostelhub.com` | `Tenant@123` |
+| Resident | `tenant@hostelhub.com` | `Tenant@123` |
 | Staff | `staff@hostelhub.com` | `Staff@123` |
 
----
+> Dev shortcut: `http://localhost:8080/login?demo=admin` (also `?demo=tenant` / `?demo=staff`) auto-logs in.
 
-## ⚙️ Environment Variables (`server/.env`)
+## ⚙️ Configuration
 
-| Variable | Purpose | Dev default |
-|----------|---------|-------------|
-| `PORT` | API port | `5000` |
-| `CLIENT_URL` | CORS origin | `http://localhost:5173` |
-| `USE_MEMORY_DB` | Use in-memory MongoDB + auto-seed | `true` |
-| `MONGO_URI` | Real MongoDB URI (used when `USE_MEMORY_DB` is not `true`) | — |
-| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | JWT signing secrets | set in `.env` |
-| `JWT_ACCESS_EXPIRES` / `JWT_REFRESH_EXPIRES` | Token lifetimes | `15m` / `7d` |
-| `SMTP_*`, `EMAIL_FROM` | Email (notices / password reset). Optional in dev | empty |
-| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | Online payments. **Empty → mock mode** (pays instantly) | empty |
+**Server** (`server/.env` — see `server/.env.example`): `PORT`, `MONGO_URI`, `USE_MEMORY_DB`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CLIENT_URL` (comma-sep for multiple origins), `SMTP_*`, `RAZORPAY_KEY_ID/SECRET`, `BUSINESS_NAME/ADDRESS/GSTIN`.
 
-To use a **real MongoDB** instead of the in-memory one, set `USE_MEMORY_DB=false` and a valid
-`MONGO_URI`, then seed once with `npm run seed`.
+**Client** (`client/.env` — see `client/.env.example`): `VITE_API_URL` (only for split deploys; same-origin uses `/api`).
 
----
+> Payments and email work without keys in dev — Razorpay runs in **mock mode** and emails are **logged to the console**. Add real credentials to go live.
 
-## 🔌 API Overview
+## 🧪 Testing
 
-Base URL: `http://localhost:5000/api`. All responses use the envelope
-`{ success, message?, data? }`. Protected routes expect `Authorization: Bearer <accessToken>`;
-a httpOnly refresh cookie auto-renews the access token on `401`.
+```bash
+cd server && npm test      # API: auth, RBAC, rooms CRUD, validation (Vitest + Supertest)
+cd client && npm test      # UI kit + helpers (Vitest + Testing Library)
+cd client && npm run lint  # ESLint
+```
 
-| Group | Base path | Highlights |
-|-------|-----------|-----------|
-| Auth | `/auth` | register, login, refresh, logout, forgot/reset password, me, profile, change-password |
-| Dashboard | `/dashboard` | `/admin`, `/tenant`, `/staff` role summaries |
-| Rooms | `/rooms` | CRUD, occupancy |
-| Tenants | `/tenants` | CRUD, per-tenant rent & complaints |
-| Staff | `/staff` | CRUD |
-| Rent | `/rents` | generate, pay, verify, receipt |
-| Complaints | `/complaints` | create, assign, status, notes, rating |
-| Notices | `/notices` | CRUD (admin), list (all) |
-| Visitors | `/visitors` | create (tenant), check-in/out/reject (admin/staff) |
-| Food Menu | `/food-menu` | CRUD (admin), feedback (tenant) |
-| Documents | `/documents` | upload (admin), list, delete |
-| Reports | `/reports` | revenue, pending-rent, occupancy, complaints, staff-tasks (`?format=csv`) |
-| Notifications | `/notifications` | in-app notifications |
+CI runs all of the above on every push/PR via GitHub Actions.
 
----
+## 🐳 Deployment
 
-## 📜 Scripts
+### Option A — Docker (self-host, one command)
 
-**server/**
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start API with nodemon (auto-seeds in memory-DB mode) |
-| `npm start` | Start API (production) |
-| `npm run seed` | Seed demo data into the configured database |
+```bash
+cp .env.example .env        # set JWT_ACCESS_SECRET + JWT_REFRESH_SECRET
+docker compose up -d --build
+# → web on http://localhost:8080, API proxied at /api, MongoDB persisted in a volume
+```
 
-**client/**
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Vite dev server |
-| `npm run build` | Production build → `dist/` |
-| `npm run preview` | Preview the production build |
+The web image (nginx) serves the SPA and proxies `/api` + `/uploads` to the API — so the browser sees a single origin (no CORS). Uploaded files persist in the `uploads` volume.
 
----
+### Option B — Managed cloud (Vercel + Render + Atlas)
 
-## 📝 Notes
+1. **Database** — create a free **MongoDB Atlas** cluster, copy its connection string.
+2. **API** — deploy `server/` to **Render** (the `render.yaml` blueprint is included). Set `MONGO_URI` (Atlas) and `CLIENT_URL` (your web URL). JWT secrets are auto-generated.
+3. **Web** — deploy `client/` to **Vercel** (or Render static). Set `VITE_API_URL` to the API URL + `/api`. `vercel.json` handles SPA routing.
 
-- **Zero-config dev:** with `USE_MEMORY_DB=true`, data resets on each restart and re-seeds — ideal for demos.
-- **Payments in dev:** with no Razorpay keys, rent payments complete instantly via mock mode; wire real keys for live checkout.
-- **Auth:** short-lived access tokens kept in memory + a httpOnly refresh cookie; the axios client refreshes transparently on `401`.
+> For a clean production tenant, set `SEED_ON_BOOT=false` and create your own admin.
+
+## 🗺️ Roadmap
+
+- Multi-property / multi-tenant SaaS mode (currently one instance per client)
+- Razorpay webhooks &amp; refunds, OTP/WhatsApp notifications
+- Cloud file storage (S3/Cloudinary), Sentry error tracking
+
+## 📄 License
+
+[MIT](LICENSE) © HostelHub

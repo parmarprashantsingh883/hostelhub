@@ -1,11 +1,14 @@
 import 'dotenv/config';
+import mongoose from 'mongoose';
 import app from './app.js';
 import { connectDB } from './config/db.js';
+import { validateEnv } from './config/env.js';
 
 const PORT = process.env.PORT || 5000;
 
 (async () => {
   try {
+    validateEnv();
     await connectDB();
 
     // Optional: auto-seed when running the in-memory DB so the demo
@@ -15,8 +18,33 @@ const PORT = process.env.PORT || 5000;
       await runSeed({ exitAfter: false });
     }
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`🚀 HostelHub API running at http://localhost:${PORT}`);
+    });
+
+    // ── Graceful shutdown ──────────────────────────────────────────────
+    let shuttingDown = false;
+    const shutdown = async (signal) => {
+      if (shuttingDown) return;
+      shuttingDown = true;
+      console.log(`\n${signal} received — shutting down gracefully…`);
+      server.close(async () => {
+        try {
+          await mongoose.connection.close();
+        } catch { /* ignore */ }
+        console.log('✅ Closed out connections. Bye.');
+        process.exit(0);
+      });
+      // Force-exit if connections don't drain in time.
+      setTimeout(() => {
+        console.error('⏱️  Forced shutdown after timeout.');
+        process.exit(1);
+      }, 10000).unref();
+    };
+
+    ['SIGTERM', 'SIGINT'].forEach((sig) => process.on(sig, () => shutdown(sig)));
+    process.on('unhandledRejection', (reason) => {
+      console.error('Unhandled promise rejection:', reason);
     });
   } catch (err) {
     console.error('Failed to start server:', err);

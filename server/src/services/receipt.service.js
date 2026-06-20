@@ -9,6 +9,13 @@ if (!fs.existsSync(RECEIPT_DIR)) fs.mkdirSync(RECEIPT_DIR, { recursive: true });
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+// Business identity printed on the invoice (configurable per deployment).
+const BUSINESS = {
+  name: process.env.BUSINESS_NAME || 'HostelHub',
+  address: process.env.BUSINESS_ADDRESS || '',
+  gstin: process.env.BUSINESS_GSTIN || '',
+};
+
 /**
  * Generate a rent receipt PDF, save under /uploads/receipts, return its URL path.
  */
@@ -22,9 +29,9 @@ export async function generateReceipt({ rent, tenant, room }) {
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    // Header band
-    doc.rect(0, 0, doc.page.width, 110).fill('#4f46e5');
-    doc.fill('#ffffff').fontSize(26).font('Helvetica-Bold').text('HostelHub', 50, 38);
+    // Header band (emerald brand)
+    doc.rect(0, 0, doc.page.width, 110).fill('#059669');
+    doc.fill('#ffffff').fontSize(26).font('Helvetica-Bold').text(BUSINESS.name, 50, 38);
     doc.fontSize(11).font('Helvetica').text('Smart PG & Hostel Management', 50, 70);
     doc.fontSize(16).font('Helvetica-Bold').text('RENT RECEIPT', 0, 48, { align: 'right', width: doc.page.width - 50 });
 
@@ -35,6 +42,14 @@ export async function generateReceipt({ rent, tenant, room }) {
     doc.fontSize(10).font('Helvetica').fill('#6b7280');
     doc.text(`Receipt No: HH-${String(rent._id).slice(-8).toUpperCase()}`, 50, y);
     doc.text(`Date: ${new Date(rent.paidAt || Date.now()).toLocaleDateString('en-IN')}`, 0, y, { align: 'right', width: doc.page.width - 50 });
+
+    // Business / billed-by block
+    if (BUSINESS.address || BUSINESS.gstin) {
+      y += 16;
+      if (BUSINESS.address) { doc.text(BUSINESS.address, 50, y); y += 14; }
+      if (BUSINESS.gstin) { doc.text(`GSTIN: ${BUSINESS.gstin}`, 50, y); }
+      y -= BUSINESS.address ? 14 : 0; // keep downstream layout anchored
+    }
 
     // Tenant block
     y += 36;
@@ -65,8 +80,8 @@ export async function generateReceipt({ rent, tenant, room }) {
 
     // Total band
     y += 8;
-    doc.rect(50, y, doc.page.width - 100, 36).fill('#eef2ff');
-    doc.fill('#4f46e5').font('Helvetica-Bold').fontSize(13);
+    doc.rect(50, y, doc.page.width - 100, 36).fill('#ecfdf5');
+    doc.fill('#059669').font('Helvetica-Bold').fontSize(13);
     doc.text('TOTAL PAID', 62, y + 11);
     doc.text(`Rs. ${rent.totalAmount.toLocaleString('en-IN')}`, 0, y + 11, { align: 'right', width: doc.page.width - 62 });
 

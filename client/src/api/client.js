@@ -15,8 +15,15 @@ export const setSessionExpiredHandler = (fn) => {
   onSessionExpired = fn;
 };
 
+/**
+ * API base. Same-origin by default ('/api' — works with the dev proxy and a
+ * reverse-proxied Docker deploy). For a split deploy (frontend and backend on
+ * different origins, e.g. Vercel + Render) set VITE_API_URL=https://api.example.com/api.
+ */
+export const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE,
   withCredentials: true,
 });
 
@@ -39,7 +46,7 @@ api.interceptors.response.use(
       try {
         refreshing =
           refreshing ||
-          axios.post('/api/auth/refresh', null, { withCredentials: true }).finally(() => {
+          axios.post(`${API_BASE}/auth/refresh`, null, { withCredentials: true }).finally(() => {
             refreshing = null;
           });
         const { data } = await refreshing;

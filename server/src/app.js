@@ -1,10 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
+import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import { corsOrigins, isProduction, isTest } from './config/env.js';
 
 import authRoutes from './routes/auth.routes.js';
 import roomRoutes from './routes/room.routes.js';
@@ -26,11 +30,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// Trust the first proxy hop (nginx / Render / Vercel) so req.ip, rate-limiting
+// and secure cookies work correctly behind a reverse proxy.
+app.set('trust proxy', 1);
+
 // ── Security & parsing ────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(compression());
+if (!isTest) app.use(morgan(isProduction ? 'combined' : 'dev'));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: corsOrigins(),
     credentials: true,
   }),
 );
@@ -38,15 +48,25 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Rate-limit auth endpoints (brute-force guard)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many attempts — try again in 15 minutes.' },
-});
-app.use('/api/auth', authLimiter);
+// Rate limiting (disabled under test to keep suites deterministic).
+if (!isTest) {
+  // Broad guard across the whole API.
+  app.use('/api', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many requests — please slow down.' },
+  }));
+  // Stricter brute-force guard on auth endpoints.
+  app.use('/api/auth', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 50,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many attempts — try again in 15 minutes.' },
+  }));
+}
 
 // Static uploads (dev local storage; swap for Cloudinary in prod)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
