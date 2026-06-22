@@ -29,6 +29,14 @@
   --color-ink-200: #e7ddcd;
 
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Editorial display + ledger mono (used on the marketing site) */
+  --font-display: 'Fraunces', 'Plus Jakarta Sans', ui-serif, Georgia, serif;
+  --font-mono: 'Spline Sans Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Warm near-black for high-contrast bands, and a paper surface */
+  --color-night-900: #2a1216;
+  --color-night-800: #3a1a20;
+  --color-paper: #f6ecdd;
 
   /* Soft, warm-tinted shadows — layered for real depth on the cream canvas */
   --shadow-card: 0 1px 2px 0 rgb(80 30 45 / 0.05), 0 2px 6px -1px rgb(80 30 45 / 0.07);
