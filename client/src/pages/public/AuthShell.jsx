@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BedDouble, Receipt, MessagesSquare, CalendarCheck, Star, TrendingUp, ShieldCheck } from 'lucide-react';
 import { LogoMark } from '../../components/brand/Logo';
-import AuthBackground from '../../components/AuthBackground';
 
 const FEATURES = [
   { icon: BedDouble,      tint: 'from-rose-300/30 to-rose-200/10',       text: 'Rooms, beds & occupancy at a glance' },
@@ -17,10 +16,8 @@ export default function AuthShell({ title, subtitle, children, footer }) {
     <div className="min-h-screen grid lg:grid-cols-[1.05fr_1fr] bg-white">
       {/* ─────────────────  BRAND PANE  ───────────────── */}
       <div className="relative hidden lg:flex flex-col justify-between overflow-hidden text-white p-12 xl:p-14">
-        {/* Crimson gradient base */}
+        {/* Coral gradient base */}
         <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#ef6f4f_0%,#ea5e3c_45%,#823423_100%)]" />
-        {/* Animated three.js layer */}
-        <AuthBackground className="absolute inset-0 z-0" />
         {/* Decorative glow orbs */}
         <div className="pointer-events-none absolute -top-32 -left-28 w-[30rem] h-[30rem] rounded-full bg-rose-400/35 blur-3xl z-0" />
         <div className="pointer-events-none absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-amber-300/25 blur-3xl z-0" />
