@@ -1,33 +1,39 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Brand — emerald ("fresh living"), HostelHub's own identity */
-  --color-brand-50: #ecfdf5;
-  --color-brand-100: #d1fae5;
-  --color-brand-200: #a7f3d0;
-  --color-brand-300: #6ee7b7;
-  --color-brand-400: #34d399;
-  --color-brand-500: #10b981;
-  --color-brand-600: #059669;
-  --color-brand-700: #047857;
-  --color-brand-800: #065f46;
-  --color-brand-900: #064e3b;
+  /* Brand — light crimson, HostelHub's identity */
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-300: #fda4af;
+  --color-brand-400: #fb7185;
+  --color-brand-500: #f43f5e;
+  --color-brand-600: #e11d48;
+  --color-brand-700: #be123c;
+  --color-brand-800: #9f1239;
+  --color-brand-900: #881337;
 
-  /* Warm accent (sunshine) for highlights */
+  /* Secondary — cream surfaces */
+  --color-cream-50: #fdfaf3;
+  --color-cream-100: #faf4e8;
+  --color-cream-200: #f3e9d4;
+  --color-cream-300: #e9d8ba;
+
+  /* Gold accent for highlights (pairs with crimson + cream) */
   --color-sun-400: #fbbf24;
   --color-sun-500: #f59e0b;
 
-  /* Warm ink/neutrals (instead of cool slate) */
-  --color-ink-50: #faf9f7;
-  --color-ink-100: #f3f1ec;
-  --color-ink-200: #e7e3da;
+  /* Warm ink/neutrals (cream-leaning) */
+  --color-ink-50: #faf7f2;
+  --color-ink-100: #f2ece1;
+  --color-ink-200: #e7ddcd;
 
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  /* Soft, warm-tinted shadows — layered for real depth on the warm canvas */
-  --shadow-card: 0 1px 2px 0 rgb(20 50 40 / 0.05), 0 2px 6px -1px rgb(20 50 40 / 0.06);
-  --shadow-soft: 0 8px 24px -6px rgb(16 60 45 / 0.12), 0 3px 10px -3px rgb(16 60 45 / 0.07);
-  --shadow-pop: 0 18px 44px -12px rgb(16 60 45 / 0.22), 0 6px 16px -6px rgb(16 60 45 / 0.12);
+  /* Soft, warm-tinted shadows — layered for real depth on the cream canvas */
+  --shadow-card: 0 1px 2px 0 rgb(80 30 45 / 0.05), 0 2px 6px -1px rgb(80 30 45 / 0.07);
+  --shadow-soft: 0 8px 24px -6px rgb(90 25 45 / 0.13), 0 3px 10px -3px rgb(90 25 45 / 0.08);
+  --shadow-pop: 0 18px 44px -12px rgb(90 20 45 / 0.24), 0 6px 16px -6px rgb(90 20 45 / 0.13);
 }
 
 html {
@@ -38,7 +44,7 @@ html {
 
 body {
   @apply text-slate-900;
-  background-color: #faf9f6; /* warm off-white canvas */
+  background-color: #fdf8f1; /* warm cream canvas */
   font-feature-settings: 'ss01';
 }
 

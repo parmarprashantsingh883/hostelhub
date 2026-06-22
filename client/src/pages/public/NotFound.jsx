@@ -7,10 +7,10 @@ export default function NotFound() {
   const home = user ? `/${user.role}` : '/';
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#faf9f6] px-5 text-center">
-      <div className="pointer-events-none absolute -top-24 left-1/2 h-[380px] w-[700px] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-200/50 via-emerald-100/40 to-transparent blur-3xl" />
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#fdf8f1] px-5 text-center">
+      <div className="pointer-events-none absolute -top-24 left-1/2 h-[380px] w-[700px] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-200/50 via-rose-100/40 to-transparent blur-3xl" />
       <div className="relative">
-        <span className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-[0_10px_24px_-8px_rgba(5,150,105,0.6)]">
+        <span className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-[0_10px_24px_-8px_rgba(225,29,72,0.6)]">
           <Compass className="h-7 w-7" />
         </span>
         <p className="text-7xl font-extrabold tracking-tight text-brand-600">404</p>
@@ -19,7 +19,7 @@ export default function NotFound() {
           The page you’re looking for doesn’t exist or may have moved. Let’s get you back home.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link to={home} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-6 text-sm font-semibold text-white shadow-[0_10px_22px_-8px_rgba(5,150,105,0.6)] transition-all hover:-translate-y-0.5 hover:bg-brand-700">
+          <Link to={home} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-6 text-sm font-semibold text-white shadow-[0_10px_22px_-8px_rgba(225,29,72,0.6)] transition-all hover:-translate-y-0.5 hover:bg-brand-700">
             <House className="h-4 w-4" /> {user ? 'Back to dashboard' : 'Back home'}
           </Link>
           <button onClick={() => window.history.back()} className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">

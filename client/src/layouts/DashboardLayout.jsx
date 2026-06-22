@@ -4,10 +4,11 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
-  Home, User, FileText, ChevronDown, House,
+  Home, User, FileText, ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
+import { LogoMark } from '../components/brand/Logo';
 
 const NAV = {
   admin: [
@@ -148,9 +149,7 @@ export default function DashboardLayout() {
       <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-ink-200 z-40 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Brand */}
         <div className="h-16 flex items-center gap-3 px-5">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white shadow-[0_6px_16px_-4px_rgba(5,150,105,0.55)]">
-            <House className="w-5 h-5" strokeWidth={2.4} />
-          </div>
+          <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(225,29,72,0.45)]" />
           <div className="min-w-0">
             <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px]">HostelHub</p>
             <p className="text-[10px] text-brand-600 font-semibold uppercase tracking-widest">{ROLE_LABEL[user?.role] || 'Portal'}</p>
@@ -168,7 +167,7 @@ export default function DashboardLayout() {
               className={({ isActive }) =>
                 `group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-brand-600 text-white shadow-[0_8px_18px_-6px_rgba(5,150,105,0.55)]'
+                    ? 'bg-brand-600 text-white shadow-[0_8px_18px_-6px_rgba(225,29,72,0.55)]'
                     : 'text-slate-500 hover:bg-brand-50 hover:text-brand-700'
                 }`
               }

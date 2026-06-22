@@ -12,7 +12,7 @@ import { containerVariants } from './motion';
 
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(79,70,229,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(79,70,229,0.55)] focus-visible:ring-brand-500/40',
+  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(225,29,72,0.55)] focus-visible:ring-brand-500/40',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40',
   danger: 'bg-red-600 text-white hover:bg-red-700 shadow-[0_2px_8px_-2px_rgba(220,38,38,0.5)] focus-visible:ring-red-500/40',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40',
@@ -221,7 +221,7 @@ export function EmptyState({ icon: Icon = Inbox, title = 'Nothing here yet', mes
 /* ── Stat card (dashboards) ─────────────────────────────────────────── */
 export function StatCard({ icon: Icon, label, value, sub, tone = 'indigo' }) {
   const tones = {
-    indigo: 'bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[0_6px_16px_-6px_rgba(79,70,229,0.6)]',
+    indigo: 'bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[0_6px_16px_-6px_rgba(225,29,72,0.6)]',
     green: 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-[0_6px_16px_-6px_rgba(5,150,105,0.6)]',
     red: 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-[0_6px_16px_-6px_rgba(220,38,38,0.6)]',
     amber: 'bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-[0_6px_16px_-6px_rgba(245,158,11,0.6)]',

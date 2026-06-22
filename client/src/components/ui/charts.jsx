@@ -1,20 +1,19 @@
 /**
  * Shared chart theme — every recharts visual in the app pulls colours, axis and
- * tooltip styling from here so the data-viz reads as one emerald system
- * (previously a mix of indigo/amber that clashed with the brand).
+ * tooltip styling from here so the data-viz reads as one crimson system.
  */
 import { inr } from './index.jsx';
 
 export const CHART = {
-  primary: '#059669',      // brand-600
-  primarySoft: '#10b981',  // brand-500
-  primaryFaint: '#a7f3d0', // brand-200
-  grid: '#eef2f7',
+  primary: '#e11d48',      // brand-600 (crimson)
+  primarySoft: '#f43f5e',  // brand-500
+  primaryFaint: '#fecdd3', // brand-200
+  grid: '#f1e9ec',
   axis: '#94a3b8',
-  // Categorical series — emerald-anchored, cohesive (no stray indigo).
-  series: ['#059669', '#34d399', '#0ea5e9', '#f59e0b', '#64748b', '#14b8a6'],
+  // Categorical series — crimson-anchored, cohesive.
+  series: ['#e11d48', '#fb7185', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
   // Occupancy semantics
-  occupancy: { Occupied: '#059669', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#ef4444' },
+  occupancy: { Occupied: '#e11d48', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
 };
 
 export const axisTick = { fontSize: 12, fill: CHART.axis };

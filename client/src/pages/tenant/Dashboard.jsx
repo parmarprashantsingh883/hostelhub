@@ -23,7 +23,7 @@ function greeting() {
 }
 
 const QUICK = [
-  { to: '/tenant/rent', label: 'Pay rent', icon: CreditCard, tone: 'from-emerald-500 to-emerald-600' },
+  { to: '/tenant/rent', label: 'Pay rent', icon: CreditCard, tone: 'from-brand-500 to-brand-600' },
   { to: '/tenant/complaints', label: 'Raise complaint', icon: Wrench, tone: 'from-amber-400 to-amber-500' },
   { to: '/tenant/visitors', label: 'Add visitor', icon: Plus, tone: 'from-brand-500 to-brand-700' },
   { to: '/tenant/food-menu', label: 'Food menu', icon: UtensilsCrossed, tone: 'from-blue-500 to-blue-600' },
@@ -165,15 +165,15 @@ export default function TenantDashboard() {
                   <AreaChart data={rentTrend} margin={{ top: 10, right: 8, left: -8, bottom: 0 }}>
                     <defs>
                       <linearGradient id="rentFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#10b981" stopOpacity={0.32} />
-                        <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.32} />
+                        <stop offset="100%" stopColor="#f43f5e" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" vertical={false} />
                     <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} />
-                    <Tooltip content={<RentTooltip />} cursor={{ stroke: '#6ee7b7', strokeWidth: 1 }} />
-                    <Area type="monotone" dataKey="amount" stroke="#059669" strokeWidth={2.5} fill="url(#rentFill)" dot={{ r: 3, fill: '#059669', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                    <Tooltip content={<RentTooltip />} cursor={{ stroke: '#fda4af', strokeWidth: 1 }} />
+                    <Area type="monotone" dataKey="amount" stroke="#e11d48" strokeWidth={2.5} fill="url(#rentFill)" dot={{ r: 3, fill: '#e11d48', strokeWidth: 0 }} activeDot={{ r: 5 }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -187,7 +187,7 @@ export default function TenantDashboard() {
             <div className="relative w-28 h-28">
               <svg viewBox="0 0 36 36" className="w-28 h-28 -rotate-90">
                 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#eef2f7" strokeWidth="3.2" />
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" strokeWidth="3.2" strokeLinecap="round" strokeDasharray={`${onTimePct} ${100 - onTimePct}`} />
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f43f5e" strokeWidth="3.2" strokeLinecap="round" strokeDasharray={`${onTimePct} ${100 - onTimePct}`} />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-2xl font-bold text-slate-900">{onTimePct}%</span>

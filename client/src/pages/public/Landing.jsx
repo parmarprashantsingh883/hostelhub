@@ -142,12 +142,12 @@ export default function Landing() {
   const price = (m) => (yearly ? `₹${Math.round(m * 0.8).toLocaleString('en-IN')}` : `₹${m.toLocaleString('en-IN')}`);
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] text-slate-900">
+    <div className="min-h-screen bg-[#fdf8f1] text-slate-900">
       {/* ── Nav ───────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-[#faf9f6]/80 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-[#fdf8f1]/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="#top" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-[0_6px_16px_-4px_rgba(5,150,105,0.55)]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-[0_6px_16px_-4px_rgba(225,29,72,0.55)]">
               <House className="h-5 w-5" strokeWidth={2.4} />
             </span>
             <span className="text-[17px] font-extrabold tracking-tight">HostelHub</span>
@@ -163,7 +163,7 @@ export default function Landing() {
             ) : (
               <>
                 <Link to="/login" className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</Link>
-                <Link to="/register" className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_18px_-6px_rgba(5,150,105,0.6)] transition-colors hover:bg-brand-700">Get started <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/register" className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_18px_-6px_rgba(225,29,72,0.6)] transition-colors hover:bg-brand-700">Get started <ArrowRight className="h-4 w-4" /></Link>
               </>
             )}
           </div>
@@ -172,7 +172,7 @@ export default function Landing() {
           </button>
         </div>
         {mobileNav && (
-          <div className="border-t border-slate-200/70 bg-[#faf9f6] px-5 py-4 md:hidden">
+          <div className="border-t border-slate-200/70 bg-[#fdf8f1] px-5 py-4 md:hidden">
             <div className="flex flex-col gap-1">
               {navLinks.map(([label, href]) => (
                 <a key={href} href={href} onClick={() => setMobileNav(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-50">{label}</a>
@@ -185,20 +185,20 @@ export default function Landing() {
 
       {/* ── Hero ──────────────────────────────────────────── */}
       <div id="top" className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-200/50 via-emerald-100/40 to-transparent blur-3xl" />
+        <div className="pointer-events-none absolute -top-32 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-200/50 via-rose-100/40 to-transparent blur-3xl" />
         <Section className="relative pt-16 pb-10 text-center sm:pt-24">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-semibold text-brand-700">
               <Sparkles className="h-3.5 w-3.5" /> The all-in-one PG &amp; hostel platform
             </span>
             <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-              Run your entire hostel from <span className="bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent">one dashboard</span>
+              Run your entire hostel from <span className="bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">one dashboard</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-500">
               Rooms, residents, rent collection, complaints, visitors, food menus and analytics — HostelHub replaces your registers, spreadsheets and WhatsApp groups with one clean, modern system.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/register" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-600 px-7 font-semibold text-white shadow-[0_12px_28px_-8px_rgba(5,150,105,0.65)] transition-all hover:bg-brand-700 hover:-translate-y-0.5">Start free <ArrowRight className="h-4 w-4" /></Link>
+              <Link to="/register" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-600 px-7 font-semibold text-white shadow-[0_12px_28px_-8px_rgba(225,29,72,0.65)] transition-all hover:bg-brand-700 hover:-translate-y-0.5">Start free <ArrowRight className="h-4 w-4" /></Link>
               <Link to="/login" className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-300 bg-white px-7 font-semibold text-slate-700 transition-colors hover:bg-slate-50">View live demo</Link>
             </div>
             <p className="mt-4 text-xs text-slate-400">
@@ -271,7 +271,7 @@ export default function Landing() {
           </motion.div>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {ROLES.map(({ icon: Icon, label, tone, points }) => (
-              <motion.div {...fadeUp} key={label} className="rounded-3xl border border-slate-200/70 bg-[#faf9f6] p-7 shadow-card">
+              <motion.div {...fadeUp} key={label} className="rounded-3xl border border-slate-200/70 bg-[#fdf8f1] p-7 shadow-card">
                 <div className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${tone} text-white shadow-soft`}>
                   <Icon className="h-6 w-6" />
                 </div>
@@ -312,7 +312,7 @@ export default function Landing() {
           <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Simple, honest pricing</h2>
             <p className="mt-3 text-slate-500">Start free. Upgrade when you grow. Cancel anytime.</p>
-            <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-[#faf9f6] p-1 text-sm">
+            <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-[#fdf8f1] p-1 text-sm">
               <button onClick={() => setYearly(false)} className={`rounded-full px-4 py-1.5 font-semibold transition-colors ${!yearly ? 'bg-brand-600 text-white' : 'text-slate-500'}`}>Monthly</button>
               <button onClick={() => setYearly(true)} className={`rounded-full px-4 py-1.5 font-semibold transition-colors ${yearly ? 'bg-brand-600 text-white' : 'text-slate-500'}`}>Yearly <span className={yearly ? 'text-brand-100' : 'text-brand-600'}>−20%</span></button>
             </div>

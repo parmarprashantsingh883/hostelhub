@@ -1,40 +1,15 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BedDouble, Receipt, MessagesSquare, CalendarCheck, Star, TrendingUp, ShieldCheck } from 'lucide-react';
+import { LogoMark } from '../../components/brand/Logo';
+import AuthBackground from '../../components/AuthBackground';
 
 const FEATURES = [
-  { icon: BedDouble,      tint: 'from-emerald-300/30 to-emerald-200/10', text: 'Rooms, beds & occupancy at a glance' },
+  { icon: BedDouble,      tint: 'from-rose-300/30 to-rose-200/10',       text: 'Rooms, beds & occupancy at a glance' },
   { icon: Receipt,        tint: 'from-amber-300/30 to-amber-200/10',     text: 'Online rent collection with auto-receipts' },
   { icon: MessagesSquare, tint: 'from-sky-300/30 to-sky-200/10',         text: 'Complaints, visitors & notices, unified' },
   { icon: CalendarCheck,  tint: 'from-fuchsia-300/30 to-fuchsia-200/10', text: 'Move-ins, dues & exits on autopilot' },
 ];
-
-/* Inline brand mark — the H-in-house monogram, no external request. */
-function BrandMark({ className = 'w-12 h-12' }) {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" className={className} aria-label="HostelHub" role="img">
-      <defs>
-        <linearGradient id="bm-tile" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#34D399" />
-          <stop offset="1" stopColor="#047857" />
-        </linearGradient>
-        <linearGradient id="bm-shine" x1="32" y1="0" x2="32" y2="36" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.3" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="16" fill="url(#bm-tile)" />
-      <rect width="64" height="36" rx="16" fill="url(#bm-shine)" />
-      <g stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none">
-        <path d="M12 32 L32 14 L52 32" />
-        <path d="M18 30 V50" />
-        <path d="M46 30 V50" />
-        <path d="M18 40 H46" />
-      </g>
-      <circle cx="49" cy="15" r="2.6" fill="#ECFDF5" />
-    </svg>
-  );
-}
 
 /** Shared two-pane shell for all auth screens. */
 export default function AuthShell({ title, subtitle, children, footer }) {
@@ -42,33 +17,34 @@ export default function AuthShell({ title, subtitle, children, footer }) {
     <div className="min-h-screen grid lg:grid-cols-[1.05fr_1fr] bg-white">
       {/* ─────────────────  BRAND PANE  ───────────────── */}
       <div className="relative hidden lg:flex flex-col justify-between overflow-hidden text-white p-12 xl:p-14">
-        {/* Layered gradient background */}
-        <div className="absolute inset-0 bg-[radial-gradient(140%_120%_at_0%_0%,#10B981_0%,#047857_45%,#064E3B_100%)]" />
+        {/* Crimson gradient base */}
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#f43f5e_0%,#e11d48_45%,#881337_100%)]" />
+        {/* Animated three.js layer */}
+        <AuthBackground className="absolute inset-0 z-0" />
         {/* Decorative glow orbs */}
-        <div className="pointer-events-none absolute -top-32 -left-28 w-[30rem] h-[30rem] rounded-full bg-emerald-300/40 blur-3xl" />
-        <div className="pointer-events-none absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-amber-300/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-cyan-300/20 blur-3xl" />
+        <div className="pointer-events-none absolute -top-32 -left-28 w-[30rem] h-[30rem] rounded-full bg-rose-400/35 blur-3xl z-0" />
+        <div className="pointer-events-none absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-amber-300/25 blur-3xl z-0" />
+        <div className="pointer-events-none absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-rose-300/20 blur-3xl z-0" />
         {/* Dot grid */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          className="pointer-events-none absolute inset-0 z-0 opacity-[0.06]"
           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '28px 28px' }}
         />
-        {/* Top sheen */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-white/12 to-transparent" />
-        {/* Bottom vignette */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/25 to-transparent" />
+        {/* Top sheen + bottom vignette */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-48 z-0 bg-gradient-to-b from-white/12 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-0 bg-gradient-to-t from-black/25 to-transparent" />
 
         {/* Brand lockup */}
-        <Link to="/" className="relative flex items-center gap-3 group w-fit">
-          <BrandMark className="w-12 h-12 drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-transform group-hover:scale-105" />
+        <Link to="/" className="relative z-10 flex items-center gap-3 group w-fit">
+          <LogoMark size={48} className="drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-transform group-hover:scale-105" />
           <div>
             <div className="font-extrabold text-[22px] tracking-tight leading-none">HostelHub</div>
-            <div className="text-[11px] text-emerald-100/80 font-medium tracking-wider uppercase mt-1">Smart PG &amp; Hostel OS</div>
+            <div className="text-[11px] text-rose-100/80 font-medium tracking-wider uppercase mt-1">Smart PG &amp; Hostel OS</div>
           </div>
         </Link>
 
         {/* Hero */}
-        <div className="relative">
+        <div className="relative z-10">
           <motion.span
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -90,7 +66,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
           >
             Run your property,
             <br />
-            <span className="bg-gradient-to-r from-amber-200 via-amber-100 to-emerald-100 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-amber-200 via-rose-100 to-white bg-clip-text text-transparent">
               not the paperwork.
             </span>
           </motion.h1>
@@ -125,7 +101,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
         </div>
 
         {/* Floating preview + testimonial */}
-        <div className="relative space-y-5">
+        <div className="relative z-10 space-y-5">
           {/* Live dashboard preview card */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -138,10 +114,10 @@ export default function AuthShell({ title, subtitle, children, footer }) {
                 <TrendingUp className="w-3.5 h-3.5" />
                 Today's snapshot
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-200">
+              <div className="flex items-center gap-1.5 text-[10px] font-semibold text-rose-100">
                 <span className="relative flex w-1.5 h-1.5">
-                  <span className="absolute inset-0 rounded-full bg-emerald-300 animate-ping opacity-75" />
-                  <span className="relative rounded-full w-1.5 h-1.5 bg-emerald-300" />
+                  <span className="absolute inset-0 rounded-full bg-rose-200 animate-ping opacity-75" />
+                  <span className="relative rounded-full w-1.5 h-1.5 bg-rose-200" />
                 </span>
                 LIVE
               </div>
@@ -150,7 +126,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
               <div>
                 <div className="text-[11px] text-white/65 font-medium">Collected this month</div>
                 <div className="text-2xl font-extrabold text-white tabular-nums tracking-tight mt-0.5">₹4,82,500</div>
-                <div className="text-[11px] text-emerald-200 font-semibold mt-0.5">▲ 18% vs last month</div>
+                <div className="text-[11px] text-rose-100 font-semibold mt-0.5">▲ 18% vs last month</div>
               </div>
               <div>
                 <div className="text-[11px] text-white/65 font-medium">Occupancy</div>
@@ -164,7 +140,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
                 <div
                   key={i}
                   style={{ height: `${v}%` }}
-                  className="flex-1 rounded-t bg-gradient-to-t from-amber-300/70 to-emerald-200/90"
+                  className="flex-1 rounded-t bg-gradient-to-t from-amber-300/70 to-rose-200/90"
                 />
               ))}
             </div>
@@ -196,7 +172,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
           {/* Trust pills */}
           <div className="flex flex-wrap items-center gap-2 text-[11px]">
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-sm">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
+              <ShieldCheck className="w-3.5 h-3.5 text-rose-100" />
               <span className="font-semibold text-white">256-bit secure</span>
             </div>
             <div className="inline-flex items-baseline gap-1.5 px-3 py-1.5 rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-sm">
@@ -214,7 +190,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       </div>
 
       {/* ─────────────────  FORM PANE  ───────────────── */}
-      <div className="flex items-center justify-center p-6 sm:p-12 bg-gradient-to-b from-white to-slate-50">
+      <div className="flex items-center justify-center p-6 sm:p-12 bg-gradient-to-b from-white to-cream-100">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -223,7 +199,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
         >
           {/* Mobile-only brand */}
           <Link to="/" className="lg:hidden flex items-center gap-3 mb-8">
-            <BrandMark className="w-10 h-10" />
+            <LogoMark size={40} />
             <span className="font-extrabold text-lg tracking-tight text-slate-900">HostelHub</span>
           </Link>
           <h1 className="text-[26px] font-extrabold text-slate-900 tracking-tight leading-tight">{title}</h1>
