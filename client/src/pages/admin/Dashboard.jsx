@@ -82,7 +82,7 @@ export default function AdminDashboard() {
                 <CartesianGrid {...gridProps} />
                 <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
                 <YAxis tick={axisTick} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} />
-                <Tooltip cursor={{ fill: 'rgba(225,29,72,0.06)' }} content={<BrandTooltip money />} />
+                <Tooltip cursor={{ fill: 'rgba(234,94,60,0.06)' }} content={<BrandTooltip money />} />
                 <Bar dataKey="revenue" fill="url(#revBar)" radius={[6, 6, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
               <BarChart data={charts.complaintByCategory} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis dataKey="category" type="category" width={90} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(225,29,72,0.06)' }} content={<BrandTooltip />} />
+                <Tooltip cursor={{ fill: 'rgba(234,94,60,0.06)' }} content={<BrandTooltip />} />
                 <Bar dataKey="count" fill={CHART.primarySoft} radius={[0, 6, 6, 0]} maxBarSize={18} />
               </BarChart>
             </ResponsiveContainer>

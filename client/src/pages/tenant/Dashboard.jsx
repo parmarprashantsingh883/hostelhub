@@ -165,15 +165,15 @@ export default function TenantDashboard() {
                   <AreaChart data={rentTrend} margin={{ top: 10, right: 8, left: -8, bottom: 0 }}>
                     <defs>
                       <linearGradient id="rentFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.32} />
-                        <stop offset="100%" stopColor="#f43f5e" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#ef6f4f" stopOpacity={0.32} />
+                        <stop offset="100%" stopColor="#ef6f4f" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" vertical={false} />
                     <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} />
-                    <Tooltip content={<RentTooltip />} cursor={{ stroke: '#fda4af', strokeWidth: 1 }} />
-                    <Area type="monotone" dataKey="amount" stroke="#e11d48" strokeWidth={2.5} fill="url(#rentFill)" dot={{ r: 3, fill: '#e11d48', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                    <Tooltip content={<RentTooltip />} cursor={{ stroke: '#f9a98f', strokeWidth: 1 }} />
+                    <Area type="monotone" dataKey="amount" stroke="#ea5e3c" strokeWidth={2.5} fill="url(#rentFill)" dot={{ r: 3, fill: '#ea5e3c', strokeWidth: 0 }} activeDot={{ r: 5 }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -187,7 +187,7 @@ export default function TenantDashboard() {
             <div className="relative w-28 h-28">
               <svg viewBox="0 0 36 36" className="w-28 h-28 -rotate-90">
                 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#eef2f7" strokeWidth="3.2" />
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f43f5e" strokeWidth="3.2" strokeLinecap="round" strokeDasharray={`${onTimePct} ${100 - onTimePct}`} />
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ef6f4f" strokeWidth="3.2" strokeLinecap="round" strokeDasharray={`${onTimePct} ${100 - onTimePct}`} />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-2xl font-bold text-slate-900">{onTimePct}%</span>

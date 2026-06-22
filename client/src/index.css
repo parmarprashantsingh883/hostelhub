@@ -1,47 +1,47 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Brand — light crimson, HostelHub's identity */
-  --color-brand-50: #fff1f2;
-  --color-brand-100: #ffe4e6;
-  --color-brand-200: #fecdd3;
-  --color-brand-300: #fda4af;
-  --color-brand-400: #fb7185;
-  --color-brand-500: #f43f5e;
-  --color-brand-600: #e11d48;
-  --color-brand-700: #be123c;
-  --color-brand-800: #9f1239;
-  --color-brand-900: #881337;
+  /* Brand — coral (soft-UI identity) */
+  --color-brand-50: #fff4f1;
+  --color-brand-100: #ffe6df;
+  --color-brand-200: #fdccbf;
+  --color-brand-300: #f9a98f;
+  --color-brand-400: #f4805f;
+  --color-brand-500: #ef6f4f;
+  --color-brand-600: #ea5e3c;
+  --color-brand-700: #c64a2c;
+  --color-brand-800: #a23d27;
+  --color-brand-900: #823423;
 
-  /* Secondary — cream surfaces */
-  --color-cream-50: #fdfaf3;
-  --color-cream-100: #faf4e8;
-  --color-cream-200: #f3e9d4;
-  --color-cream-300: #e9d8ba;
+  /* Secondary — soft cream/paper surfaces */
+  --color-cream-50: #fbf9f6;
+  --color-cream-100: #f4f1ec;
+  --color-cream-200: #e9e4dc;
+  --color-cream-300: #d8d1c6;
 
-  /* Gold accent for highlights (pairs with crimson + cream) */
+  /* Gold accent for highlights */
   --color-sun-400: #fbbf24;
   --color-sun-500: #f59e0b;
 
-  /* Warm ink/neutrals (cream-leaning) */
-  --color-ink-50: #faf7f2;
-  --color-ink-100: #f2ece1;
-  --color-ink-200: #e7ddcd;
+  /* Warm-neutral ink */
+  --color-ink-50: #f5f3ef;
+  --color-ink-100: #ebe7e1;
+  --color-ink-200: #ddd7cd;
 
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   /* Editorial display + ledger mono (used on the marketing site) */
   --font-display: 'Fraunces', 'Plus Jakarta Sans', ui-serif, Georgia, serif;
   --font-mono: 'Spline Sans Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Warm near-black for high-contrast bands, and a paper surface */
-  --color-night-900: #2a1216;
-  --color-night-800: #3a1a20;
-  --color-paper: #f6ecdd;
+  /* Near-black for buttons / high-contrast bands, and a paper surface */
+  --color-night-900: #1c1c1e;
+  --color-night-800: #2c2c2e;
+  --color-paper: #f3f0ea;
 
-  /* Soft, warm-tinted shadows — layered for real depth on the cream canvas */
-  --shadow-card: 0 1px 2px 0 rgb(80 30 45 / 0.05), 0 2px 6px -1px rgb(80 30 45 / 0.07);
-  --shadow-soft: 0 8px 24px -6px rgb(90 25 45 / 0.13), 0 3px 10px -3px rgb(90 25 45 / 0.08);
-  --shadow-pop: 0 18px 44px -12px rgb(90 20 45 / 0.24), 0 6px 16px -6px rgb(90 20 45 / 0.13);
+  /* Soft, diffuse shadows (soft-UI) — neutral-warm */
+  --shadow-card: 0 2px 4px -1px rgb(40 30 25 / 0.04), 0 10px 28px -10px rgb(40 30 25 / 0.10);
+  --shadow-soft: 0 10px 32px -8px rgb(40 30 25 / 0.14), 0 4px 12px -6px rgb(40 30 25 / 0.08);
+  --shadow-pop: 0 26px 60px -16px rgb(40 30 25 / 0.20), 0 8px 24px -10px rgb(40 30 25 / 0.10);
 }
 
 html {
@@ -52,7 +52,7 @@ html {
 
 body {
   @apply text-slate-900;
-  background-color: #fdf8f1; /* warm cream canvas */
+  background-color: #f1eeea; /* soft warm-gray canvas (soft-UI) */
   font-feature-settings: 'ss01';
 }
 

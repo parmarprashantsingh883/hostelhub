@@ -18,7 +18,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       {/* ─────────────────  BRAND PANE  ───────────────── */}
       <div className="relative hidden lg:flex flex-col justify-between overflow-hidden text-white p-12 xl:p-14">
         {/* Crimson gradient base */}
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#f43f5e_0%,#e11d48_45%,#881337_100%)]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#ef6f4f_0%,#ea5e3c_45%,#823423_100%)]" />
         {/* Animated three.js layer */}
         <AuthBackground className="absolute inset-0 z-0" />
         {/* Decorative glow orbs */}

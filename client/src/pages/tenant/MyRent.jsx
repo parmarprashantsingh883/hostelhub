@@ -155,7 +155,7 @@ export default function MyRent() {
         <div className="relative overflow-hidden rounded-3xl border border-brand-200/70 bg-gradient-to-br from-brand-50 to-emerald-50 p-6 shadow-card">
           <div className="pointer-events-none absolute -top-10 -right-6 w-52 h-52 rounded-full bg-brand-400/15 blur-3xl" />
           <div className="relative flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shrink-0 shadow-[0_8px_20px_-6px_rgba(225,29,72,0.6)]">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shrink-0 shadow-[0_8px_20px_-6px_rgba(234,94,60,0.6)]">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>

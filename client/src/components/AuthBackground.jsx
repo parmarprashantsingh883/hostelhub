@@ -43,7 +43,7 @@ export default function AuthBackground({ className = '' }) {
     const pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const pMat = new THREE.PointsMaterial({
-      color: 0xffe4e6, size: 0.085, transparent: true, opacity: 0.85, depthWrite: false,
+      color: 0xffe6df, size: 0.085, transparent: true, opacity: 0.85, depthWrite: false,
     });
     const points = new THREE.Points(pGeo, pMat);
     group.add(points);
@@ -62,8 +62,8 @@ export default function AuthBackground({ className = '' }) {
       wires.push(w);
       return w;
     };
-    const ico = addWire(new THREE.IcosahedronGeometry(3.2, 1), 0xfda4af, 0.55, 1, [4, -0.5, 0]);
-    const ico2 = addWire(new THREE.IcosahedronGeometry(2, 0), 0xfff1f2, 0.4, 1, [-6, 3.5, -5]);
+    const ico = addWire(new THREE.IcosahedronGeometry(3.2, 1), 0xf9a98f, 0.55, 1, [4, -0.5, 0]);
+    const ico2 = addWire(new THREE.IcosahedronGeometry(2, 0), 0xfff4f1, 0.4, 1, [-6, 3.5, -5]);
 
     // ── Interaction + resize ────────────────────────────────────────
     let mx = 0, my = 0;

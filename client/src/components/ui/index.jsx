@@ -12,7 +12,7 @@ import { containerVariants } from './motion';
 
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(225,29,72,0.55)] focus-visible:ring-brand-500/40',
+  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(234,94,60,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(234,94,60,0.55)] focus-visible:ring-brand-500/40',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40',
   danger: 'bg-red-600 text-white hover:bg-red-700 shadow-[0_2px_8px_-2px_rgba(220,38,38,0.5)] focus-visible:ring-red-500/40',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40',
@@ -22,7 +22,7 @@ export function Button({ variant = 'primary', size = 'md', loading, className = 
   const sizes = { sm: 'h-8 px-3 text-xs', md: 'h-10 px-4 text-sm', lg: 'h-11 px-6 text-[15px]' };
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 outline-none focus-visible:ring-4 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${btnVariants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-150 outline-none focus-visible:ring-4 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${btnVariants[variant]} ${sizes[size]} ${className}`}
       disabled={loading || rest.disabled}
       {...rest}
     >
@@ -49,7 +49,7 @@ export function Field({ label, error, required, children, hint }) {
 }
 
 export const inputCls = (error) =>
-  `w-full h-10 px-3 rounded-lg border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 ${
+  `w-full h-10 px-3.5 rounded-xl border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 ${
     error ? 'border-red-400 focus:ring-red-500/10 focus:border-red-500' : 'border-slate-300 hover:border-slate-400'
   }`;
 
@@ -69,7 +69,7 @@ export function Textarea({ error, className = '', rows = 3, ...rest }) {
   return (
     <textarea
       rows={rows}
-      className={`w-full px-3 py-2 rounded-lg border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 ${
+      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 ${
         error ? 'border-red-400' : 'border-slate-300 hover:border-slate-400'
       } ${className}`}
       {...rest}
@@ -80,7 +80,7 @@ export function Textarea({ error, className = '', rows = 3, ...rest }) {
 /* ── Card ───────────────────────────────────────────────────────────── */
 export function Card({ title, action, className = '', children }) {
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200/70 shadow-card ${className}`}>
+    <div className={`bg-white rounded-3xl border border-black/[0.04] shadow-card ${className}`}>
       {(title || action) && (
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
           <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
@@ -149,13 +149,13 @@ export function Modal({ open, onClose, title, children, wide }) {
             transition={{ duration: 0.18 }}
           />
           <motion.div
-            className={`relative bg-white rounded-2xl shadow-pop w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-y-auto scrollbar-thin`}
+            className={`relative bg-white rounded-3xl shadow-pop w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-y-auto scrollbar-thin`}
             initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}
             transition={{ type: 'spring', stiffness: 320, damping: 26 }}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur rounded-t-2xl z-10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur rounded-t-3xl z-10">
               <h3 className="text-base font-semibold text-slate-900">{title}</h3>
               <button onClick={onClose} className="w-8 h-8 -mr-1 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" aria-label="Close">
                 <X className="w-5 h-5" />
@@ -221,7 +221,7 @@ export function EmptyState({ icon: Icon = Inbox, title = 'Nothing here yet', mes
 /* ── Stat card (dashboards) ─────────────────────────────────────────── */
 export function StatCard({ icon: Icon, label, value, sub, tone = 'indigo' }) {
   const tones = {
-    indigo: 'bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[0_6px_16px_-6px_rgba(225,29,72,0.6)]',
+    indigo: 'bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[0_6px_16px_-6px_rgba(234,94,60,0.6)]',
     green: 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-[0_6px_16px_-6px_rgba(5,150,105,0.6)]',
     red: 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-[0_6px_16px_-6px_rgba(220,38,38,0.6)]',
     amber: 'bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-[0_6px_16px_-6px_rgba(245,158,11,0.6)]',
@@ -229,7 +229,7 @@ export function StatCard({ icon: Icon, label, value, sub, tone = 'indigo' }) {
   };
   return (
     <motion.div
-      className="group bg-white rounded-2xl border border-slate-200/70 shadow-card hover:shadow-soft p-5 flex items-start gap-4"
+      className="group bg-white rounded-3xl border border-black/[0.04] shadow-card hover:shadow-soft p-5 flex items-start gap-4"
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
