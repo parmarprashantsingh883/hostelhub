@@ -37,3 +37,7 @@ pnpm-debug.log*
 coverage/
 *.local
 redesign.workflow.mjs
+
+# Vite cache
+.vite/
+client/.vite/
