@@ -12,6 +12,66 @@ import {
 const EMPTY_FORM = { roomNumber: '', floor: 0, roomType: 'single', capacity: 1, rentAmount: '', facilities: '' };
 
 const TYPE_TONE = { single: 'blue', double: 'indigo', triple: 'yellow', dormitory: 'gray' };
+const initials = (n) => (n || '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+
+/** Visual bed/room occupancy map — rooms grouped by floor, one cell per bed. */
+function BedMap({ rooms, onAssign }) {
+  const floors = [...new Set(rooms.map((r) => r.floor))].sort((a, b) => a - b);
+  return (
+    <div className="space-y-7">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-brand-600" /> Occupied</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md border border-dashed border-slate-300 bg-white" /> Vacant</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-amber-100 ring-1 ring-amber-200" /> Maintenance</span>
+      </div>
+      {floors.map((floor) => {
+        const fr = rooms.filter((r) => r.floor === floor);
+        const cap = fr.reduce((s, r) => s + (r.capacity || 0), 0);
+        const occ = fr.reduce((s, r) => s + (r.currentOccupancy || 0), 0);
+        const pct = cap ? Math.round((occ / cap) * 100) : 0;
+        return (
+          <div key={floor}>
+            <div className="mb-3 flex items-center justify-between border-b border-slate-200/70 pb-2">
+              <h3 className="font-display text-lg font-semibold text-slate-900">Floor {floor}</h3>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">{occ}/{cap} beds · {pct}% full</span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {fr.map((r) => {
+                const maint = r.status === 'maintenance';
+                return (
+                  <div key={r._id} className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-card">
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-slate-900">Room {r.roomNumber}</p>
+                        <p className="text-xs capitalize text-slate-400">{r.roomType} · {inr(r.rentAmount)}</p>
+                      </div>
+                      {maint
+                        ? <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 ring-1 ring-amber-200">Upkeep</span>
+                        : <span className="shrink-0 font-mono text-[11px] text-slate-400">{r.currentOccupancy}/{r.capacity}</span>}
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {Array.from({ length: r.capacity }).map((_, i) => {
+                        const t = r.assignedTenants?.[i];
+                        if (maint) return <span key={i} className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-500 ring-1 ring-amber-200"><Wrench className="h-4 w-4" /></span>;
+                        if (t) return <span key={i} title={t.name} className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-[11px] font-bold text-white" aria-label={`Bed occupied by ${t.name}`}>{initials(t.name)}</span>;
+                        return (
+                          <button key={i} onClick={() => onAssign(r)} title="Assign a tenant to this bed" aria-label="Assign a tenant to this bed"
+                            className="flex h-11 w-11 items-center justify-center rounded-xl border border-dashed border-slate-300 text-slate-300 transition-colors hover:border-brand-400 hover:bg-brand-50 hover:text-brand-500">
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Rooms() {
   const [rooms, setRooms] = useState([]);
@@ -23,6 +83,7 @@ export default function Rooms() {
   const [assignFor, setAssignFor] = useState(null);
   const [tenants, setTenants] = useState([]);
   const [assignTenantId, setAssignTenantId] = useState('');
+  const [view, setView] = useState('beds'); // 'beds' | 'table'
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -134,9 +195,15 @@ export default function Rooms() {
         title="Rooms"
         subtitle={`${rooms.length} room${rooms.length === 1 ? '' : 's'} across your property`}
         action={
-          <Button onClick={() => setForm({ ...EMPTY_FORM })}>
-            <Plus className="w-4 h-4" /> Add room
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 text-sm">
+              <button onClick={() => setView('beds')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'beds' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}>Beds</button>
+              <button onClick={() => setView('table')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'table' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}>Table</button>
+            </div>
+            <Button onClick={() => setForm({ ...EMPTY_FORM })}>
+              <Plus className="w-4 h-4" /> Add room
+            </Button>
+          </div>
         }
       />
 
@@ -177,18 +244,22 @@ export default function Rooms() {
         </div>
       </Card>
 
-      {/* List */}
-      <Card>
-        {loading ? (
-          <Spinner />
-        ) : rooms.length === 0 ? (
+      {/* List / bed-map */}
+      {loading ? (
+        <Card><Spinner /></Card>
+      ) : rooms.length === 0 ? (
+        <Card>
           <EmptyState
             icon={DoorOpen}
             title="No rooms found"
             message="Add your first room to start assigning tenants."
             action={<Button onClick={() => setForm({ ...EMPTY_FORM })}><Plus className="w-4 h-4" /> Add room</Button>}
           />
-        ) : (
+        </Card>
+      ) : view === 'beds' ? (
+        <BedMap rooms={rooms} onAssign={openAssign} />
+      ) : (
+        <Card>
           <Table headers={['Room', 'Type', 'Rent', 'Occupancy', 'Status', 'Tenants', 'Actions']}>
             {rooms.map((r) => {
               const full = r.currentOccupancy >= r.capacity;
@@ -271,8 +342,8 @@ export default function Rooms() {
               );
             })}
           </Table>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {/* Add/Edit modal */}
       <Modal open={!!form} onClose={() => setForm(null)} title={form?._id ? `Edit room ${form.roomNumber}` : 'Add room'}>

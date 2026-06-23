@@ -25,6 +25,16 @@ function GlanceRow({ icon: Icon, tile, label, value }) {
   );
 }
 
+function DeltaChip({ pct }) {
+  if (pct == null) return null;
+  const up = pct >= 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold ${up ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+      {up ? '▲' : '▼'} {Math.abs(pct)}%
+    </span>
+  );
+}
+
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [data, setData] = useState(null);
@@ -41,13 +51,17 @@ export default function AdminDashboard() {
   const firstName = user?.name?.split(' ')[0] || 'there';
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long' });
+  const rev = charts.revenueByMonth || [];
+  const collectedDelta = rev.length > 1 && rev.at(-2).revenue
+    ? Math.round(((rev.at(-1).revenue - rev.at(-2).revenue) / rev.at(-2).revenue) * 100)
+    : null;
 
   return (
     <div className="space-y-5">
       {/* ── Greeting ─────────────────────────────────────── */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-400">{dateStr}</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-400">{dateStr} <span className="text-slate-300">·</span> updated just now</p>
           <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900">{greeting()}, {firstName} 👋</h1>
           <p className="mt-1 text-sm text-slate-500">Here's how your property is doing today.</p>
         </div>
@@ -68,7 +82,10 @@ export default function AdminDashboard() {
             </span>
           </div>
           <p className="mt-3 font-display text-[2.6rem] font-semibold leading-none tracking-tight tabular-nums text-slate-900">{inr(stats.monthCollection)}</p>
-          <p className="mt-2 text-sm text-slate-500">{inr(stats.monthPending)} still pending</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+            <DeltaChip pct={collectedDelta} />
+            <span>vs last month · {inr(stats.monthPending)} pending</span>
+          </div>
           <div className="mt-auto pt-5">
             {charts.revenueByMonth?.length > 1
               ? <Sparkline data={charts.revenueByMonth} dataKey="revenue" id="rev-spark" height={56} />

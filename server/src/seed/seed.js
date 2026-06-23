@@ -55,36 +55,49 @@ export async function runSeed({ exitAfter = true } = {}) {
   const rooms = await Room.create(roomSpecs);
   const roomByNumber = Object.fromEntries(rooms.map((r) => [r.roomNumber, r]));
 
-  // ── Tenants (5) ───────────────────────────────────────
-  const tenantSpecs = [
-    { name: 'Demo Tenant', email: 'tenant@hostelhub.com', phone: '+91 9000000002', room: '101', rent: 9000 },
-    { name: 'Aarav Shah', email: 'aarav@example.com', phone: '+91 9000000003', room: '102', rent: 7000 },
-    { name: 'Priya Patel', email: 'priya@example.com', phone: '+91 9000000004', room: '102', rent: 7000 },
-    { name: 'Rohan Mehta', email: 'rohan@example.com', phone: '+91 9000000005', room: '104', rent: 6000 },
-    { name: 'Sneha Iyer', email: 'sneha@example.com', phone: '+91 9000000006', room: '201', rent: 9500 },
+  // ── Tenants — fill rooms for a healthy demo occupancy (20 of 23 beds) ──
+  // [roomNumber, occupants] — 302 is under maintenance, one dorm bed left vacant.
+  const FILL = [
+    ['101', 1], ['102', 2], ['103', 2], ['104', 3], ['201', 1],
+    ['202', 2], ['203', 3], ['204', 5], ['301', 1],
+  ];
+  // First five names are kept stable (referenced by complaints/visitors below).
+  const NAMES = [
+    'Demo Tenant', 'Aarav Shah', 'Priya Patel', 'Rohan Mehta', 'Sneha Iyer',
+    'Karan Nair', 'Isha Gupta', 'Vikram Rao', 'Neha Singh', 'Arjun Das',
+    'Meera Joshi', 'Sanjay Pillai', 'Divya Menon', 'Pooja Reddy', 'Aditya Kulkarni',
+    'Tara Bose', 'Nikhil Jain', 'Ananya Krishnan', 'Farhan Khan', 'Ritu Sharma',
   ];
   const tenants = [];
-  for (const t of tenantSpecs) {
-    const room = roomByNumber[t.room];
-    const tenant = await User.create({
-      name: t.name,
-      email: t.email,
-      phone: t.phone,
-      password: 'Tenant@123',
-      role: 'tenant',
-      tenantProfile: {
-        roomId: room._id,
-        joiningDate: new Date(Date.now() - 90 * 24 * 3600 * 1000),
-        securityDeposit: t.rent,
-        rentAmount: t.rent,
-        status: 'active',
-        emergencyContact: { name: 'Family Contact', phone: '+91 9111111111', relation: 'parent' },
-        idProof: { type: 'aadhaar', number: 'XXXX-XXXX-' + Math.floor(1000 + Math.random() * 9000) },
-      },
-    });
-    room.assignedTenants.push(tenant._id);
+  let ni = 0;
+  for (const [roomNo, count] of FILL) {
+    const room = roomByNumber[roomNo];
+    for (let j = 0; j < count; j++) {
+      const name = NAMES[ni] || `Resident ${ni + 1}`;
+      const email = ni === 0 ? 'tenant@hostelhub.com' : `${name.toLowerCase().replace(/[^a-z]+/g, '.')}@example.com`;
+      const tenant = await User.create({
+        name,
+        email,
+        phone: `+91 90000${String(10000 + ni).slice(-5)}`,
+        password: 'Tenant@123',
+        role: 'tenant',
+        tenantProfile: {
+          roomId: room._id,
+          joiningDate: new Date(Date.now() - (150 - ni * 5) * 24 * 3600 * 1000),
+          securityDeposit: room.rentAmount,
+          rentAmount: room.rentAmount,
+          status: 'active',
+          emergencyContact: { name: 'Family Contact', phone: '+91 9111111111', relation: 'parent' },
+          idProof: { type: 'aadhaar', number: 'XXXX-XXXX-' + Math.floor(1000 + Math.random() * 9000) },
+        },
+      });
+      room.assignedTenants.push(tenant._id);
+      tenants.push(tenant);
+      ni++;
+    }
+    room.currentOccupancy = count;
+    room.status = count >= room.capacity ? 'occupied' : count > 0 ? 'partially_occupied' : 'vacant';
     await room.save();
-    tenants.push(tenant);
   }
 
   // ── Staff (3) ─────────────────────────────────────────
@@ -107,48 +120,39 @@ export async function runSeed({ exitAfter = true } = {}) {
     );
   }
 
-  // ── Rents (current + previous month for each tenant) ──
+  // ── Rents — last 6 months, revenue ramping up; current month mostly paid ──
   const now = new Date();
   const cm = now.getMonth() + 1;
   const cy = now.getFullYear();
-  const pm = cm === 1 ? 12 : cm - 1;
-  const py = cm === 1 ? cy - 1 : cy;
+  const mkRent = (t, m, y, paid) => Rent.create({
+    tenantId: t._id,
+    roomId: t.tenantProfile.roomId,
+    month: m,
+    year: y,
+    rentAmount: t.tenantProfile.rentAmount,
+    totalAmount: t.tenantProfile.rentAmount,
+    dueDate: new Date(y, m - 1, 5),
+    status: paid ? 'paid' : 'pending',
+    ...(paid
+      ? {
+          paymentMethod: Math.random() < 0.5 ? 'upi' : 'razorpay',
+          transactionId: `SEED-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
+          paidAt: new Date(y, m - 1, 4),
+        }
+      : {}),
+  });
 
-  for (const t of tenants) {
-    // previous month — paid
-    await Rent.create({
-      tenantId: t._id,
-      roomId: t.tenantProfile.roomId,
-      month: pm,
-      year: py,
-      rentAmount: t.tenantProfile.rentAmount,
-      totalAmount: t.tenantProfile.rentAmount,
-      dueDate: new Date(py, pm - 1, 5),
-      status: 'paid',
-      paymentMethod: 'upi',
-      transactionId: `SEED-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
-      paidAt: new Date(py, pm - 1, 4),
-    });
-    // current month — first two tenants pending, rest paid
-    const isPending = tenants.indexOf(t) < 2;
-    await Rent.create({
-      tenantId: t._id,
-      roomId: t.tenantProfile.roomId,
-      month: cm,
-      year: cy,
-      rentAmount: t.tenantProfile.rentAmount,
-      totalAmount: t.tenantProfile.rentAmount,
-      dueDate: new Date(cy, cm - 1, 5),
-      status: isPending ? 'pending' : 'paid',
-      ...(isPending
-        ? {}
-        : {
-            paymentMethod: 'razorpay',
-            transactionId: `SEED-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
-            paidAt: new Date(cy, cm - 1, 3),
-          }),
-    });
+  // Past 5 months: a growing number of residents paid (upward revenue trend).
+  const paidByOffset = { 5: 9, 4: 11, 3: 13, 2: 15, 1: 17 };
+  for (const off of [5, 4, 3, 2, 1]) {
+    const d = new Date(cy, cm - 1 - off, 1);
+    const m = d.getMonth() + 1;
+    const y = d.getFullYear();
+    const k = paidByOffset[off];
+    for (let i = 0; i < k && i < tenants.length; i++) await mkRent(tenants[i], m, y, true);
   }
+  // Current month: first 2 residents pending (for the Pending KPI), the rest paid.
+  for (let i = 0; i < tenants.length; i++) await mkRent(tenants[i], cm, cy, i >= 2);
 
   // ── Complaints (5) ────────────────────────────────────
   const complaintSpecs = [
