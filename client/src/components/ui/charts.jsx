@@ -5,15 +5,15 @@
 import { inr } from './index.jsx';
 
 export const CHART = {
-  primary: '#ea5e3c',      // brand-600 (crimson)
-  primarySoft: '#ef6f4f',  // brand-500
-  primaryFaint: '#fdccbf', // brand-200
-  grid: '#efe9e3',
+  primary: '#243047',      // brand-600 (crimson)
+  primarySoft: '#41506a',  // brand-500
+  primaryFaint: '#ccd5e2', // brand-200
+  grid: '#eef1f5',
   axis: '#94a3b8',
   // Categorical series — crimson-anchored, cohesive.
-  series: ['#ea5e3c', '#f4805f', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
+  series: ['#243047', '#6e8099', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
   // Occupancy semantics
-  occupancy: { Occupied: '#ea5e3c', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
+  occupancy: { Occupied: '#243047', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
 };
 
 export const axisTick = { fontSize: 12, fill: CHART.axis };

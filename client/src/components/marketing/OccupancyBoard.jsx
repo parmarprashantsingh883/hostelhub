@@ -14,7 +14,7 @@ const ROOMS = [
 
 const CELL = {
   occ: 'bg-brand-50 text-brand-700 ring-1 ring-brand-100',
-  hot: 'bg-brand-600 text-white ring-1 ring-brand-600 shadow-[0_8px_18px_-8px_rgba(234,94,60,0.7)]',
+  hot: 'bg-brand-600 text-white ring-1 ring-brand-600 shadow-[0_8px_18px_-8px_rgba(36,48,71,0.7)]',
   vac: 'bg-white text-slate-300 border border-dashed border-slate-300',
   mnt: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
 };

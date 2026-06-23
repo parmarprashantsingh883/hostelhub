@@ -67,7 +67,7 @@ export default function MyRoom() {
         <Home className="pointer-events-none absolute right-6 bottom-2 w-40 h-40 text-white/[0.04]" strokeWidth={1.5} />
         <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-[0_8px_20px_-6px_rgba(234,94,60,0.7)]">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-[0_8px_20px_-6px_rgba(36,48,71,0.7)]">
               <DoorOpen className="w-7 h-7" />
             </div>
             <div>

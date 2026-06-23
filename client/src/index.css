@@ -1,47 +1,47 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Brand — coral (soft-UI identity) */
-  --color-brand-50: #fff4f1;
-  --color-brand-100: #ffe6df;
-  --color-brand-200: #fdccbf;
-  --color-brand-300: #f9a98f;
-  --color-brand-400: #f4805f;
-  --color-brand-500: #ef6f4f;
-  --color-brand-600: #ea5e3c;
-  --color-brand-700: #c64a2c;
-  --color-brand-800: #a23d27;
-  --color-brand-900: #823423;
+  /* Brand — ink navy (minimal monochrome identity) */
+  --color-brand-50: #f4f6f9;
+  --color-brand-100: #e5eaf1;
+  --color-brand-200: #ccd5e2;
+  --color-brand-300: #a6b4c9;
+  --color-brand-400: #6e8099;
+  --color-brand-500: #41506a;
+  --color-brand-600: #243047;
+  --color-brand-700: #1a2336;
+  --color-brand-800: #131a28;
+  --color-brand-900: #0e1420;
 
-  /* Secondary — soft cream/paper surfaces */
-  --color-cream-50: #fbf9f6;
-  --color-cream-100: #f4f1ec;
-  --color-cream-200: #e9e4dc;
-  --color-cream-300: #d8d1c6;
+  /* Secondary — cool light surfaces */
+  --color-cream-50: #f8fafc;
+  --color-cream-100: #eef1f5;
+  --color-cream-200: #e2e7ee;
+  --color-cream-300: #cdd5e0;
 
-  /* Gold accent for highlights */
+  /* Status accent (sparing) */
   --color-sun-400: #fbbf24;
   --color-sun-500: #f59e0b;
 
-  /* Warm-neutral ink */
-  --color-ink-50: #f5f3ef;
-  --color-ink-100: #ebe7e1;
-  --color-ink-200: #ddd7cd;
+  /* Cool-neutral ink */
+  --color-ink-50: #f4f6f9;
+  --color-ink-100: #e9edf2;
+  --color-ink-200: #dbe1ea;
 
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   /* Editorial display + ledger mono (used on the marketing site) */
   --font-display: 'Fraunces', 'Plus Jakarta Sans', ui-serif, Georgia, serif;
   --font-mono: 'Spline Sans Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Near-black for buttons / high-contrast bands, and a paper surface */
-  --color-night-900: #1c1c1e;
-  --color-night-800: #2c2c2e;
-  --color-paper: #f3f0ea;
+  /* Navy near-black for buttons / high-contrast bands, and a cool surface */
+  --color-night-900: #161d2b;
+  --color-night-800: #232c3f;
+  --color-paper: #eef1f5;
 
-  /* Soft, diffuse shadows (soft-UI) — neutral-warm */
-  --shadow-card: 0 2px 4px -1px rgb(40 30 25 / 0.04), 0 10px 28px -10px rgb(40 30 25 / 0.10);
-  --shadow-soft: 0 10px 32px -8px rgb(40 30 25 / 0.14), 0 4px 12px -6px rgb(40 30 25 / 0.08);
-  --shadow-pop: 0 26px 60px -16px rgb(40 30 25 / 0.20), 0 8px 24px -10px rgb(40 30 25 / 0.10);
+  /* Minimal, flat shadows (cool slate tint) */
+  --shadow-card: 0 1px 2px 0 rgb(30 41 59 / 0.04), 0 1px 3px 0 rgb(30 41 59 / 0.05);
+  --shadow-soft: 0 4px 16px -4px rgb(30 41 59 / 0.10), 0 2px 6px -2px rgb(30 41 59 / 0.06);
+  --shadow-pop: 0 16px 40px -12px rgb(30 41 59 / 0.18), 0 6px 16px -8px rgb(30 41 59 / 0.10);
 }
 
 html {
@@ -52,7 +52,7 @@ html {
 
 body {
   @apply text-slate-900;
-  background-color: #f1eeea; /* soft warm-gray canvas (soft-UI) */
+  background-color: #f6f8fa; /* cool light-gray canvas (minimal) */
   font-feature-settings: 'ss01';
 }
 

@@ -149,7 +149,7 @@ export default function DashboardLayout() {
       <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-ink-200 z-40 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Brand */}
         <div className="h-16 flex items-center gap-3 px-5">
-          <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(234,94,60,0.45)]" />
+          <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(36,48,71,0.45)]" />
           <div className="min-w-0">
             <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px]">HostelHub</p>
             <p className="text-[10px] text-brand-600 font-semibold uppercase tracking-widest">{ROLE_LABEL[user?.role] || 'Portal'}</p>
@@ -167,7 +167,7 @@ export default function DashboardLayout() {
               className={({ isActive }) =>
                 `group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-brand-600 text-white shadow-[0_8px_18px_-6px_rgba(234,94,60,0.55)]'
+                    ? 'bg-brand-600 text-white shadow-[0_8px_18px_-6px_rgba(36,48,71,0.55)]'
                     : 'text-slate-500 hover:bg-brand-50 hover:text-brand-700'
                 }`
               }

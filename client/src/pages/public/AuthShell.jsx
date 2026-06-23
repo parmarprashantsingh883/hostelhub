@@ -17,11 +17,11 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       {/* ─────────────────  BRAND PANE  ───────────────── */}
       <div className="relative hidden lg:flex flex-col justify-between overflow-hidden text-white p-12 xl:p-14">
         {/* Coral gradient base */}
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#ef6f4f_0%,#ea5e3c_45%,#823423_100%)]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#41506a_0%,#243047_45%,#0e1420_100%)]" />
         {/* Decorative glow orbs */}
-        <div className="pointer-events-none absolute -top-32 -left-28 w-[30rem] h-[30rem] rounded-full bg-rose-400/35 blur-3xl z-0" />
+        <div className="pointer-events-none absolute -top-32 -left-28 w-[30rem] h-[30rem] rounded-full bg-slate-300/25 blur-3xl z-0" />
         <div className="pointer-events-none absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-amber-300/25 blur-3xl z-0" />
-        <div className="pointer-events-none absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-rose-300/20 blur-3xl z-0" />
+        <div className="pointer-events-none absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-slate-300/15 blur-3xl z-0" />
         {/* Dot grid */}
         <div
           className="pointer-events-none absolute inset-0 z-0 opacity-[0.06]"
@@ -63,7 +63,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
           >
             Run your property,
             <br />
-            <span className="bg-gradient-to-r from-amber-200 via-rose-100 to-white bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-white via-slate-300 to-white bg-clip-text text-transparent">
               not the paperwork.
             </span>
           </motion.h1>

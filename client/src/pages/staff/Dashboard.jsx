@@ -56,7 +56,7 @@ export default function StaffDashboard() {
 
       <div className="grid gap-5 lg:grid-cols-12">
         {/* Queue summary */}
-        <div className="flex flex-col rounded-3xl border border-black/[0.04] bg-white p-6 shadow-card lg:col-span-5">
+        <div className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Your queue</p>
           <div className="mt-1">
             <Stat icon={ClipboardList} tile="bg-blue-50 text-blue-600" label="Assigned" value={stats.assigned} />
@@ -72,15 +72,15 @@ export default function StaffDashboard() {
           </div>
         </div>
 
-        {/* Progress donut — bold dark */}
-        <div className="flex flex-col items-center rounded-3xl bg-night-900 p-6 text-white shadow-soft lg:col-span-4">
-          <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Today's progress</p>
-          <div className="my-3"><StatDonut value={pct} size={148} stroke={14} track="rgba(255,255,255,0.12)" centerClass="text-white" /></div>
-          <p className="text-sm text-white/65">{stats.resolvedToday} of {total || 0} cleared</p>
+        {/* Progress donut */}
+        <div className="flex flex-col items-center rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-4">
+          <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Today's progress</p>
+          <div className="my-3"><StatDonut value={pct} size={148} stroke={14} /></div>
+          <p className="text-sm text-slate-500">{stats.resolvedToday} of {total || 0} cleared</p>
         </div>
 
         {/* Visitors expected */}
-        <div className="flex flex-col rounded-3xl border border-black/[0.04] bg-white p-6 shadow-card lg:col-span-3">
+        <div className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600"><ClipboardList className="h-5 w-5" /></span>
           <p className="mt-auto pt-6 font-display text-4xl font-semibold tabular-nums text-slate-900">{stats.expectedVisitors}</p>
           <p className="mt-1 text-sm text-slate-500">visitors expected today</p>

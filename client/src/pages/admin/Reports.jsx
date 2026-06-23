@@ -195,7 +195,7 @@ export default function Reports() {
               onClick={() => setActive(r.slug)}
               className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
                 active === r.slug
-                  ? 'bg-brand-600 text-white shadow-[0_4px_12px_-4px_rgba(234,94,60,0.6)]'
+                  ? 'bg-brand-600 text-white shadow-[0_4px_12px_-4px_rgba(36,48,71,0.6)]'
                   : 'text-slate-600 bg-slate-100 hover:bg-slate-200'
               }`}
             >
@@ -225,7 +225,7 @@ export default function Reports() {
                 <CartesianGrid {...gridProps} />
                 <XAxis dataKey="label" tick={axisTick} tickLine={false} axisLine={false} />
                 <YAxis tick={axisTick} tickLine={false} axisLine={false} width={70} tickFormatter={(v) => inr(v)} />
-                <Tooltip cursor={{ fill: 'rgba(234,94,60,0.06)' }} content={<BrandTooltip money />} />
+                <Tooltip cursor={{ fill: 'rgba(36,48,71,0.06)' }} content={<BrandTooltip money />} />
                 <Bar dataKey="value" name="Revenue" fill={CHART.primary} radius={[6, 6, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>

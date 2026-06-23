@@ -60,7 +60,7 @@ export default function AdminDashboard() {
       {/* ── Bento hero ───────────────────────────────────── */}
       <div className="grid gap-5 lg:grid-cols-12">
         {/* Collected */}
-        <div className="flex flex-col rounded-3xl border border-black/[0.04] bg-white p-6 shadow-card lg:col-span-5">
+        <div className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-5">
           <div className="flex items-center justify-between">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Collected this month</p>
             <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-700">
@@ -76,22 +76,22 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Occupancy donut — bold dark card */}
-        <div className="flex flex-col items-center rounded-3xl bg-night-900 p-6 text-white shadow-soft lg:col-span-4">
-          <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Bed occupancy</p>
+        {/* Occupancy donut */}
+        <div className="flex flex-col items-center rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-4">
+          <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Bed occupancy</p>
           <div className="my-3">
-            <StatDonut value={stats.occupancyPct} size={148} stroke={14} track="rgba(255,255,255,0.12)" centerClass="text-white" />
+            <StatDonut value={stats.occupancyPct} size={148} stroke={14} />
           </div>
-          <p className="text-sm text-white/65">{stats.occupiedBeds}/{stats.totalBeds} beds filled</p>
+          <p className="text-sm text-slate-500">{stats.occupiedBeds}/{stats.totalBeds} beds filled</p>
         </div>
 
         {/* Rooms breakdown */}
-        <div className="flex flex-col rounded-3xl border border-black/[0.04] bg-white p-6 shadow-card lg:col-span-3">
+        <div className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Rooms</p>
           <p className="mt-2 font-display text-3xl font-semibold tabular-nums text-slate-900">{stats.totalRooms}</p>
           <div className="mt-auto pt-5">
             <SegmentBar segments={[
-              { label: 'Occupied', value: stats.occupiedRooms, color: '#ea5e3c' },
+              { label: 'Occupied', value: stats.occupiedRooms, color: '#243047' },
               { label: 'Partial', value: stats.partialRooms, color: '#f59e0b' },
               { label: 'Vacant', value: stats.vacantRooms, color: '#cbd5e1' },
               { label: 'Upkeep', value: stats.maintenanceRooms, color: '#9ca3af' },

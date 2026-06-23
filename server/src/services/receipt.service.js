@@ -30,7 +30,7 @@ export async function generateReceipt({ rent, tenant, room }) {
     doc.pipe(stream);
 
     // Header band (emerald brand)
-    doc.rect(0, 0, doc.page.width, 110).fill('#ea5e3c');
+    doc.rect(0, 0, doc.page.width, 110).fill('#243047');
     doc.fill('#ffffff').fontSize(26).font('Helvetica-Bold').text(BUSINESS.name, 50, 38);
     doc.fontSize(11).font('Helvetica').text('Smart PG & Hostel Management', 50, 70);
     doc.fontSize(16).font('Helvetica-Bold').text('RENT RECEIPT', 0, 48, { align: 'right', width: doc.page.width - 50 });
@@ -80,8 +80,8 @@ export async function generateReceipt({ rent, tenant, room }) {
 
     // Total band
     y += 8;
-    doc.rect(50, y, doc.page.width - 100, 36).fill('#fff4f1');
-    doc.fill('#ea5e3c').font('Helvetica-Bold').fontSize(13);
+    doc.rect(50, y, doc.page.width - 100, 36).fill('#f4f6f9');
+    doc.fill('#243047').font('Helvetica-Bold').fontSize(13);
     doc.text('TOTAL PAID', 62, y + 11);
     doc.text(`Rs. ${rent.totalAmount.toLocaleString('en-IN')}`, 0, y + 11, { align: 'right', width: doc.page.width - 62 });
 

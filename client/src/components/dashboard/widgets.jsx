@@ -1,9 +1,9 @@
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const ARC = { brand: '#ea5e3c', green: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
+const ARC = { brand: '#243047', green: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
 
 /** SVG progress donut with a centered value. Works on light or dark cards. */
-export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', track = '#efe9e3', centerClass = 'text-slate-900', subClass = 'text-slate-400', label }) {
+export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', track = '#eef1f5', centerClass = 'text-slate-900', subClass = 'text-slate-400', label }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(100, value));
@@ -25,7 +25,7 @@ export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone
 }
 
 /** Tiny filled area chart — for "trend at a glance" cards. */
-export function Sparkline({ data, dataKey = 'revenue', color = '#ea5e3c', height = 56, id = 'spark' }) {
+export function Sparkline({ data, dataKey = 'revenue', color = '#243047', height = 56, id = 'spark' }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 6, right: 0, left: 0, bottom: 0 }}>
