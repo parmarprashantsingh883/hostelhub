@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
-  Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins,
+  Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -231,14 +231,28 @@ export default function DashboardLayout() {
         </header>
 
         <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+          {/* Suspense lives INSIDE the layout so a lazy route chunk only swaps
+              the content area — the sidebar/topbar never flash. AnimatePresence
+              sequences the outgoing → incoming page for a smooth, flicker-free feel. */}
+          <Suspense
+            fallback={
+              <div className="flex min-h-[55vh] items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-brand-300" />
+              </div>
+            }
           >
-            <Outlet />
-          </motion.div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          </Suspense>
         </main>
       </div>
     </div>
