@@ -89,6 +89,8 @@ export async function runSeed({ exitAfter = true } = {}) {
           status: 'active',
           emergencyContact: { name: 'Family Contact', phone: '+91 9111111111', relation: 'parent' },
           idProof: { type: 'aadhaar', number: 'XXXX-XXXX-' + Math.floor(1000 + Math.random() * 9000) },
+          policeVerification: ['verified', 'verified', 'submitted', 'pending'][ni % 4],
+          agreementStatus: ['signed', 'signed', 'sent', 'not_sent'][ni % 4],
         },
       });
       room.assignedTenants.push(tenant._id);

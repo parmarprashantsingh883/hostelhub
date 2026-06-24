@@ -33,6 +33,16 @@ const tenantProfileSchema = new mongoose.Schema(
       type: { type: String, enum: ['aadhaar', 'passport', 'driving_license', 'voter_id', 'other'] },
       number: String,
     },
+    policeVerification: {
+      type: String,
+      enum: ['pending', 'submitted', 'verified'],
+      default: 'pending',
+    },
+    agreementStatus: {
+      type: String,
+      enum: ['not_sent', 'sent', 'signed'],
+      default: 'not_sent',
+    },
   },
   { _id: false },
 );
