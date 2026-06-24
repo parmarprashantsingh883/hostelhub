@@ -219,8 +219,11 @@ export const getReceipt = asyncHandler(async (req, res) => {
 });
 
 /** POST /api/rents/send-reminders (admin) — email + notify all pending/overdue */
-export const sendReminders = asyncHandler(async (_req, res) => {
-  const rents = await Rent.find({ status: { $in: ['pending', 'overdue'] } }).populate('tenantId', 'name email');
+export const sendReminders = asyncHandler(async (req, res) => {
+  const { rentIds } = req.body || {};
+  const query = { status: { $in: ['pending', 'overdue'] } };
+  if (Array.isArray(rentIds) && rentIds.length) query._id = { $in: rentIds };
+  const rents = await Rent.find(query).populate('tenantId', 'name email');
   let sent = 0;
   for (const rent of rents) {
     if (!rent.tenantId) continue;

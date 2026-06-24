@@ -21,6 +21,7 @@ export default function Rents() {
   const [markMethod, setMarkMethod] = useState('cash');
   const [adjustFor, setAdjustFor] = useState(null);
   const [adjust, setAdjust] = useState({ lateFee: 0, discount: 0 });
+  const [selected, setSelected] = useState(new Set());
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -78,17 +79,26 @@ export default function Rents() {
     }
   };
 
-  const remind = async () => {
+  const remind = async (rentIds) => {
     setBusy(true);
     try {
-      const { data } = await api.post('/rents/send-reminders');
-      toast.success(`${data.data.remindersSent} reminders sent`);
+      const body = rentIds && rentIds.length ? { rentIds } : {};
+      const { data } = await api.post('/rents/send-reminders', body);
+      const n = data.data.remindersSent;
+      toast.success(n ? `${n} reminder${n === 1 ? '' : 's'} sent via email` : 'No pending dues to remind');
+      setSelected(new Set());
     } catch (err) {
       toast.error(errMsg(err));
     } finally {
       setBusy(false);
     }
   };
+
+  const toggleSel = (id) => setSelected((s) => {
+    const n = new Set(s);
+    n.has(id) ? n.delete(id) : n.add(id);
+    return n;
+  });
 
   const receipt = async (rent) => {
     try {
@@ -110,6 +120,9 @@ export default function Rents() {
     { collected: 0, pending: 0, monthTotal: 0, overdue: 0 },
   );
   const collectionPct = totals.monthTotal > 0 ? Math.round((totals.collected / totals.monthTotal) * 100) : 0;
+  const unpaid = rents.filter((r) => r.status !== 'paid');
+  const allUnpaidSelected = unpaid.length > 0 && unpaid.every((r) => selected.has(r._id));
+  const toggleAll = () => setSelected(allUnpaidSelected ? new Set() : new Set(unpaid.map((r) => r._id)));
 
   return (
     <div className="space-y-6">
@@ -189,9 +202,33 @@ export default function Rents() {
             action={<Button onClick={() => setGenOpen(true)}><CalendarPlus className="w-4 h-4" /> Generate month</Button>}
           />
         ) : (
-          <Table headers={['Tenant', 'Room', 'Rent', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
+          <>
+            <div className="mb-3 flex flex-wrap items-center gap-3 rounded-xl bg-slate-50/70 px-3 py-2">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+                <input type="checkbox" checked={allUnpaidSelected} onChange={toggleAll} disabled={!unpaid.length} className="h-4 w-4 rounded border-slate-300 accent-brand-600" />
+                Select unpaid ({unpaid.length})
+              </label>
+              {selected.size > 0 && (
+                <>
+                  <span className="text-xs font-semibold text-slate-700">{selected.size} selected</span>
+                  <Button size="sm" onClick={() => remind([...selected])} loading={busy}><BellRing className="w-3.5 h-3.5" /> Remind selected</Button>
+                  <button onClick={() => setSelected(new Set())} className="text-xs text-slate-400 hover:text-slate-600">Clear</button>
+                </>
+              )}
+              <span className="ml-auto flex items-center gap-1.5">
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-700">Email ✓</span>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">WhatsApp soon</span>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">SMS soon</span>
+              </span>
+            </div>
+            <Table headers={['', 'Tenant', 'Room', 'Rent', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
             {rents.map((r) => (
               <TableRow key={r._id} className="hover:bg-brand-50/40 transition-colors">
+                <Td>
+                  {r.status !== 'paid' && (
+                    <input type="checkbox" checked={selected.has(r._id)} onChange={() => toggleSel(r._id)} className="h-4 w-4 rounded border-slate-300 accent-brand-600" aria-label="Select rent row" />
+                  )}
+                </Td>
                 <Td>
                   <div className="flex items-center gap-3">
                     <Avatar name={r.tenantId?.name} size="sm" />
@@ -216,6 +253,13 @@ export default function Rents() {
                   <div className="flex items-center gap-1">
                     {r.status !== 'paid' ? (
                       <>
+                        <button
+                          onClick={() => remind([r._id])}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+                          title="Send reminder"
+                        >
+                          <BellRing className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => { setAdjustFor(r); setAdjust({ lateFee: r.lateFee || 0, discount: r.discount || 0 }); }}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
@@ -244,7 +288,8 @@ export default function Rents() {
                 </Td>
               </TableRow>
             ))}
-          </Table>
+            </Table>
+          </>
         )}
       </Card>
 
