@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Spinner, EmptyState, Table, TableRow, Td, PageHeader,
-  StatCard, StatusBadge, inr, fmtDate,
+  StatCard, StatusBadge, inr, fmtDate, Pagination, usePagination,
 } from '../../components/ui';
 import { CHART, BrandTooltip, axisTick, gridProps } from '../../components/ui/charts';
 
@@ -179,6 +179,8 @@ export default function Reports() {
     });
   }, [rows, active]);
 
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(rows, 10);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -240,12 +242,15 @@ export default function Reports() {
           <EmptyState icon={FileBarChart} title="No data" message="No rows for this report and date range." />
         ) : (
           <Table headers={headers.map(humanize)}>
-            {rows.map((row, i) => (
+            {pageItems.map((row, i) => (
               <TableRow key={i}>
                 {headers.map((h) => <Td key={h}>{formatCell(h, row[h])}</Td>)}
               </TableRow>
             ))}
           </Table>
+        )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
     </div>

@@ -5,6 +5,7 @@ import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Textarea, Modal, Spinner, EmptyState, StatusBadge,
   Table, TableRow, Td, PageHeader, StatCard, Avatar, fmtDateTime,
+  Pagination, usePagination,
 } from '../../components/ui';
 
 const EMPTY = { visitorName: '', visitorPhone: '', purpose: '', expectedDateTime: '' };
@@ -55,6 +56,8 @@ export default function TenantVisitors() {
   const upcoming = visitors.filter((v) => v.expectedDateTime && new Date(v.expectedDateTime) >= now).length;
   const thisMonth = visitors.filter((v) => v.expectedDateTime && new Date(v.expectedDateTime) >= monthStart).length;
 
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(visitors, 10);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -83,7 +86,7 @@ export default function TenantVisitors() {
           />
         ) : (
           <Table headers={['Visitor', 'Purpose', 'Expected', 'Status']}>
-            {visitors.map((v) => (
+            {pageItems.map((v) => (
               <TableRow key={v._id}>
                 <Td>
                   <div className="flex items-center gap-3">
@@ -102,6 +105,9 @@ export default function TenantVisitors() {
               </TableRow>
             ))}
           </Table>
+        )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
 

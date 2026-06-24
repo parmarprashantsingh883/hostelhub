@@ -7,6 +7,7 @@ import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, ConfirmDialog, Spinner, EmptyState,
   StatusBadge, Badge, StatCard, Avatar, ProgressBar, Table, TableRow, Td, PageHeader, inr,
+  Pagination, usePagination,
 } from '../../components/ui';
 
 const EMPTY_FORM = { roomNumber: '', floor: 0, roomType: 'single', capacity: 1, rentAmount: '', facilities: '' };
@@ -189,6 +190,9 @@ export default function Rooms() {
   const beds = rooms.reduce((s, r) => s + (r.capacity || 0), 0);
   const filled = rooms.reduce((s, r) => s + (r.currentOccupancy || 0), 0);
 
+  // Client-side pagination for the table view only (bed-map uses the full array)
+  const { page, setPage, totalPages, pageItems, total: pageTotal, pageSize } = usePagination(rooms, 10);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -261,7 +265,7 @@ export default function Rooms() {
       ) : (
         <Card>
           <Table headers={['Room', 'Type', 'Rent', 'Occupancy', 'Status', 'Tenants', 'Actions']}>
-            {rooms.map((r) => {
+            {pageItems.map((r) => {
               const full = r.currentOccupancy >= r.capacity;
               const occTone = full ? 'green' : r.currentOccupancy ? 'amber' : 'slate';
               return (
@@ -342,6 +346,9 @@ export default function Rooms() {
               );
             })}
           </Table>
+          {pageTotal > 0 && (
+            <Pagination page={page} totalPages={totalPages} total={pageTotal} pageSize={pageSize} onPage={setPage} />
+          )}
         </Card>
       )}
 

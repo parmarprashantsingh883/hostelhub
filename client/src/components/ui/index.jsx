@@ -14,9 +14,9 @@ import { containerVariants } from './motion';
 const btnVariants = {
   primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(36,48,71,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(36,48,71,0.55)] focus-visible:ring-brand-500/40',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40',
-  danger: 'bg-red-600 text-white hover:bg-red-700 shadow-[0_2px_8px_-2px_rgba(220,38,38,0.5)] focus-visible:ring-red-500/40',
+  danger: 'bg-rose-50 text-rose-600 border border-rose-500/25 hover:bg-rose-100 focus-visible:ring-rose-400/40',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40',
-  success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-[0_2px_8px_-2px_rgba(5,150,105,0.5)] focus-visible:ring-emerald-500/40',
+  success: 'bg-emerald-50 text-emerald-700 border border-emerald-600/25 hover:bg-emerald-100 focus-visible:ring-emerald-500/40',
 };
 export function Button({ variant = 'primary', size = 'md', loading, className = '', children, ...rest }) {
   const sizes = { sm: 'h-8 px-3 text-xs', md: 'h-10 px-4 text-sm', lg: 'h-11 px-6 text-[15px]' };

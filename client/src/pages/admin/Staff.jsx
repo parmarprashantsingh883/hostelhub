@@ -5,6 +5,7 @@ import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, ConfirmDialog, Spinner, EmptyState,
   StatusBadge, Badge, StatCard, Avatar, Table, TableRow, Td, PageHeader, inr, fmtDate,
+  Pagination, usePagination,
 } from '../../components/ui';
 
 const EMPTY = { name: '', email: '', phone: '', password: '', staffType: 'maintenance', salary: '' };
@@ -48,6 +49,8 @@ export default function Staff() {
     const payroll = staff.reduce((sum, s) => sum + (Number(s.staffProfile?.salary) || 0), 0);
     return { total: staff.length, active, managers, payroll };
   }, [staff]);
+
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(staff, 10);
 
   const save = async (e) => {
     e.preventDefault();
@@ -127,7 +130,7 @@ export default function Staff() {
           <EmptyState icon={UserCog} title="No staff found" message="Add maintenance, security, cooks and managers here." />
         ) : (
           <Table headers={['Member', 'Role', 'Phone', 'Salary', 'Joined', 'Status', 'Actions']}>
-            {staff.map((s) => (
+            {pageItems.map((s) => (
               <TableRow key={s._id} className="hover:bg-brand-50/40 transition-colors">
                 <Td>
                   <div className="flex items-center gap-3">
@@ -174,6 +177,9 @@ export default function Staff() {
               </TableRow>
             ))}
           </Table>
+        )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
 

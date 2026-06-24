@@ -7,7 +7,7 @@ import {
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Modal, Spinner, EmptyState, StatusBadge, Table, TableRow, Td,
-  PageHeader, StatCard, inr, fmtDate,
+  PageHeader, StatCard, inr, fmtDate, Pagination, usePagination,
 } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
 
@@ -121,6 +121,8 @@ export default function MyRent() {
   const onTimePct = paidRents.length ? Math.round((onTimeCount / paidRents.length) * 100) : 100;
   const nextDue = due[0];
 
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(rents, 10);
+
   return (
     <div className="space-y-6">
       <PageHeader title="My Rent" subtitle="Pay online and download receipts" />
@@ -183,7 +185,7 @@ export default function MyRent() {
           <EmptyState icon={Banknote} title="No rent records yet" message="Your rent appears here once the admin generates the month." />
         ) : (
           <Table headers={['Month', 'Rent', 'Electricity', 'Late fee', 'Discount', 'Total', 'Due date', 'Status', 'Actions']}>
-            {rents.map((r) => (
+            {pageItems.map((r) => (
               <TableRow key={r._id}>
                 <Td>
                   <div className="flex items-center gap-3">
@@ -215,6 +217,9 @@ export default function MyRent() {
               </TableRow>
             ))}
           </Table>
+        )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
 

@@ -4,7 +4,7 @@ import { ClipboardList, LogIn, LogOut, Ban, Clock, UserCheck, UserMinus, Filter 
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Select, Spinner, EmptyState, StatusBadge, Table, TableRow, Td,
-  PageHeader, StatCard, Avatar, fmtDateTime,
+  PageHeader, StatCard, Avatar, fmtDateTime, Pagination, usePagination,
 } from '../../components/ui';
 
 const STATUSES = ['expected', 'checked_in', 'checked_out', 'rejected'];
@@ -44,6 +44,8 @@ export default function StaffVisitors() {
 
   const countBy = (s) => visitors.filter((v) => v.status === s).length;
 
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(visitors, 10);
+
   return (
     <div className="space-y-6">
       <PageHeader title="Visitor Log" subtitle="Check visitors in and out at the gate" />
@@ -74,7 +76,7 @@ export default function StaffVisitors() {
           <EmptyState icon={ClipboardList} title="No visitors" message="Visitor requests appear here for check-in." />
         ) : (
           <Table headers={['Visitor', 'Phone', 'Tenant', 'Purpose', 'Expected', 'Status', 'Actions']}>
-            {visitors.map((v) => (
+            {pageItems.map((v) => (
               <TableRow key={v._id}>
                 <Td>
                   <div className="flex items-center gap-3">
@@ -110,6 +112,9 @@ export default function StaffVisitors() {
               </TableRow>
             ))}
           </Table>
+        )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
     </div>

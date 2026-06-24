@@ -7,6 +7,7 @@ import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Textarea, Modal, ConfirmDialog, Spinner,
   EmptyState, Badge, StatCard, Table, TableRow, Td, PageHeader, inr, fmtDate,
+  Pagination, usePagination,
 } from '../../components/ui';
 
 const CATEGORIES = ['maintenance', 'utilities', 'salaries', 'supplies', 'rent', 'marketing', 'other'];
@@ -102,6 +103,8 @@ export default function Expenses() {
   const net = summary?.net ?? 0;
   const topCat = summary?.topCategory;
 
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(expenses, 10);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -182,7 +185,7 @@ export default function Expenses() {
       ) : (
         <Card>
           <Table headers={['Date', 'Category', 'Vendor', 'Note', 'Amount', '']}>
-            {expenses.map((x) => (
+            {pageItems.map((x) => (
               <TableRow key={x._id}>
                 <Td className="whitespace-nowrap">{fmtDate(x.date)}</Td>
                 <Td><Badge tone={CATEGORY_TONE[x.category] || 'gray'}>{x.category}</Badge></Td>
@@ -201,6 +204,9 @@ export default function Expenses() {
               </TableRow>
             ))}
           </Table>
+          {!loading && total > 0 && (
+            <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
+          )}
         </Card>
       )}
 
