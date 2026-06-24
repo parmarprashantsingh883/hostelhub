@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RECEIPT_DIR = path.join(__dirname, '..', 'uploads', 'receipts');
 if (!fs.existsSync(RECEIPT_DIR)) fs.mkdirSync(RECEIPT_DIR, { recursive: true });
+const FONT_DIR = path.join(__dirname, '..', 'assets', 'fonts');
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -16,94 +17,147 @@ const BUSINESS = {
   gstin: process.env.BUSINESS_GSTIN || '',
 };
 
+// Palette — mirrors the app's ink-navy theme.
+const NAVY = '#243047';
+const INK = '#0f172a';
+const SLATE = '#64748b';
+const MUTE = '#94a3b8';
+const LINE = '#e6eaf0';
+const BAND = '#f1f5f9';
+const GREEN = '#0f9d6e';
+const GREEN_BG = '#e7f6f0';
+
 /**
- * Generate a rent receipt PDF, save under /uploads/receipts, return its URL path.
+ * Generate a polished rent-receipt PDF, save under /uploads/receipts, return its URL path.
  */
 export async function generateReceipt({ rent, tenant, room }) {
   const fileName = `receipt-${rent._id}.pdf`;
   const filePath = path.join(RECEIPT_DIR, fileName);
   const monthLabel = `${MONTHS[rent.month - 1]} ${rent.year}`;
 
+  // Unicode font so ₹ renders; fall back to Helvetica + "Rs." if the bundle is absent.
+  const reg = path.join(FONT_DIR, 'DejaVuSans.ttf');
+  const bold = path.join(FONT_DIR, 'DejaVuSans-Bold.ttf');
+  const uni = fs.existsSync(reg) && fs.existsSync(bold);
+  const FN = uni ? 'Body' : 'Helvetica';
+  const FB = uni ? 'BodyB' : 'Helvetica-Bold';
+  const money = (n) => `${uni ? '₹' : 'Rs. '}${Number(n || 0).toLocaleString('en-IN')}`;
+
   await new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const doc = new PDFDocument({ size: 'A4', margin: 0 });
+    if (uni) {
+      doc.registerFont('Body', reg);
+      doc.registerFont('BodyB', bold);
+    }
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    // Header band (emerald brand)
-    doc.rect(0, 0, doc.page.width, 110).fill('#243047');
-    doc.fill('#ffffff').fontSize(26).font('Helvetica-Bold').text(BUSINESS.name, 50, 38);
-    doc.fontSize(11).font('Helvetica').text('Smart PG & Hostel Management', 50, 70);
-    doc.fontSize(16).font('Helvetica-Bold').text('RENT RECEIPT', 0, 48, { align: 'right', width: doc.page.width - 50 });
+    const W = doc.page.width;
+    const H = doc.page.height;
+    const L = 50;
+    const R = W - 50;
+    const CW = R - L;
 
-    doc.fill('#111827');
+    // ── Header band ────────────────────────────────────────────────────
+    doc.rect(0, 0, W, 124).fill(NAVY);
+    // little logo square
+    doc.roundedRect(L, 40, 30, 30, 7).fill('#33425e');
+    doc.fillColor('#ffffff').font(FB).fontSize(15).text('H', L, 47, { width: 30, align: 'center' });
+    doc.fillColor('#ffffff').font(FB).fontSize(22).text(BUSINESS.name, L + 42, 40);
+    doc.font(FN).fontSize(10).fillColor('#c2cbd9').text('Smart PG & Hostel Management', L + 42, 69);
+    doc.font(FB).fontSize(15).fillColor('#ffffff').text('RENT RECEIPT', L, 44, { width: CW, align: 'right' });
+    doc.font(FN).fontSize(9.5).fillColor('#9fabbd').text(`No. HH-${String(rent._id).slice(-8).toUpperCase()}`, L, 66, { width: CW, align: 'right' });
 
-    // Receipt meta
-    let y = 140;
-    doc.fontSize(10).font('Helvetica').fill('#6b7280');
-    doc.text(`Receipt No: HH-${String(rent._id).slice(-8).toUpperCase()}`, 50, y);
-    doc.text(`Date: ${new Date(rent.paidAt || Date.now()).toLocaleDateString('en-IN')}`, 0, y, { align: 'right', width: doc.page.width - 50 });
-
-    // Business / billed-by block
-    if (BUSINESS.address || BUSINESS.gstin) {
-      y += 16;
-      if (BUSINESS.address) { doc.text(BUSINESS.address, 50, y); y += 14; }
-      if (BUSINESS.gstin) { doc.text(`GSTIN: ${BUSINESS.gstin}`, 50, y); }
-      y -= BUSINESS.address ? 14 : 0; // keep downstream layout anchored
+    // ── Billed-to (left) + status pill & details (right) ───────────────
+    let y = 158;
+    doc.font(FB).fontSize(8.5).fillColor(MUTE).text('BILLED TO', L, y, { characterSpacing: 0.6 });
+    doc.font(FB).fontSize(12.5).fillColor(INK).text(tenant?.name || '—', L, y + 14);
+    doc.font(FN).fontSize(10).fillColor(SLATE).text(tenant?.email || '', L, y + 31);
+    if (room?.roomNumber) {
+      doc.fillColor(SLATE).text(`Room ${room.roomNumber} · Floor ${room.floor} · ${room.roomType}`, L, y + 45);
     }
 
-    // Tenant block
-    y += 36;
-    doc.fontSize(12).font('Helvetica-Bold').fill('#111827').text('Received from', 50, y);
-    y += 18;
-    doc.fontSize(11).font('Helvetica').text(tenant.name, 50, y);
-    y += 15;
-    doc.fill('#6b7280').text(tenant.email, 50, y);
-    if (room) {
-      y += 15;
-      doc.text(`Room ${room.roomNumber} · Floor ${room.floor} · ${room.roomType}`, 50, y);
-    }
+    // Status pill (right)
+    const isPaid = rent.status === 'paid';
+    const pillText = isPaid ? 'PAID' : String(rent.status || '').toUpperCase();
+    doc.font(FB).fontSize(9);
+    const tw = doc.widthOfString(pillText);
+    const pillW = tw + 30;
+    const pillX = R - pillW;
+    doc.roundedRect(pillX, y, pillW, 20, 10).fill(isPaid ? GREEN_BG : BAND);
+    doc.circle(pillX + 13, y + 10, 3).fill(isPaid ? GREEN : MUTE);
+    doc.fillColor(isPaid ? GREEN : SLATE).font(FB).fontSize(9).text(pillText, pillX + 20, y + 6);
 
-    // Amount table
-    y += 40;
-    const elecLabel = rent.electricityMeta?.units
-      ? `Electricity (${rent.electricityMeta.units} units / ${rent.electricityMeta.occupants})`
-      : 'Electricity';
-    const rows = [
-      ['Rent for', monthLabel],
-      ['Base rent', `Rs. ${rent.rentAmount.toLocaleString('en-IN')}`],
-      ...(rent.electricityCharge ? [[elecLabel, `Rs. ${rent.electricityCharge.toLocaleString('en-IN')}`]] : []),
-      ['Late fee', `Rs. ${(rent.lateFee || 0).toLocaleString('en-IN')}`],
-      ['Discount', `- Rs. ${(rent.discount || 0).toLocaleString('en-IN')}`],
+    // Details block (right, label/value rows)
+    const detX = 330;
+    const detW = R - detX;
+    let dy = y + 32;
+    const details = [
+      ['Issue date', new Date().toLocaleDateString('en-IN')],
+      ['Payment date', new Date(rent.paidAt || Date.now()).toLocaleDateString('en-IN')],
+      ['Method', String(rent.paymentMethod || 'cash').replace(/_/g, ' ').toUpperCase()],
     ];
-    doc.fill('#111827');
-    rows.forEach(([k, v]) => {
-      doc.font('Helvetica').fontSize(11).text(k, 50, y);
-      doc.font('Helvetica-Bold').text(v, 0, y, { align: 'right', width: doc.page.width - 50 });
-      y += 22;
+    details.forEach(([k, v]) => {
+      doc.font(FN).fontSize(9.5).fillColor(MUTE).text(k, detX, dy, { width: detW * 0.5 });
+      doc.font(FB).fontSize(9.5).fillColor(INK).text(v, detX, dy, { width: detW, align: 'right' });
+      dy += 16;
+    });
+    if (rent.transactionId) {
+      doc.font(FN).fontSize(8).fillColor(MUTE).text(rent.transactionId, detX, dy, { width: detW, align: 'right' });
+    }
+
+    // ── Items table ────────────────────────────────────────────────────
+    y = 268;
+    doc.font(FB).fontSize(8.5).fillColor(MUTE).text('DESCRIPTION', L, y, { characterSpacing: 0.6 });
+    doc.font(FB).fontSize(8.5).fillColor(MUTE).text('AMOUNT', L, y, { width: CW, align: 'right', characterSpacing: 0.6 });
+    y += 15;
+    doc.moveTo(L, y).lineTo(R, y).lineWidth(1).strokeColor(NAVY).stroke();
+    y += 14;
+
+    const items = [[`Room rent — ${monthLabel}`, money(rent.rentAmount)]];
+    if (rent.electricityCharge) {
+      const m = rent.electricityMeta;
+      const desc = m?.units ? `Electricity (${m.units} units / ${m.occupants})` : 'Electricity';
+      items.push([desc, money(rent.electricityCharge)]);
+    }
+    if (rent.lateFee) items.push(['Late fee', money(rent.lateFee)]);
+    if (rent.discount) items.push(['Discount', `– ${money(rent.discount)}`]);
+
+    items.forEach(([k, v]) => {
+      doc.font(FN).fontSize(10.5).fillColor(INK).text(k, L, y, { width: CW * 0.7 });
+      doc.font(FB).fontSize(10.5).fillColor(INK).text(v, L, y, { width: CW, align: 'right' });
+      y += 23;
+      doc.moveTo(L, y - 7).lineTo(R, y - 7).lineWidth(0.5).strokeColor(LINE).stroke();
     });
 
-    // Total band
+    // ── Total band ─────────────────────────────────────────────────────
     y += 8;
-    doc.rect(50, y, doc.page.width - 100, 36).fill('#f4f6f9');
-    doc.fill('#243047').font('Helvetica-Bold').fontSize(13);
-    doc.text('TOTAL PAID', 62, y + 11);
-    doc.text(`Rs. ${rent.totalAmount.toLocaleString('en-IN')}`, 0, y + 11, { align: 'right', width: doc.page.width - 62 });
+    doc.roundedRect(L, y, CW, 46, 8).fill(BAND);
+    doc.fillColor(NAVY).font(FB).fontSize(12).text('TOTAL PAID', L + 18, y + 16);
+    doc.fillColor(NAVY).font(FB).fontSize(17).text(money(rent.totalAmount), L, y + 13, { width: CW - 18, align: 'right' });
+    y += 46;
 
-    // Payment meta
-    y += 60;
-    doc.fill('#6b7280').font('Helvetica').fontSize(10);
-    doc.text(`Payment method: ${(rent.paymentMethod || 'cash').toUpperCase()}`, 50, y);
-    if (rent.transactionId) {
-      y += 15;
-      doc.text(`Transaction ID: ${rent.transactionId}`, 50, y);
+    // ── Business block (optional) ──────────────────────────────────────
+    if (BUSINESS.address || BUSINESS.gstin) {
+      y += 26;
+      doc.font(FB).fontSize(8.5).fillColor(MUTE).text('FROM', L, y, { characterSpacing: 0.6 });
+      y += 13;
+      doc.font(FN).fontSize(9.5).fillColor(SLATE);
+      if (BUSINESS.address) { doc.text(BUSINESS.address, L, y, { width: CW * 0.6 }); y += 13; }
+      if (BUSINESS.gstin) doc.text(`GSTIN: ${BUSINESS.gstin}`, L, y);
     }
 
-    // Footer
-    doc.fontSize(9).fill('#9ca3af').text(
+    // ── Footer ─────────────────────────────────────────────────────────
+    const fy = H - 92;
+    doc.moveTo(L, fy).lineTo(R, fy).lineWidth(0.5).strokeColor(LINE).stroke();
+    doc.font(FB).fontSize(10.5).fillColor(INK).text('Thank you for staying with us.', L, fy + 14, { width: CW, align: 'center' });
+    doc.font(FN).fontSize(8).fillColor(MUTE).text(
       'This is a computer-generated receipt and does not require a signature.',
-      50,
-      doc.page.height - 80,
-      { align: 'center', width: doc.page.width - 100 },
+      L, fy + 32, { width: CW, align: 'center' },
+    );
+    doc.font(FN).fontSize(7.5).fillColor('#b6bfcd').text(
+      `${BUSINESS.name} · generated ${new Date().toLocaleString('en-IN')}`,
+      L, fy + 46, { width: CW, align: 'center' },
     );
 
     doc.end();
