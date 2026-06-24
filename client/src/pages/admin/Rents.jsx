@@ -185,7 +185,7 @@ export default function Rents() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={Wallet}
-          tone="green"
+          accent
           label="Collected"
           value={inr(totals.collected)}
           sub={`${collectionPct}% of month billed`}

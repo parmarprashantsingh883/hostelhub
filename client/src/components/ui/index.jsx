@@ -274,27 +274,49 @@ export function EmptyState({ icon: Icon = Inbox, title = 'Nothing here yet', mes
 }
 
 /* ── Stat card (dashboards) ─────────────────────────────────────────── */
-export function StatCard({ icon: Icon, label, value, sub, tone = 'indigo' }) {
-  // Minimal monochrome: navy-tint tiles. Colour lives only in status badges.
-  const tile = 'bg-brand-50 text-brand-600';
-  const tones = { indigo: tile, green: tile, red: tile, amber: tile, blue: tile };
+/**
+ * KPI tile — label + icon chip on top, a large tabular value below.
+ * `accent` renders the navy hero treatment for a featured metric.
+ */
+export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
+  if (accent) {
+    return (
+      <motion.div
+        className="surface-hero relative overflow-hidden rounded-2xl p-5 text-white shadow-hero"
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">{label}</p>
+          {Icon && (
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/15 shrink-0">
+              <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
+            </span>
+          )}
+        </div>
+        <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums truncate">{value}</p>
+        {sub && <p className="mt-2 text-xs text-white/55">{sub}</p>}
+      </motion.div>
+    );
+  }
   return (
     <motion.div
-      className="group bg-white rounded-2xl border border-slate-200/70 shadow-card hover:shadow-soft p-5 flex items-start gap-4"
+      className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card transition-shadow duration-200 hover:shadow-soft"
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      whileHover={{ y: -4 }}
       transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105 ${tones[tone]}`}>
-        <Icon className="w-6 h-6" />
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.13em] text-slate-400">{label}</p>
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100/70 shrink-0 transition-transform duration-200 group-hover:scale-105">
+          <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
+        </span>
       </div>
-      <div className="min-w-0">
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</p>
-        <p className="text-[26px] leading-tight font-bold text-slate-900 mt-1 truncate tracking-tight tabular-nums">{value}</p>
-        {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
-      </div>
+      <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums text-slate-900 truncate">{value}</p>
+      {sub && <p className="mt-2 text-xs text-slate-400">{sub}</p>}
     </motion.div>
   );
 }

@@ -128,10 +128,10 @@ export default function Expenses() {
         />
         <StatCard
           icon={TrendingUp}
-          tone={net >= 0 ? 'green' : 'red'}
+          accent
           label="Net P&L"
           value={inr(net)}
-          sub={net >= 0 ? 'Profit' : 'Loss'}
+          sub={net >= 0 ? 'Profit this month' : 'Loss this month'}
         />
         <StatCard
           icon={Receipt}
