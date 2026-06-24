@@ -180,19 +180,29 @@ export async function runSeed({ exitAfter = true } = {}) {
     }
   }
 
-  // ── Complaints (5) ────────────────────────────────────
+  // ── Complaints (14 — realistic status mix, most resolved) ─────────────
   const complaintSpecs = [
     { title: 'Wi-Fi very slow on floor 2', category: 'wifi', priority: 'high', tenant: 0, status: 'assigned', staff: 0 },
     { title: 'Tap leaking in bathroom', category: 'water', priority: 'medium', tenant: 1, status: 'in_progress', staff: 0 },
-    { title: 'Tube light flickering', category: 'electricity', priority: 'low', tenant: 2, status: 'resolved', staff: 0, rating: 4 },
-    { title: 'Room cleaning skipped twice', category: 'cleaning', priority: 'medium', tenant: 3, status: 'pending' },
+    { title: 'Tube light flickering', category: 'electricity', priority: 'low', tenant: 2, status: 'resolved', staff: 0, rating: 4, feedback: 'Fixed the same day, thanks!' },
+    { title: 'Room cleaning skipped twice', category: 'cleaning', priority: 'medium', tenant: 3, status: 'resolved', staff: 0, rating: 5, feedback: 'Sorted out quickly.' },
     { title: 'Cupboard hinge broken', category: 'furniture', priority: 'low', tenant: 4, status: 'pending' },
+    { title: 'Geyser not heating water', category: 'electricity', priority: 'high', tenant: 5, status: 'resolved', staff: 0, rating: 4 },
+    { title: 'Bathroom drain blocked', category: 'water', priority: 'urgent', tenant: 6, status: 'resolved', staff: 0, rating: 3, feedback: 'Took a while but resolved.' },
+    { title: 'AC not cooling in room 101', category: 'maintenance', priority: 'high', tenant: 0, status: 'in_progress', staff: 0 },
+    { title: 'Main door lock is loose', category: 'security', priority: 'medium', tenant: 7, status: 'resolved', staff: 1, rating: 5, feedback: 'Replaced promptly.' },
+    { title: 'Dinner quality dropped this week', category: 'food', priority: 'medium', tenant: 8, status: 'rejected', remarks: 'Menu reviewed with the cook; portions and spice levels adjusted.' },
+    { title: "Window won't close fully", category: 'furniture', priority: 'low', tenant: 9, status: 'resolved', staff: 0, rating: 4 },
+    { title: 'Wi-Fi router needs a restart', category: 'wifi', priority: 'low', tenant: 10, status: 'resolved', staff: 0, rating: 5 },
+    { title: 'Cockroaches in shared kitchen', category: 'cleaning', priority: 'high', tenant: 11, status: 'pending' },
+    { title: 'Hot water timing too short', category: 'water', priority: 'low', tenant: 12, status: 'resolved', staff: 0, rating: 4 },
   ];
-  for (const c of complaintSpecs) {
+  for (let ci = 0; ci < complaintSpecs.length; ci++) {
+    const c = complaintSpecs[ci];
     const t = tenants[c.tenant];
     await Complaint.create({
       title: c.title,
-      description: `${c.title}. Please fix as soon as possible.`,
+      description: `${c.title}. Please look into this when possible.`,
       category: c.category,
       priority: c.priority,
       tenantId: t._id,
@@ -200,7 +210,9 @@ export async function runSeed({ exitAfter = true } = {}) {
       assignedStaffId: c.staff !== undefined ? staff[c.staff]._id : null,
       status: c.status,
       rating: c.rating || null,
-      resolvedAt: c.status === 'resolved' ? new Date() : null,
+      ...(c.feedback ? { tenantFeedback: c.feedback } : {}),
+      ...(c.remarks ? { adminRemarks: c.remarks } : {}),
+      resolvedAt: c.status === 'resolved' ? new Date(Date.now() - (ci + 1) * 2 * 24 * 3600 * 1000) : null,
     });
   }
 
@@ -213,23 +225,32 @@ export async function runSeed({ exitAfter = true } = {}) {
     { title: 'Diwali dinner special 🎉', content: 'Special festive dinner on Diwali night. Veg thali + sweets for everyone!', category: 'food', priority: 'normal', targetAudience: 'tenants', createdBy: admin._id },
   ]);
 
-  // ── Visitors (2 expected today) ───────────────────────
-  await Visitor.create([
-    {
-      tenantId: tenants[0]._id,
-      visitorName: 'Rahul Verma',
-      visitorPhone: '+91 9222222222',
-      purpose: 'Family visit',
-      expectedDateTime: new Date(Date.now() + 4 * 3600 * 1000),
-    },
-    {
-      tenantId: tenants[1]._id,
-      visitorName: 'Amit Joshi',
-      visitorPhone: '+91 9333333333',
-      purpose: 'Document delivery',
-      expectedDateTime: new Date(Date.now() + 24 * 3600 * 1000),
-    },
-  ]);
+  // ── Visitors — realistic mix: checked-out, inside now, expected, rejected ──
+  const H = 3600 * 1000;
+  const visitorSpecs = [
+    { t: 0, name: 'Rahul Verma', phone: '+91 9222200001', purpose: 'Family visit', exp: -5 * H, status: 'checked_out', entry: -5 * H, exit: -2 * H },
+    { t: 2, name: 'Sunita Rao', phone: '+91 9222200002', purpose: 'Parents visiting', exp: -4 * H, status: 'checked_out', entry: -4 * H, exit: -1 * H },
+    { t: 5, name: 'Amazon Delivery', phone: '+91 9222200003', purpose: 'Parcel handover', exp: -3 * H, status: 'checked_out', entry: -3 * H, exit: -2.9 * H },
+    { t: 1, name: 'Amit Joshi', phone: '+91 9222200004', purpose: 'Friend dropping by', exp: -2 * H, status: 'checked_in', entry: -2 * H, exit: null },
+    { t: 7, name: 'Priya Desai', phone: '+91 9222200005', purpose: 'Relative', exp: -1 * H, status: 'checked_in', entry: -1 * H, exit: null },
+    { t: 3, name: 'Vikas Kumar', phone: '+91 9222200006', purpose: 'Family visit', exp: 3 * H, status: 'expected' },
+    { t: 9, name: 'Neha Agarwal', phone: '+91 9222200007', purpose: 'Document handover', exp: 5 * H, status: 'expected' },
+    { t: 4, name: 'Ramesh Tiwari', phone: '+91 9222200008', purpose: 'Maintenance vendor', exp: 26 * H, status: 'expected' },
+    { t: 6, name: 'Unlisted caller', phone: '+91 9222200009', purpose: 'Unannounced', exp: -6 * H, status: 'rejected' },
+  ];
+  for (const v of visitorSpecs) {
+    await Visitor.create({
+      tenantId: tenants[v.t]._id,
+      visitorName: v.name,
+      visitorPhone: v.phone,
+      purpose: v.purpose,
+      expectedDateTime: new Date(now.getTime() + v.exp),
+      entryTime: v.entry != null ? new Date(now.getTime() + v.entry) : null,
+      exitTime: v.exit != null ? new Date(now.getTime() + v.exit) : null,
+      status: v.status,
+      approvedBy: v.status === 'checked_in' || v.status === 'checked_out' ? admin._id : null,
+    });
+  }
 
   // ── Food menu (current week) ──────────────────────────
   const monday = new Date(now);
@@ -244,6 +265,16 @@ export async function runSeed({ exitAfter = true } = {}) {
     ['Chhole Bhature', 'Veg Thali Special', 'Maggi + Tea', 'Pav Bhaji'],
     ['Masala Dosa', 'Sunday Special: Paneer Thali', 'Cake + Juice', 'Fried Rice + Manchurian'],
   ];
+  // Resident food feedback (drives the avg rating + most-liked/disliked).
+  const FB = {
+    0: [{ t: 1, meal: 'lunch', r: 5, c: 'Loved the paneer butter masala' }, { t: 3, meal: 'dinner', r: 4 }],
+    1: [{ t: 2, meal: 'breakfast', r: 4 }, { t: 5, meal: 'lunch', r: 3, c: 'Rajma was a bit bland' }],
+    2: [{ t: 4, meal: 'dinner', r: 5, c: 'Dal tadka was great' }, { t: 7, meal: 'snacks', r: 2, c: 'Pakoras were cold' }],
+    3: [{ t: 6, meal: 'lunch', r: 4 }, { t: 8, meal: 'dinner', r: 5 }],
+    4: [{ t: 9, meal: 'dinner', r: 4, c: 'Matar paneer 👍' }],
+    5: [{ t: 10, meal: 'lunch', r: 5, c: 'Thali special was 🔥' }],
+    6: [{ t: 0, meal: 'lunch', r: 4, c: 'Sunday thali was nice' }],
+  };
   for (let i = 0; i < 7; i++) {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
@@ -254,6 +285,13 @@ export async function runSeed({ exitAfter = true } = {}) {
       lunch: menus[i][1],
       snacks: menus[i][2],
       dinner: menus[i][3],
+      feedback: (FB[i] || []).map((f) => ({
+        tenantId: tenants[f.t]._id,
+        meal: f.meal,
+        rating: f.r,
+        comment: f.c || '',
+        at: new Date(date.getTime() + 13 * 3600 * 1000),
+      })),
     });
   }
 
