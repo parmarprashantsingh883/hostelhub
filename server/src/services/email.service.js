@@ -29,7 +29,14 @@ export async function sendEmail({ to, subject, html, text }) {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     return { dev: true };
   }
-  return t.sendMail({ from: process.env.EMAIL_FROM, to, subject, html, text });
+  try {
+    return await t.sendMail({ from: process.env.EMAIL_FROM, to, subject, html, text });
+  } catch (err) {
+    // Email is best-effort: a delivery failure must never break the request
+    // that triggered it (e.g. a recorded payment must still return success).
+    console.error(`✉️  Email delivery failed (to ${to}):`, err.message);
+    return { error: err.message };
+  }
 }
 
 export const emailTemplates = {

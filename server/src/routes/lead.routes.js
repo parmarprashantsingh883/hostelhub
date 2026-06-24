@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import rateLimit from 'express-rate-limit';
 import * as ctrl from '../controllers/lead.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
+import { isTest } from '../config/env.js';
 
 const SOURCES = ['website', 'walk_in', 'referral', 'social', 'other'];
 const STAGES = ['new', 'contacted', 'visit_scheduled', 'token_paid', 'converted', 'lost'];
@@ -26,7 +28,17 @@ const stageBody = z.object({ stage: z.enum(STAGES) });
 const router = Router();
 
 // PUBLIC — the booking page posts here without auth. Must come BEFORE protect.
-router.post('/public', validate(publicLeadBody), ctrl.createPublicLead);
+// Stricter per-IP limit than the global API guard to deter booking spam.
+const publicLeadGuard = isTest
+  ? (req, res, next) => next()
+  : rateLimit({
+      windowMs: 60 * 60 * 1000,
+      max: 20,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { success: false, message: 'Too many enquiries — please try again later.' },
+    });
+router.post('/public', publicLeadGuard, validate(publicLeadBody), ctrl.createPublicLead);
 
 // Everything below requires an authenticated admin.
 router.use(protect);
