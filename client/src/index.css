@@ -38,10 +38,11 @@
   --color-night-800: #232c3f;
   --color-paper: #eef1f5;
 
-  /* Minimal, flat shadows (cool slate tint) */
-  --shadow-card: 0 1px 2px 0 rgb(30 41 59 / 0.04), 0 1px 3px 0 rgb(30 41 59 / 0.05);
-  --shadow-soft: 0 4px 16px -4px rgb(30 41 59 / 0.10), 0 2px 6px -2px rgb(30 41 59 / 0.06);
-  --shadow-pop: 0 16px 40px -12px rgb(30 41 59 / 0.18), 0 6px 16px -8px rgb(30 41 59 / 0.10);
+  /* Layered shadows (cool slate tint) — more depth, still restrained */
+  --shadow-card: 0 1px 2px 0 rgb(16 24 40 / 0.04), 0 2px 6px -1px rgb(16 24 40 / 0.06);
+  --shadow-soft: 0 6px 20px -6px rgb(16 24 40 / 0.12), 0 2px 8px -3px rgb(16 24 40 / 0.07);
+  --shadow-pop: 0 24px 50px -16px rgb(16 24 40 / 0.22), 0 8px 20px -10px rgb(16 24 40 / 0.12);
+  --shadow-hero: 0 26px 50px -22px rgb(13 18 29 / 0.6), 0 10px 22px -12px rgb(13 18 29 / 0.45);
 }
 
 html {
@@ -83,3 +84,25 @@ h1, h2, h3 {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 .animate-pop-in { animation: pop-in 0.16s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ── Premium surfaces ─────────────────────────────────────────── */
+/* Ink-navy hero surface for featured cards / bands — gradient + faint dot grid
+   layered in a single declaration so neither overrides the other. */
+.surface-hero {
+  background-color: #202a3d;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.06) 1px, transparent 0),
+    radial-gradient(125% 140% at 0% 0%, #38486590 0%, #202a3d 46%, #121826 100%);
+  background-size: 22px 22px, 100% 100%;
+}
+/* Subtle top-light sheen on light cards */
+.sheen-top::before {
+  content: '';
+  position: absolute; inset: 0 0 auto 0; height: 40%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.6), transparent);
+  pointer-events: none;
+}
+/* Card hover-raise helper */
+.raise { transition: box-shadow .2s cubic-bezier(0.16,1,0.3,1), transform .2s cubic-bezier(0.16,1,0.3,1); }
+.raise:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }

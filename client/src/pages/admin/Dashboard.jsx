@@ -9,7 +9,7 @@ import {
 import { api } from '../../api/client';
 import { Card, Spinner, EmptyState, StatusBadge, Avatar, Button, inr, fmtDate } from '../../components/ui';
 import { CHART, BrandTooltip, axisTick, gridProps } from '../../components/ui/charts';
-import { StatDonut, Sparkline, SegmentBar } from '../../components/dashboard/widgets';
+import { StatDonut, SegmentBar } from '../../components/dashboard/widgets';
 import { useAuth } from '../../context/AuthContext';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -25,11 +25,12 @@ function GlanceRow({ icon: Icon, tile, label, value }) {
   );
 }
 
-function DeltaChip({ pct }) {
+/** Delta chip tuned for the dark hero surface. */
+function DeltaChipDark({ pct }) {
   if (pct == null) return null;
   const up = pct >= 0;
   return (
-    <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold ${up ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500'}`}>
+    <span className="inline-flex items-center gap-0.5 rounded-full bg-white/12 px-1.5 py-0.5 text-[11px] font-semibold text-white ring-1 ring-white/15">
       {up ? '▲' : '▼'} {Math.abs(pct)}%
     </span>
   );
@@ -55,6 +56,9 @@ export default function AdminDashboard() {
   const collectedDelta = rev.length > 1 && rev.at(-2).revenue
     ? Math.round(((rev.at(-1).revenue - rev.at(-2).revenue) / rev.at(-2).revenue) * 100)
     : null;
+  const revVals = rev.map((r) => r.revenue || 0);
+  const maxRev = Math.max(1, ...revVals);
+  const bars = revVals.map((v) => Math.max(8, Math.round((v / maxRev) * 100)));
 
   return (
     <div className="space-y-5">
@@ -73,37 +77,40 @@ export default function AdminDashboard() {
 
       {/* ── Bento hero ───────────────────────────────────── */}
       <div className="grid gap-5 lg:grid-cols-12">
-        {/* Collected */}
-        <div className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-5">
-          <div className="flex items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Collected this month</p>
-            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-700">
-              <Banknote className="h-3 w-3" /> {MONTHS[now.getMonth()]} {now.getFullYear()}
-            </span>
-          </div>
-          <p className="mt-3 font-display text-[2.6rem] font-semibold leading-none tracking-tight tabular-nums text-slate-900">{inr(stats.monthCollection)}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-            <DeltaChip pct={collectedDelta} />
-            <span>vs last month · {inr(stats.monthPending)} pending</span>
-          </div>
-          <div className="mt-auto pt-5">
-            {charts.revenueByMonth?.length > 1
-              ? <Sparkline data={charts.revenueByMonth} dataKey="revenue" id="rev-spark" height={56} />
-              : <div className="h-14" />}
+        {/* Collected — navy hero */}
+        <div className="surface-hero relative flex flex-col overflow-hidden rounded-2xl p-6 text-white shadow-hero lg:col-span-5">
+          <div className="pointer-events-none absolute -top-16 -right-12 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+          <div className="relative z-10 flex h-full flex-col">
+            <div className="flex items-center justify-between">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">Collected this month</p>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/90 ring-1 ring-white/15">
+                <Banknote className="h-3 w-3" /> {MONTHS[now.getMonth()]} {now.getFullYear()}
+              </span>
+            </div>
+            <p className="mt-3 font-display text-[2.8rem] font-semibold leading-none tracking-tight tabular-nums">{inr(stats.monthCollection)}</p>
+            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-white/60">
+              <DeltaChipDark pct={collectedDelta} />
+              <span>vs last month · <span className="font-medium text-white/85">{inr(stats.monthPending)}</span> pending</span>
+            </div>
+            <div className="mt-auto flex h-16 items-end gap-1.5 pt-6">
+              {bars.length > 1 ? bars.map((h, i) => (
+                <div key={i} style={{ height: `${h}%` }} className="flex-1 rounded-t bg-gradient-to-t from-white/15 to-white/60" />
+              )) : <div className="h-full w-full" />}
+            </div>
           </div>
         </div>
 
         {/* Occupancy donut */}
-        <div className="flex flex-col items-center rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-4">
+        <div className="flex flex-col items-center rounded-2xl border border-slate-200/80 bg-white p-6 shadow-card lg:col-span-4">
           <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Bed occupancy</p>
           <div className="my-3">
             <StatDonut value={stats.occupancyPct} size={148} stroke={14} />
           </div>
-          <p className="text-sm text-slate-500">{stats.occupiedBeds}/{stats.totalBeds} beds filled</p>
+          <p className="text-sm text-slate-500"><span className="font-semibold text-slate-700">{stats.occupiedBeds}</span>/{stats.totalBeds} beds filled</p>
         </div>
 
         {/* Rooms breakdown */}
-        <div className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card lg:col-span-3">
+        <div className="flex flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-card lg:col-span-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Rooms</p>
           <p className="mt-2 font-display text-3xl font-semibold tabular-nums text-slate-900">{stats.totalRooms}</p>
           <div className="mt-auto pt-5">
