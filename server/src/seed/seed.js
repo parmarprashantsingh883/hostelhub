@@ -12,6 +12,9 @@ import Complaint from '../models/Complaint.js';
 import Notice from '../models/Notice.js';
 import Visitor from '../models/Visitor.js';
 import FoodMenu from '../models/FoodMenu.js';
+import Expense from '../models/Expense.js';
+import Lead from '../models/Lead.js';
+import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
@@ -232,6 +235,101 @@ export async function runSeed({ exitAfter = true } = {}) {
       dinner: menus[i][3],
     });
   }
+
+  // ── Expenses — last 6 months of operating costs (keeps P&L positive) ──
+  // One predictable set per month so the P&L trend reads cleanly against the
+  // rising rent income seeded above.
+  const expenseFor = (off) => {
+    const d = new Date(cy, cm - 1 - off, 1);
+    const m = d.getMonth();
+    const y = d.getFullYear();
+    const at = (day) => new Date(y, m, day);
+    const rows = [
+      { category: 'salaries', amount: 54000, vendor: 'Monthly Payroll', note: 'Cook, security & maintenance staff', date: at(1) },
+      { category: 'utilities', amount: 12000 + off * 800, vendor: 'State Electricity Board', note: 'Electricity + water', date: at(7) },
+      { category: 'supplies', amount: 5500 + off * 200, vendor: 'Sri Sai Kirana', note: 'Kitchen & cleaning supplies', date: at(12) },
+      { category: 'maintenance', amount: 3000 + (off % 3) * 2500, vendor: 'FixIt Services', note: 'Plumbing & electrical repairs', date: at(18) },
+    ];
+    if (off === 0 || off === 3) {
+      rows.push({ category: 'marketing', amount: 2500, vendor: 'JustDial Listings', note: 'Lead generation ads', date: at(9) });
+    }
+    return rows;
+  };
+  for (const off of [5, 4, 3, 2, 1, 0]) {
+    for (const r of expenseFor(off)) await Expense.create({ ...r, createdBy: admin._id });
+  }
+
+  // ── Leads — a populated CRM pipeline across every stage ───────────────
+  const day = 24 * 3600 * 1000;
+  const leadSpecs = [
+    { name: 'Rahul Deshpande', phone: '+91 9812000001', email: 'rahul.d@example.com', source: 'website', stage: 'new', budget: 8000, note: 'Looking for a single AC room from next month.', followUpAt: new Date(Date.now() + 2 * day) },
+    { name: 'Sara Thomas', phone: '+91 9812000002', email: 'sara.t@example.com', source: 'website', stage: 'new', budget: 7000, note: 'Enquired via booking page. Working professional.' },
+    { name: 'Imran Sheikh', phone: '+91 9812000003', source: 'walk_in', stage: 'new', budget: 6000, note: 'Walked in asking about triple sharing.' },
+    { name: 'Pooja Hegde', phone: '+91 9812000004', email: 'pooja.h@example.com', source: 'referral', stage: 'contacted', budget: 9000, note: 'Referred by current resident Priya. Called, interested.', followUpAt: new Date(Date.now() + 1 * day) },
+    { name: 'Vivek Malhotra', phone: '+91 9812000005', source: 'social', stage: 'contacted', budget: 7500, note: 'Found us on Instagram. Wants a virtual tour.' },
+    { name: 'Ananya Roy', phone: '+91 9812000006', email: 'ananya.r@example.com', source: 'website', stage: 'visit_scheduled', budget: 9500, note: 'Visit booked for this weekend.', followUpAt: new Date(Date.now() + 3 * day) },
+    { name: 'Harsh Vardhan', phone: '+91 9812000007', source: 'referral', stage: 'visit_scheduled', budget: 7000, note: 'Coming with parents to see the property.', followUpAt: new Date(Date.now() + 4 * day) },
+    { name: 'Tanvi Kapoor', phone: '+91 9812000008', email: 'tanvi.k@example.com', source: 'website', stage: 'token_paid', budget: 9000, note: 'Paid ₹2000 token to block room 201.' },
+    { name: 'Manish Gupta', phone: '+91 9812000009', email: 'manish.g@example.com', source: 'walk_in', stage: 'converted', budget: 6000, note: 'Moved in last week — converted to resident.' },
+    { name: 'Deepika Menon', phone: '+91 9812000010', source: 'social', stage: 'lost', budget: 5000, note: 'Chose a closer PG. Budget mismatch.' },
+  ];
+  for (const l of leadSpecs) await Lead.create({ ...l, createdBy: admin._id });
+
+  // ── Move-out queue — two former residents for the settlement demo ─────
+  // These are NOT counted in room occupancy; they reference a former room only
+  // for display. One awaits settlement (with a deduction), one is fully closed.
+  const mohit = await User.create({
+    name: 'Mohit Agarwal',
+    email: 'mohit.agarwal@example.com',
+    phone: '+91 9000022001',
+    password: 'Tenant@123',
+    role: 'tenant',
+    tenantProfile: {
+      roomId: roomByNumber['102']._id,
+      joiningDate: new Date(Date.now() - 220 * day),
+      moveOutDate: new Date(Date.now() - 6 * day),
+      securityDeposit: 9000,
+      rentAmount: 7000,
+      status: 'moved_out',
+      idProof: { type: 'aadhaar', number: 'XXXX-XXXX-4821' },
+      policeVerification: 'verified',
+      agreementStatus: 'signed',
+    },
+  });
+  await DepositLedger.create({
+    tenantId: mohit._id,
+    entries: [
+      { type: 'deposit', amount: 9000, reason: 'Opening security deposit', at: new Date(Date.now() - 220 * day) },
+      { type: 'deduction', amount: 1500, reason: 'Wall repainting & minor repairs', at: new Date(Date.now() - 5 * day) },
+    ],
+  });
+
+  const kavya = await User.create({
+    name: 'Kavya Nair',
+    email: 'kavya.nair@example.com',
+    phone: '+91 9000022002',
+    password: 'Tenant@123',
+    role: 'tenant',
+    tenantProfile: {
+      roomId: roomByNumber['203']._id,
+      joiningDate: new Date(Date.now() - 300 * day),
+      moveOutDate: new Date(Date.now() - 40 * day),
+      securityDeposit: 6200,
+      rentAmount: 6200,
+      status: 'moved_out',
+      idProof: { type: 'aadhaar', number: 'XXXX-XXXX-7733' },
+      policeVerification: 'verified',
+      agreementStatus: 'signed',
+    },
+  });
+  await DepositLedger.create({
+    tenantId: kavya._id,
+    entries: [
+      { type: 'deposit', amount: 6200, reason: 'Opening security deposit', at: new Date(Date.now() - 300 * day) },
+      { type: 'refund', amount: 6200, reason: 'Move-out settlement refund', at: new Date(Date.now() - 38 * day) },
+    ],
+    settledAt: new Date(Date.now() - 38 * day),
+  });
 
   console.log('🌱 Seed complete:');
   console.log('   admin@hostelhub.com / Admin@123');

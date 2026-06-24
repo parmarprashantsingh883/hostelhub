@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
-  Home, User, FileText, ChevronDown,
+  Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -15,8 +15,11 @@ const NAV = {
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/rooms', label: 'Rooms', icon: DoorOpen },
     { to: '/admin/tenants', label: 'Tenants', icon: Users },
+    { to: '/admin/leads', label: 'Leads', icon: UserPlus },
     { to: '/admin/staff', label: 'Staff', icon: UserCog },
     { to: '/admin/rents', label: 'Rent & Payments', icon: Banknote },
+    { to: '/admin/expenses', label: 'Expenses & P&L', icon: Wallet },
+    { to: '/admin/settlements', label: 'Settlements', icon: HandCoins },
     { to: '/admin/complaints', label: 'Complaints', icon: Wrench },
     { to: '/admin/notices', label: 'Notices', icon: Megaphone },
     { to: '/admin/visitors', label: 'Visitors', icon: ClipboardList },

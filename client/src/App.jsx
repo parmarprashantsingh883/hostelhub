@@ -11,6 +11,7 @@ const Login = lazy(() => import('./pages/public/Login.jsx'));
 const Register = lazy(() => import('./pages/public/Register.jsx'));
 const ForgotPassword = lazy(() => import('./pages/public/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/public/ResetPassword.jsx'));
+const Book = lazy(() => import('./pages/public/Book.jsx'));
 
 // Admin
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard.jsx'));
@@ -23,6 +24,9 @@ const AdminNotices = lazy(() => import('./pages/admin/Notices.jsx'));
 const AdminVisitors = lazy(() => import('./pages/admin/Visitors.jsx'));
 const AdminFoodMenu = lazy(() => import('./pages/admin/FoodMenu.jsx'));
 const Reports = lazy(() => import('./pages/admin/Reports.jsx'));
+const Expenses = lazy(() => import('./pages/admin/Expenses.jsx'));
+const Leads = lazy(() => import('./pages/admin/Leads.jsx'));
+const Settlements = lazy(() => import('./pages/admin/Settlements.jsx'));
 
 // Tenant
 const TenantDashboard = lazy(() => import('./pages/tenant/Dashboard.jsx'));
@@ -56,6 +60,7 @@ export default function App() {
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />
+        <Route path="/book" element={<Book />} />
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -75,6 +80,9 @@ export default function App() {
             <Route path="notices" element={<AdminNotices />} />
             <Route path="visitors" element={<AdminVisitors />} />
             <Route path="food-menu" element={<AdminFoodMenu />} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="leads" element={<Leads />} />
+            <Route path="settlements" element={<Settlements />} />
             <Route path="reports" element={<Reports />} />
             <Route path="profile" element={<Profile />} />
           </Route>

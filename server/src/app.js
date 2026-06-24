@@ -23,6 +23,9 @@ import documentRoutes from './routes/document.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import expenseRoutes from './routes/expense.routes.js';
+import leadRoutes from './routes/lead.routes.js';
+import settlementRoutes from './routes/settlement.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
@@ -86,6 +89,9 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/leads', leadRoutes);
+app.use('/api/settlements', settlementRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);
