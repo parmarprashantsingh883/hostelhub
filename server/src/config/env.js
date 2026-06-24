@@ -21,7 +21,7 @@ export function validateEnv() {
       fatal.push('USE_MEMORY_DB=true in production — data resets on every restart');
     }
     if (!process.env.MONGO_URI) fatal.push('MONGO_URI is required in production');
-    if (!process.env.CLIENT_URL) warn.push('CLIENT_URL not set — CORS falls back to localhost only');
+    if (!process.env.CLIENT_URL) fatal.push('CLIENT_URL is required in production (CORS origin + password-reset links)');
   }
 
   warn.forEach((m) => console.warn('⚠️  env:', m));

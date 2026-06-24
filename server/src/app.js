@@ -5,10 +5,12 @@ import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { corsOrigins, isProduction, isTest } from './config/env.js';
+import { sanitizeRequest } from './middleware/sanitize.middleware.js';
 
 import authRoutes from './routes/auth.routes.js';
 import roomRoutes from './routes/room.routes.js';
@@ -50,6 +52,7 @@ app.use(
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb', parameterLimit: 100 }));
 app.use(cookieParser());
+app.use(sanitizeRequest); // strip NoSQL operator keys ($, .) from inputs
 
 // Rate limiting (disabled under test to keep suites deterministic).
 if (!isTest) {
@@ -76,6 +79,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ── Routes ────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => res.json({ success: true, status: 'ok' }));
+// Readiness probe — only 200 once the DB connection is live (for k8s/load balancers).
+app.get('/api/ready', (_req, res) => {
+  const ready = mongoose.connection.readyState === 1;
+  res.status(ready ? 200 : 503).json({ success: ready, status: ready ? 'ready' : 'connecting' });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/tenants', tenantRoutes);

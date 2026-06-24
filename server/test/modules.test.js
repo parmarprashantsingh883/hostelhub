@@ -230,6 +230,26 @@ describe('notice mass-assignment guard', () => {
   });
 });
 
+describe('infra hardening', () => {
+  it('readiness probe returns 200 when the DB is connected', async () => {
+    const res = await request(app).get('/api/ready');
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('ready');
+  });
+
+  it('neutralises a NoSQL operator-injection query', async () => {
+    // ?status[$ne]=paid would leak unpaid rows if the operator reached Mongo.
+    // The sanitizer strips $ne, so the operator never acts as one — the
+    // malformed filter is rejected (4xx), not honoured with a data leak.
+    const res = await request(app).get('/api/rents?status[$ne]=paid').set(auth(adminT));
+    expect(res.status).toBeGreaterThanOrEqual(400);
+    expect(res.status).toBeLessThan(500);
+    // a sanity check that a clean filter still works
+    const ok = await request(app).get('/api/rents?status=paid').set(auth(adminT));
+    expect(ok.status).toBe(200);
+  });
+});
+
 describe('electricity split — 3 occupants', () => {
   it('computes per-head = floor(total / occupants)', async () => {
     const rooms = (await request(app).get('/api/rooms?limit=200').set(auth(adminT))).body.data.rooms;
