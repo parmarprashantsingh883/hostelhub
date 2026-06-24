@@ -4,7 +4,7 @@
  */
 import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
 
 /* Motion primitives — re-exported so pages import everything from one place. */
 export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './motion';
@@ -55,6 +55,25 @@ export const inputCls = (error) =>
 
 export function Input({ error, className = '', ...rest }) {
   return <input className={`${inputCls(error)} ${className}`} {...rest} />;
+}
+
+/** Password field with a show/hide toggle. Forwards refs/props (RHF-friendly). */
+export function PasswordInput({ error, className = '', ...rest }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <input type={show ? 'text' : 'password'} className={`${inputCls(error)} pr-10 ${className}`} {...rest} />
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => setShow((s) => !s)}
+        aria-label={show ? 'Hide password' : 'Show password'}
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:text-slate-600"
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
 }
 
 export function Select({ error, className = '', children, ...rest }) {

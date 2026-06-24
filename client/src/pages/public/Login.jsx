@@ -6,7 +6,7 @@ import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { Mail, Lock, ShieldCheck, User, Wrench, ArrowRight } from 'lucide-react';
 import AuthShell from './AuthShell';
-import { Button, Field, Input } from '../../components/ui';
+import { Button, Field, Input, PasswordInput } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
 import { errMsg } from '../../api/client';
 
@@ -81,8 +81,8 @@ export default function Login() {
         </Field>
         <Field label="Password" error={errors.password?.message} required>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-            <Input type="password" placeholder="••••••••" autoComplete="current-password" error={errors.password} className="pl-10" {...register('password')} />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+            <PasswordInput placeholder="••••••••" autoComplete="current-password" error={errors.password} className="pl-10" {...register('password')} />
           </div>
         </Field>
         <div className="flex justify-end -mt-1">

@@ -30,10 +30,12 @@ export default function AuthShell({ title, subtitle, children, footer }) {
 
       {/* ───────────────── IMAGE (right) ───────────────── */}
       <div className="relative hidden overflow-hidden lg:block">
-        <img src="/auth-bg.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img src="/auth-bg.jpg" alt="" className="animate-ken-burns absolute inset-0 h-full w-full object-cover will-change-transform" />
         {/* Ink-navy duotone so the monochrome scene reads as the brand */}
         <div className="absolute inset-0 bg-brand-800/45 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-900/85 via-brand-900/10 to-brand-900/25" />
+        {/* cinematic vignette */}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 120% at 50% 45%, transparent 55%, rgba(13,18,29,0.55) 100%)' }} />
         {/* faint dot grid */}
         <div
           className="absolute inset-0 opacity-[0.05]"
@@ -46,7 +48,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-flex items-center gap-3.5 rounded-2xl bg-white/10 px-7 py-5 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/25 backdrop-blur-md"
+            className="animate-float-soft inline-flex items-center gap-3.5 rounded-2xl bg-white/10 px-7 py-5 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/25 backdrop-blur-md"
           >
             <LogoMono size={42} className="text-white" />
             <span className="text-[28px] font-extrabold tracking-tight text-white">Quarters</span>

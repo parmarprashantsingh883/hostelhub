@@ -106,3 +106,18 @@ h1, h2, h3 {
 /* Card hover-raise helper */
 .raise { transition: box-shadow .2s cubic-bezier(0.16,1,0.3,1), transform .2s cubic-bezier(0.16,1,0.3,1); }
 .raise:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+
+/* Slow cinematic drift for hero/auth imagery */
+@keyframes ken-burns {
+  from { transform: scale(1.06) translate3d(0, 0, 0); }
+  to   { transform: scale(1.16) translate3d(-1.5%, -1.5%, 0); }
+}
+.animate-ken-burns { animation: ken-burns 24s ease-in-out infinite alternate; }
+
+/* Gentle float for a glass badge */
+@keyframes float-soft { from { transform: translateY(0); } to { transform: translateY(-7px); } }
+.animate-float-soft { animation: float-soft 5s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns, .animate-float-soft { animation: none; }
+}

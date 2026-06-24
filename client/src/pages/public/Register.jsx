@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 import AuthShell from './AuthShell';
-import { Button, Field, Input } from '../../components/ui';
+import { Button, Field, Input, PasswordInput } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
 import { errMsg } from '../../api/client';
 
@@ -70,10 +70,10 @@ export default function Register() {
         </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Password" error={errors.password?.message} required>
-            <Input type="password" placeholder="••••••••" autoComplete="new-password" error={errors.password} {...register('password')} />
+            <PasswordInput placeholder="••••••••" autoComplete="new-password" error={errors.password} {...register('password')} />
           </Field>
           <Field label="Confirm" error={errors.confirm?.message} required>
-            <Input type="password" placeholder="••••••••" autoComplete="new-password" error={errors.confirm} {...register('confirm')} />
+            <PasswordInput placeholder="••••••••" autoComplete="new-password" error={errors.confirm} {...register('confirm')} />
           </Field>
         </div>
         <Button type="submit" loading={busy} className="w-full" size="lg">Create account</Button>
