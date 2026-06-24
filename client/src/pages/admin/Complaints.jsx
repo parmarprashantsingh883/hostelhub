@@ -8,6 +8,7 @@ import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Select, Textarea, Modal, Spinner, EmptyState,
   StatusBadge, StatCard, Avatar, Table, TableRow, Td, PageHeader, fmtDateTime,
+  Pagination, usePagination,
 } from '../../components/ui';
 
 const CATEGORIES = ['electricity', 'water', 'cleaning', 'wifi', 'food', 'furniture', 'security', 'maintenance', 'other'];
@@ -100,6 +101,7 @@ export default function AdminComplaints() {
   const inProgressCount = complaints.filter((c) => c.status === 'in_progress').length;
   const resolvedCount = complaints.filter((c) => c.status === 'resolved').length;
   const criticalCount = complaints.filter((c) => c.priority === 'high' || c.priority === 'urgent').length;
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(complaints, 10);
 
   return (
     <div className="space-y-6">
@@ -140,7 +142,7 @@ export default function AdminComplaints() {
           <EmptyState icon={Wrench} title="No complaints" message="Nothing matches the current filters." />
         ) : (
           <Table headers={['Complaint', 'Tenant', 'Category', 'Priority', 'Assigned to', 'Status', 'Raised']}>
-            {complaints.map((c) => (
+            {pageItems.map((c) => (
               <TableRow
                 key={c._id}
                 onClick={() => openDetail(c)}
@@ -181,6 +183,9 @@ export default function AdminComplaints() {
               </TableRow>
             ))}
           </Table>
+        )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
 

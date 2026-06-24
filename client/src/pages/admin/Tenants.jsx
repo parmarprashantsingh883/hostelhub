@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Plus, Pencil, UserX, Users, FileUp, Check, ArrowLeft, ArrowRight, ShieldCheck, FileSignature, BedDouble, User as UserIcon } from 'lucide-react';
+import { Plus, Pencil, UserX, Users, FileUp, Check, ArrowLeft, ArrowRight, ShieldCheck, FileSignature, BedDouble, User as UserIcon, Eye } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, ConfirmDialog, Spinner, EmptyState,
   StatusBadge, Badge, Table, TableRow, Td, PageHeader, inr, fmtDate,
+  Avatar, Drawer, DetailRow, Pagination, usePagination,
 } from '../../components/ui';
 
 const initials = (name) => (name || '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
@@ -63,6 +64,8 @@ export default function Tenants() {
   const [docFor, setDocFor] = useState(null);
   const [docType, setDocType] = useState('id_proof');
   const [docFile, setDocFile] = useState(null);
+  const [viewing, setViewing] = useState(null);
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(tenants, 8);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -182,10 +185,10 @@ export default function Tenants() {
           <EmptyState icon={Users} title="No tenants found" message="Add a tenant or relax your filters." />
         ) : (
           <Table headers={['Tenant', 'Contact', 'Room', 'Rent', 'Verification', 'Status', 'Actions']}>
-            {tenants.map((t) => {
+            {pageItems.map((t) => {
               const p = t.tenantProfile || {};
               return (
-                <TableRow key={t._id} className="hover:bg-brand-50/40 transition-colors">
+                <TableRow key={t._id} onClick={() => setViewing(t)} className="cursor-pointer hover:bg-brand-50/40 transition-colors">
                   <Td>
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials(t.name)}</div>
@@ -210,7 +213,8 @@ export default function Tenants() {
                   </Td>
                   <Td><StatusBadge status={p.status} /></Td>
                   <Td>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                      <button onClick={() => setViewing(t)} className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors" title="Quick view"><Eye className="w-4 h-4" /></button>
                       <button onClick={() => editTenant(t)} className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors" title="Edit"><Pencil className="w-4 h-4" /></button>
                       <button onClick={() => setDocFor(t)} className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors" title="Upload document"><FileUp className="w-4 h-4" /></button>
                       {p.status === 'active' && (
@@ -223,7 +227,72 @@ export default function Tenants() {
             })}
           </Table>
         )}
+        {!loading && total > 0 && (
+          <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
+        )}
       </Card>
+
+      {/* Quick-view drawer */}
+      <Drawer
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        title={viewing?.name}
+        subtitle={viewing?.email}
+        footer={viewing && (
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => { const t = viewing; setViewing(null); editTenant(t); }}>
+              <Pencil className="w-3.5 h-3.5" /> Edit
+            </Button>
+            {viewing.tenantProfile?.status === 'active' && (
+              <Button variant="danger" size="sm" onClick={() => { const t = viewing; setViewing(null); setConfirmOut(t); }}>
+                <UserX className="w-3.5 h-3.5" /> Move out
+              </Button>
+            )}
+          </div>
+        )}
+      >
+        {viewing && (() => {
+          const p = viewing.tenantProfile || {};
+          return (
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <Avatar name={viewing.name} size="lg" />
+                <div className="min-w-0">
+                  <p className="font-semibold text-slate-900 truncate">{viewing.name}</p>
+                  <div className="mt-1"><StatusBadge status={p.status} /></div>
+                </div>
+              </div>
+
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400 mb-1">Allotment</p>
+                <DetailRow label="Room">{p.roomId?.roomNumber ? `Room ${p.roomId.roomNumber}${p.roomId.floor ? ` · Floor ${p.roomId.floor}` : ''}` : 'Unassigned'}</DetailRow>
+                <DetailRow label="Monthly rent">{inr(p.rentAmount)}</DetailRow>
+                <DetailRow label="Security deposit">{inr(p.securityDeposit)}</DetailRow>
+                <DetailRow label="Joined">{fmtDate(p.joiningDate)}</DetailRow>
+                {p.moveOutDate && <DetailRow label="Moved out">{fmtDate(p.moveOutDate)}</DetailRow>}
+              </div>
+
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400 mb-1">Contact</p>
+                <DetailRow label="Phone">{viewing.phone || '—'}</DetailRow>
+                <DetailRow label="Emergency">{p.emergencyContact?.name ? `${p.emergencyContact.name}${p.emergencyContact.phone ? ` · ${p.emergencyContact.phone}` : ''}` : '—'}</DetailRow>
+                <DetailRow label="Guardian">{p.guardianDetails?.name ? `${p.guardianDetails.name}${p.guardianDetails.phone ? ` · ${p.guardianDetails.phone}` : ''}` : '—'}</DetailRow>
+              </div>
+
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400 mb-1">Verification</p>
+                <DetailRow label="ID proof">{p.idProof?.number ? `${labelize(p.idProof.type)} · ${p.idProof.number}` : '—'}</DetailRow>
+                <DetailRow label="Police">
+                  <Badge tone={POLICE_TONE[p.policeVerification] || 'gray'}>{labelize(p.policeVerification || 'pending')}</Badge>
+                </DetailRow>
+                <DetailRow label="Agreement">
+                  <Badge tone={AGREEMENT_TONE[p.agreementStatus] || 'gray'}>{labelize(p.agreementStatus || 'not_sent')}</Badge>
+                </DetailRow>
+              </div>
+            </div>
+          );
+        })()}
+      </Drawer>
 
       {/* Add wizard / Edit form */}
       <Modal open={!!form} onClose={() => setForm(null)} title={isEdit ? `Edit ${form.name}` : 'Onboard a new tenant'} wide>

@@ -5,6 +5,7 @@ import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, Spinner, EmptyState,
   StatusBadge, StatCard, Avatar, Table, TableRow, Td, PageHeader, inr, fmtDate,
+  Pagination, usePagination,
 } from '../../components/ui';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -159,6 +160,7 @@ export default function Rents() {
   const unpaid = rents.filter((r) => r.status !== 'paid');
   const allUnpaidSelected = unpaid.length > 0 && unpaid.every((r) => selected.has(r._id));
   const toggleAll = () => setSelected(allUnpaidSelected ? new Set() : new Set(unpaid.map((r) => r._id)));
+  const { page, setPage, totalPages, pageItems, total, pageSize } = usePagination(rents, 10);
 
   return (
     <div className="space-y-6">
@@ -261,7 +263,7 @@ export default function Rents() {
               </span>
             </div>
             <Table headers={['', 'Tenant', 'Room', 'Rent', 'Electricity', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
-            {rents.map((r) => (
+            {pageItems.map((r) => (
               <TableRow key={r._id} className="hover:bg-brand-50/40 transition-colors">
                 <Td>
                   {r.status !== 'paid' && (
@@ -335,6 +337,7 @@ export default function Rents() {
               </TableRow>
             ))}
             </Table>
+            <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
           </>
         )}
       </Card>
