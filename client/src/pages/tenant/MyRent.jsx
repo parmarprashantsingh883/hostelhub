@@ -182,7 +182,7 @@ export default function MyRent() {
         ) : rents.length === 0 ? (
           <EmptyState icon={Banknote} title="No rent records yet" message="Your rent appears here once the admin generates the month." />
         ) : (
-          <Table headers={['Month', 'Rent', 'Late fee', 'Discount', 'Total', 'Due date', 'Status', 'Actions']}>
+          <Table headers={['Month', 'Rent', 'Electricity', 'Late fee', 'Discount', 'Total', 'Due date', 'Status', 'Actions']}>
             {rents.map((r) => (
               <TableRow key={r._id}>
                 <Td>
@@ -195,6 +195,7 @@ export default function MyRent() {
                   </div>
                 </Td>
                 <Td className="tabular-nums">{inr(r.rentAmount)}</Td>
+                <Td className={`tabular-nums ${r.electricityCharge ? 'text-slate-700' : 'text-slate-400'}`}>{r.electricityCharge ? inr(r.electricityCharge) : '—'}</Td>
                 <Td className={`tabular-nums ${r.lateFee ? 'text-red-600 font-medium' : 'text-slate-400'}`}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
                 <Td className={`tabular-nums ${r.discount ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
                 <Td className="font-bold text-slate-900 tabular-nums">{inr(r.totalAmount)}</Td>
@@ -236,6 +237,12 @@ export default function MyRent() {
                 <dt className="text-slate-500">Rent</dt>
                 <dd className="font-medium text-slate-800 tabular-nums">{inr(paying.rentAmount)}</dd>
               </div>
+              {paying.electricityCharge > 0 && (
+                <div className="flex items-center justify-between">
+                  <dt className="text-slate-500">Electricity{paying.electricityMeta?.units ? ` (${paying.electricityMeta.units}u ÷ ${paying.electricityMeta.occupants})` : ''}</dt>
+                  <dd className="font-medium text-slate-800 tabular-nums">{inr(paying.electricityCharge)}</dd>
+                </div>
+              )}
               {paying.lateFee > 0 && (
                 <div className="flex items-center justify-between text-red-600">
                   <dt>Late fee</dt>

@@ -159,6 +159,27 @@ export async function runSeed({ exitAfter = true } = {}) {
   // Current month: first 2 residents pending (for the Pending KPI), the rest paid.
   for (let i = 0; i < tenants.length; i++) await mkRent(tenants[i], cm, cy, i >= 2);
 
+  // ── Electricity — split two rooms' sub-meter bills into the current month ──
+  const elecRooms = [
+    { no: '102', units: 118, rate: 8 },
+    { no: '203', units: 210, rate: 8 },
+  ];
+  for (const er of elecRooms) {
+    const room = roomByNumber[er.no];
+    const occ = await User.find({ role: 'tenant', 'tenantProfile.status': 'active', 'tenantProfile.roomId': room._id });
+    if (!occ.length) continue;
+    const total = er.units * er.rate;
+    const base = Math.floor(total / occ.length);
+    const remainder = total - base * occ.length;
+    for (let i = 0; i < occ.length; i++) {
+      const rent = await Rent.findOne({ tenantId: occ[i]._id, month: cm, year: cy });
+      if (!rent) continue;
+      rent.electricityCharge = base + (i === occ.length - 1 ? remainder : 0);
+      rent.electricityMeta = { units: er.units, ratePerUnit: er.rate, occupants: occ.length };
+      await rent.save();
+    }
+  }
+
   // ── Complaints (5) ────────────────────────────────────
   const complaintSpecs = [
     { title: 'Wi-Fi very slow on floor 2', category: 'wifi', priority: 'high', tenant: 0, status: 'assigned', staff: 0 },

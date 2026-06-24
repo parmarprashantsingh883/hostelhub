@@ -6,6 +6,7 @@ const router = Router();
 router.use(protect);
 
 router.post('/generate', authorize('admin'), ctrl.generateRents);
+router.post('/electricity', authorize('admin'), ctrl.applyElectricity);
 router.post('/send-reminders', authorize('admin'), ctrl.sendReminders);
 router.get('/', ctrl.listRents);
 router.get('/:id', ctrl.getRent);

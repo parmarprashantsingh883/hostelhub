@@ -7,6 +7,13 @@ const rentSchema = new mongoose.Schema(
     month: { type: Number, required: true, min: 1, max: 12 },
     year: { type: Number, required: true, min: 2020 },
     rentAmount: { type: Number, required: true, min: 0 },
+    electricityCharge: { type: Number, default: 0, min: 0 },
+    // How the electricity share was derived (for the invoice line-item detail).
+    electricityMeta: {
+      units: { type: Number, default: 0, min: 0 },
+      ratePerUnit: { type: Number, default: 0, min: 0 },
+      occupants: { type: Number, default: 0, min: 0 },
+    },
     lateFee: { type: Number, default: 0, min: 0 },
     discount: { type: Number, default: 0, min: 0 },
     totalAmount: { type: Number, required: true, min: 0 },
@@ -34,7 +41,10 @@ rentSchema.index({ tenantId: 1, month: 1, year: 1 }, { unique: true });
 
 // Recompute total before save
 rentSchema.pre('save', function (next) {
-  this.totalAmount = Math.max(0, this.rentAmount + (this.lateFee || 0) - (this.discount || 0));
+  this.totalAmount = Math.max(
+    0,
+    this.rentAmount + (this.electricityCharge || 0) + (this.lateFee || 0) - (this.discount || 0),
+  );
   next();
 });
 

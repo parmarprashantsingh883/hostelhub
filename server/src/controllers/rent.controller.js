@@ -55,6 +55,87 @@ export const generateRents = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { created, skipped, month, year } });
 });
 
+/** POST /api/rents/electricity (admin)
+ *  Split a room's electricity bill across its active occupants and fold the
+ *  per-head share into each tenant's rent invoice for the month.
+ *  Body: { roomId, month, year, units?, ratePerUnit?, amount? }
+ *  Total is `amount` if given, else units * ratePerUnit. Paid invoices are
+ *  skipped (a closed invoice must not change). Missing invoices are created. */
+export const applyElectricity = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const roomId = req.body.roomId;
+  const month = Number(req.body.month) || now.getMonth() + 1;
+  const year = Number(req.body.year) || now.getFullYear();
+  const units = Math.max(0, Number(req.body.units) || 0);
+  const ratePerUnit = Math.max(0, Number(req.body.ratePerUnit) || 0);
+  const amount = req.body.amount !== undefined ? Math.max(0, Number(req.body.amount)) : units * ratePerUnit;
+
+  if (!roomId) throw new ApiError(400, 'roomId is required');
+  if (amount <= 0) throw new ApiError(422, 'Provide a positive amount, or units and a rate per unit');
+
+  const room = await Room.findById(roomId);
+  if (!room) throw new ApiError(404, 'Room not found');
+
+  const occupants = await User.find({
+    role: 'tenant',
+    isActive: true,
+    'tenantProfile.status': 'active',
+    'tenantProfile.roomId': roomId,
+  });
+  if (occupants.length === 0) throw new ApiError(422, 'This room has no active occupants to bill');
+
+  // Split into whole rupees; the last occupant absorbs the rounding remainder.
+  const base = Math.floor(amount / occupants.length);
+  const remainder = amount - base * occupants.length;
+
+  let charged = 0;
+  let skippedPaid = 0;
+  const dueDay = Number(req.body.dueDay) || 5;
+  for (let i = 0; i < occupants.length; i++) {
+    const t = occupants[i];
+    const share = base + (i === occupants.length - 1 ? remainder : 0);
+    let rent = await Rent.findOne({ tenantId: t._id, month, year });
+    if (!rent) {
+      rent = new Rent({
+        tenantId: t._id,
+        roomId,
+        month,
+        year,
+        rentAmount: t.tenantProfile.rentAmount || 0,
+        dueDate: new Date(year, month - 1, dueDay),
+      });
+    }
+    if (rent.status === 'paid') {
+      skippedPaid++;
+      continue;
+    }
+    rent.electricityCharge = share;
+    rent.electricityMeta = { units, ratePerUnit, occupants: occupants.length };
+    await rent.save();
+    charged++;
+    await notify(t._id, {
+      title: 'Electricity charge added',
+      message: `₹${share} electricity for ${monthLabel(month, year)} was added to your rent (Room ${room.roomNumber}).`,
+      type: 'rent_due',
+      link: '/tenant/rent',
+    });
+  }
+
+  res.json({
+    success: true,
+    data: {
+      roomNumber: room.roomNumber,
+      month,
+      year,
+      total: amount,
+      occupants: occupants.length,
+      perHead: base,
+      charged,
+      skippedPaid,
+    },
+  });
+});
+
 /** GET /api/rents?status=&month=&year=&tenantId=&page=&limit= */
 export const listRents = asyncHandler(async (req, res) => {
   const { status, month, year, tenantId, page = 1, limit = 50 } = req.query;

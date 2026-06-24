@@ -65,9 +65,13 @@ export async function generateReceipt({ rent, tenant, room }) {
 
     // Amount table
     y += 40;
+    const elecLabel = rent.electricityMeta?.units
+      ? `Electricity (${rent.electricityMeta.units} units / ${rent.electricityMeta.occupants})`
+      : 'Electricity';
     const rows = [
       ['Rent for', monthLabel],
       ['Base rent', `Rs. ${rent.rentAmount.toLocaleString('en-IN')}`],
+      ...(rent.electricityCharge ? [[elecLabel, `Rs. ${rent.electricityCharge.toLocaleString('en-IN')}`]] : []),
       ['Late fee', `Rs. ${(rent.lateFee || 0).toLocaleString('en-IN')}`],
       ['Discount', `- Rs. ${(rent.discount || 0).toLocaleString('en-IN')}`],
     ];

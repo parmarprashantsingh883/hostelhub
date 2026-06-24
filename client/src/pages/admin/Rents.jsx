@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Banknote, BellRing, FileDown, CheckCircle2, CalendarPlus, Pencil, Wallet, Clock, AlertTriangle } from 'lucide-react';
+import { Banknote, BellRing, FileDown, CheckCircle2, CalendarPlus, Pencil, Wallet, Clock, AlertTriangle, Zap } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, Spinner, EmptyState,
@@ -22,6 +22,9 @@ export default function Rents() {
   const [adjustFor, setAdjustFor] = useState(null);
   const [adjust, setAdjust] = useState({ lateFee: 0, discount: 0 });
   const [selected, setSelected] = useState(new Set());
+  const [rooms, setRooms] = useState([]);
+  const [elecOpen, setElecOpen] = useState(false);
+  const [elec, setElec] = useState({ roomId: '', mode: 'units', units: '', ratePerUnit: 8, amount: '' });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -36,6 +39,39 @@ export default function Rents() {
   }, [filter]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    api.get('/rooms', { params: { limit: 200 } })
+      .then(({ data }) => setRooms(data.data.rooms || []))
+      .catch(() => { /* non-blocking */ });
+  }, []);
+
+  const applyElectricity = async () => {
+    const room = rooms.find((r) => r._id === elec.roomId);
+    if (!room) return toast.error('Pick a room to bill');
+    const payload = {
+      roomId: elec.roomId,
+      month: filter.month,
+      year: filter.year,
+      dueDay: gen.dueDay,
+      ...(elec.mode === 'flat'
+        ? { amount: Number(elec.amount) }
+        : { units: Number(elec.units), ratePerUnit: Number(elec.ratePerUnit) }),
+    };
+    setBusy(true);
+    try {
+      const { data } = await api.post('/rents/electricity', payload);
+      const d = data.data;
+      toast.success(`₹${d.total} split across ${d.charged} tenant${d.charged === 1 ? '' : 's'} (₹${d.perHead}/head)${d.skippedPaid ? ` · ${d.skippedPaid} paid skipped` : ''}`);
+      setElecOpen(false);
+      setElec({ roomId: '', mode: 'units', units: '', ratePerUnit: 8, amount: '' });
+      load();
+    } catch (err) {
+      toast.error(errMsg(err));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const generate = async () => {
     setBusy(true);
@@ -134,6 +170,9 @@ export default function Rents() {
             <Button variant="secondary" onClick={remind} loading={busy}>
               <BellRing className="w-4 h-4" /> Send reminders
             </Button>
+            <Button variant="secondary" onClick={() => setElecOpen(true)}>
+              <Zap className="w-4 h-4" /> Bill electricity
+            </Button>
             <Button onClick={() => setGenOpen(true)}>
               <CalendarPlus className="w-4 h-4" /> Generate month
             </Button>
@@ -221,7 +260,7 @@ export default function Rents() {
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">SMS soon</span>
               </span>
             </div>
-            <Table headers={['', 'Tenant', 'Room', 'Rent', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
+            <Table headers={['', 'Tenant', 'Room', 'Rent', 'Electricity', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
             {rents.map((r) => (
               <TableRow key={r._id} className="hover:bg-brand-50/40 transition-colors">
                 <Td>
@@ -244,6 +283,13 @@ export default function Rents() {
                     : <span className="text-slate-400">—</span>}
                 </Td>
                 <Td className="tabular-nums">{inr(r.rentAmount)}</Td>
+                <Td className={r.electricityCharge ? 'tabular-nums text-slate-700' : 'text-slate-400'}>
+                  {r.electricityCharge ? (
+                    <span title={r.electricityMeta?.units ? `${r.electricityMeta.units} units ÷ ${r.electricityMeta.occupants}` : 'Electricity share'}>
+                      {inr(r.electricityCharge)}
+                    </span>
+                  ) : '—'}
+                </Td>
                 <Td className={r.lateFee ? 'text-red-600 font-medium tabular-nums' : 'text-slate-400'}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
                 <Td className={r.discount ? 'text-emerald-600 font-medium tabular-nums' : 'text-slate-400'}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
                 <Td className="font-bold text-slate-900 tabular-nums">{inr(r.totalAmount)}</Td>
@@ -317,6 +363,89 @@ export default function Rents() {
         </div>
       </Modal>
 
+      {/* Electricity billing modal */}
+      <Modal open={elecOpen} onClose={() => setElecOpen(false)} title="Bill electricity to a room">
+        {(() => {
+          const room = rooms.find((r) => r._id === elec.roomId);
+          const occ = room?.currentOccupancy || 0;
+          const total = elec.mode === 'flat'
+            ? Math.max(0, Number(elec.amount) || 0)
+            : Math.max(0, (Number(elec.units) || 0) * (Number(elec.ratePerUnit) || 0));
+          const perHead = occ > 0 ? Math.floor(total / occ) : 0;
+          return (
+            <div className="space-y-4">
+              <p className="text-sm text-slate-500">
+                Splits the bill equally across the room's <b className="text-slate-700">active occupants</b> and adds each share to their {MONTHS[filter.month - 1]} {filter.year} rent. Paid invoices are left untouched.
+              </p>
+              <Field label="Room">
+                <Select value={elec.roomId} onChange={(e) => setElec((s) => ({ ...s, roomId: e.target.value }))}>
+                  <option value="">Select a room…</option>
+                  {rooms.filter((r) => (r.currentOccupancy || 0) > 0).map((r) => (
+                    <option key={r._id} value={r._id}>
+                      Room {r.roomNumber} · {r.currentOccupancy} occupant{r.currentOccupancy === 1 ? '' : 's'}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+
+              <div className="inline-flex rounded-xl bg-slate-100 p-1 text-sm">
+                <button
+                  type="button"
+                  onClick={() => setElec((s) => ({ ...s, mode: 'units' }))}
+                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'units' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                >
+                  Units × rate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setElec((s) => ({ ...s, mode: 'flat' }))}
+                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'flat' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                >
+                  Flat amount
+                </button>
+              </div>
+
+              {elec.mode === 'units' ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Units consumed">
+                    <Input type="number" min={0} value={elec.units} onChange={(e) => setElec((s) => ({ ...s, units: e.target.value }))} placeholder="e.g. 120" />
+                  </Field>
+                  <Field label="Rate / unit (₹)">
+                    <Input type="number" min={0} step="0.5" value={elec.ratePerUnit} onChange={(e) => setElec((s) => ({ ...s, ratePerUnit: e.target.value }))} />
+                  </Field>
+                </div>
+              ) : (
+                <Field label="Total bill amount (₹)">
+                  <Input type="number" min={0} value={elec.amount} onChange={(e) => setElec((s) => ({ ...s, amount: e.target.value }))} placeholder="e.g. 960" />
+                </Field>
+              )}
+
+              <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Bill total</span>
+                  <span className="font-semibold tabular-nums text-slate-900">{inr(total)}</span>
+                </div>
+                <div className="mt-1 flex items-center justify-between">
+                  <span className="text-slate-500">Split across</span>
+                  <span className="font-semibold tabular-nums text-slate-900">{occ} occupant{occ === 1 ? '' : 's'}</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between border-t border-slate-200/70 pt-2">
+                  <span className="font-medium text-brand-700">Per head</span>
+                  <span className="text-lg font-bold tabular-nums text-brand-700">{inr(perHead)}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-1">
+                <Button variant="secondary" onClick={() => setElecOpen(false)}>Cancel</Button>
+                <Button onClick={applyElectricity} loading={busy} disabled={!elec.roomId || total <= 0}>
+                  <Zap className="w-4 h-4" /> Add to invoices
+                </Button>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
+
       {/* Mark paid modal */}
       <Modal open={!!markFor} onClose={() => setMarkFor(null)} title={`Mark paid — ${markFor?.tenantId?.name}`}>
         <div className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 mb-4">
@@ -356,7 +485,7 @@ export default function Rents() {
         </div>
         <div className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 mt-4">
           <span className="text-sm font-medium text-slate-500">New total</span>
-          <span className="text-lg font-bold text-slate-900 tabular-nums">{inr((adjustFor?.rentAmount || 0) + (adjust.lateFee || 0) - (adjust.discount || 0))}</span>
+          <span className="text-lg font-bold text-slate-900 tabular-nums">{inr((adjustFor?.rentAmount || 0) + (adjustFor?.electricityCharge || 0) + (adjust.lateFee || 0) - (adjust.discount || 0))}</span>
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <Button variant="secondary" onClick={() => setAdjustFor(null)}>Cancel</Button>
