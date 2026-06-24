@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
-  Button, Card, Field, Select, Textarea, Modal, Spinner, EmptyState,
+  Button, Card, Field, Select, Textarea, Modal, TableSkeleton, EmptyState,
   StatusBadge, StatCard, Avatar, Table, TableRow, Td, PageHeader, fmtDateTime,
   Pagination, usePagination,
 } from '../../components/ui';
@@ -137,7 +137,7 @@ export default function AdminComplaints() {
 
       <Card>
         {loading ? (
-          <Spinner />
+          <TableSkeleton cols={7} />
         ) : complaints.length === 0 ? (
           <EmptyState icon={Wrench} title="No complaints" message="Nothing matches the current filters." />
         ) : (

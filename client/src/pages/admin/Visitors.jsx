@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { ClipboardList, LogIn, LogOut, Ban, Clock, UserCheck, UserMinus, Filter } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
-  Button, Card, Select, Spinner, EmptyState, StatusBadge, Table, TableRow, Td,
+  Button, Card, Select, TableSkeleton, EmptyState, StatusBadge, Table, TableRow, Td,
   PageHeader, StatCard, Avatar, fmtDateTime, Pagination, usePagination,
 } from '../../components/ui';
 
@@ -71,7 +71,7 @@ export default function AdminVisitors() {
 
       <Card>
         {loading ? (
-          <Spinner />
+          <TableSkeleton cols={6} />
         ) : visitors.length === 0 ? (
           <EmptyState icon={ClipboardList} title="No visitors" message="Visitor requests raised by tenants appear here." />
         ) : (

@@ -297,6 +297,51 @@ export function Skeleton({ className = '' }) {
   return <div className={`animate-pulse rounded-lg bg-slate-200/70 ${className}`} />;
 }
 
+/** Table loading skeleton — mimics an avatar + name rows + columns. */
+export function TableSkeleton({ rows = 6, cols = 5 }) {
+  return (
+    <div role="status" aria-label="Loading" className="animate-fade-in-up">
+      <div className="hidden gap-4 border-b border-slate-200 pb-3 sm:flex">
+        {Array.from({ length: cols }).map((_, i) => (
+          <Skeleton key={i} className={`h-2.5 ${i === 0 ? 'w-28' : 'flex-1'}`} />
+        ))}
+      </div>
+      <div className="divide-y divide-slate-100">
+        {Array.from({ length: rows }).map((_, r) => (
+          <div key={r} className="flex items-center gap-4 py-3.5">
+            <Skeleton className="h-9 w-9 shrink-0 rounded-full" />
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Skeleton className="h-3 w-1/3" />
+              <Skeleton className="h-2.5 w-1/4" />
+            </div>
+            {Array.from({ length: Math.max(0, cols - 2) }).map((_, c) => (
+              <Skeleton key={c} className="hidden h-3 flex-1 sm:block" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** KPI strip loading skeleton — matches the StatCard grid. */
+export function StatStripSkeleton({ count = 4 }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card">
+          <div className="flex items-start justify-between">
+            <Skeleton className="h-2.5 w-20" />
+            <Skeleton className="h-9 w-9 rounded-xl" />
+          </div>
+          <Skeleton className="mt-3 h-7 w-24" />
+          <Skeleton className="mt-2.5 h-2.5 w-16" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function EmptyState({ icon: Icon = Inbox, title = 'Nothing here yet', message, action }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">

@@ -7,7 +7,7 @@ import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts';
 import { api } from '../../api/client';
-import { Card, Spinner, EmptyState, StatusBadge, Avatar, Button, inr, fmtDate } from '../../components/ui';
+import { Card, Skeleton, EmptyState, StatusBadge, Avatar, Button, inr, fmtDate } from '../../components/ui';
 import { CHART, BrandTooltip, axisTick, gridProps } from '../../components/ui/charts';
 import { StatDonut, SegmentBar } from '../../components/dashboard/widgets';
 import { useAuth } from '../../context/AuthContext';
@@ -45,7 +45,22 @@ export default function AdminDashboard() {
     api.get('/dashboard/admin').then(({ data }) => setData(data.data)).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Spinner label="Loading dashboard…" />;
+  if (loading) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-9 w-72" />
+        <div className="grid gap-5 lg:grid-cols-12">
+          <Skeleton className="h-44 rounded-2xl lg:col-span-5" />
+          <Skeleton className="h-44 rounded-2xl lg:col-span-4" />
+          <Skeleton className="h-44 rounded-2xl lg:col-span-3" />
+        </div>
+        <div className="grid gap-5 lg:grid-cols-3">
+          <Skeleton className="h-72 rounded-2xl lg:col-span-2" />
+          <Skeleton className="h-72 rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
   if (!data) return <EmptyState title="Could not load dashboard" />;
 
   const { stats, recentPayments, recentComplaints, charts } = data;

@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Plus, Pencil, UserX, Users, FileUp, Check, ArrowLeft, ArrowRight, ShieldCheck, FileSignature, BedDouble, User as UserIcon, Eye } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
-  Button, Card, Field, Input, Select, Modal, ConfirmDialog, Spinner, EmptyState,
+  Button, Card, Field, Input, Select, Modal, ConfirmDialog, TableSkeleton, EmptyState,
   StatusBadge, Badge, Table, TableRow, Td, PageHeader, inr, fmtDate,
   Avatar, Drawer, DetailRow, Pagination, usePagination,
 } from '../../components/ui';
@@ -180,7 +180,7 @@ export default function Tenants() {
 
       <Card>
         {loading ? (
-          <Spinner />
+          <TableSkeleton cols={7} />
         ) : tenants.length === 0 ? (
           <EmptyState icon={Users} title="No tenants found" message="Add a tenant or relax your filters." />
         ) : (

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
-  Button, Card, Field, Input, Select, Textarea, Modal, ConfirmDialog, Spinner,
+  Button, Card, Field, Input, Select, Textarea, Modal, ConfirmDialog, TableSkeleton,
   EmptyState, Badge, StatCard, Table, TableRow, Td, PageHeader, inr, fmtDate,
   Pagination, usePagination,
 } from '../../components/ui';
@@ -172,7 +172,7 @@ export default function Expenses() {
 
       {/* List */}
       {loading ? (
-        <Card><Spinner /></Card>
+        <Card><TableSkeleton cols={5} /></Card>
       ) : expenses.length === 0 ? (
         <Card>
           <EmptyState

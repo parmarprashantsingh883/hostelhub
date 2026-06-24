@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Banknote, BellRing, FileDown, CheckCircle2, CalendarPlus, Pencil, Wallet, Clock, AlertTriangle, Zap } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
-  Button, Card, Field, Input, Select, Modal, Spinner, EmptyState,
+  Button, Card, Field, Input, Select, Modal, TableSkeleton, EmptyState,
   StatusBadge, StatCard, Avatar, Table, TableRow, Td, PageHeader, inr, fmtDate,
   Pagination, usePagination,
 } from '../../components/ui';
@@ -234,7 +234,7 @@ export default function Rents() {
 
       <Card>
         {loading ? (
-          <Spinner />
+          <TableSkeleton cols={7} />
         ) : rents.length === 0 ? (
           <EmptyState
             icon={Banknote}

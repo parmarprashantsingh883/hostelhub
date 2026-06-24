@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Plus, Pencil, UserX, UserCog, Users, UserCheck, Shield, Search } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
-  Button, Card, Field, Input, Select, Modal, ConfirmDialog, Spinner, EmptyState,
+  Button, Card, Field, Input, Select, Modal, ConfirmDialog, TableSkeleton, EmptyState,
   StatusBadge, Badge, StatCard, Avatar, Table, TableRow, Td, PageHeader, inr, fmtDate,
   Pagination, usePagination,
 } from '../../components/ui';
@@ -125,7 +125,7 @@ export default function Staff() {
 
       <Card>
         {loading ? (
-          <Spinner />
+          <TableSkeleton cols={6} />
         ) : staff.length === 0 ? (
           <EmptyState icon={UserCog} title="No staff found" message="Add maintenance, security, cooks and managers here." />
         ) : (
