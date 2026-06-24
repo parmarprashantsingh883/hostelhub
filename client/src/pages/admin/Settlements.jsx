@@ -30,11 +30,11 @@ function SettlementBreakdown({ s }) {
         </li>
         <li className="flex items-center justify-between px-5 py-3">
           <span className="text-slate-600">Less: pending rent dues</span>
-          <span className="font-semibold tabular-nums text-red-600">− {inr(s.pendingDues)}</span>
+          <span className="font-semibold tabular-nums text-rose-500">− {inr(s.pendingDues)}</span>
         </li>
         <li className="flex items-center justify-between px-5 py-3">
           <span className="text-slate-600">Less: deductions</span>
-          <span className="font-semibold tabular-nums text-red-600">− {inr(s.totalDeductions)}</span>
+          <span className="font-semibold tabular-nums text-rose-500">− {inr(s.totalDeductions)}</span>
         </li>
       </ul>
       <div className="flex items-center justify-between rounded-b-2xl bg-brand-50 px-5 py-4">
@@ -294,7 +294,7 @@ export default function Settlements() {
                       <TableRow key={e._id}>
                         <Td><StatusBadge status={e.type === 'deposit' ? 'active' : e.type === 'refund' ? 'resolved' : 'overdue'} /></Td>
                         <Td className="text-slate-700">{e.reason || <span className="capitalize">{e.type}</span>}</Td>
-                        <Td className={`font-semibold tabular-nums ${e.type === 'deposit' ? 'text-slate-900' : 'text-red-600'}`}>
+                        <Td className={`font-semibold tabular-nums ${e.type === 'deposit' ? 'text-slate-900' : 'text-rose-500'}`}>
                           {e.type === 'deposit' ? '' : '− '}{inr(e.amount)}
                         </Td>
                         <Td className="text-slate-500">{fmtDate(e.at)}</Td>

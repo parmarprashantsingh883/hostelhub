@@ -94,12 +94,12 @@ export function Card({ title, action, className = '', children }) {
 
 /* ── Badge ──────────────────────────────────────────────────────────── */
 const badgeTones = {
-  green: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-  red: 'bg-red-50 text-red-700 ring-red-600/20',
-  yellow: 'bg-amber-50 text-amber-700 ring-amber-600/20',
-  blue: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  gray: 'bg-slate-100 text-slate-600 ring-slate-500/20',
-  indigo: 'bg-brand-50 text-brand-700 ring-brand-600/20',
+  green: 'bg-emerald-50 text-emerald-600 ring-emerald-500/15',
+  red: 'bg-rose-50 text-rose-500 ring-rose-400/15',
+  yellow: 'bg-amber-50 text-amber-600 ring-amber-400/15',
+  blue: 'bg-sky-50 text-sky-600 ring-sky-400/15',
+  gray: 'bg-slate-100 text-slate-500 ring-slate-400/15',
+  indigo: 'bg-brand-50 text-brand-600 ring-brand-500/15',
 };
 export function Badge({ tone = 'gray', children }) {
   return (
@@ -119,7 +119,7 @@ export function StatusBadge({ status }) {
     important: 'yellow', normal: 'gray',
   };
   const tone = tones[status] || 'gray';
-  const dot = { green: 'bg-emerald-500', red: 'bg-red-500', yellow: 'bg-amber-500', blue: 'bg-blue-500', gray: 'bg-slate-400', indigo: 'bg-brand-500' }[tone];
+  const dot = { green: 'bg-emerald-400', red: 'bg-rose-400', yellow: 'bg-amber-400', blue: 'bg-sky-400', gray: 'bg-slate-300', indigo: 'bg-brand-400' }[tone];
   return (
     <Badge tone={tone}>
       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />

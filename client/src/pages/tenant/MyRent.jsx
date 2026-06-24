@@ -196,8 +196,8 @@ export default function MyRent() {
                 </Td>
                 <Td className="tabular-nums">{inr(r.rentAmount)}</Td>
                 <Td className={`tabular-nums ${r.electricityCharge ? 'text-slate-700' : 'text-slate-400'}`}>{r.electricityCharge ? inr(r.electricityCharge) : '—'}</Td>
-                <Td className={`tabular-nums ${r.lateFee ? 'text-red-600 font-medium' : 'text-slate-400'}`}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
-                <Td className={`tabular-nums ${r.discount ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
+                <Td className={`tabular-nums ${r.lateFee ? 'text-rose-500 font-medium' : 'text-slate-400'}`}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
+                <Td className={`tabular-nums ${r.discount ? 'text-emerald-500 font-medium' : 'text-slate-400'}`}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
                 <Td className="font-bold text-slate-900 tabular-nums">{inr(r.totalAmount)}</Td>
                 <Td className="text-slate-500">{fmtDate(r.dueDate)}</Td>
                 <Td><StatusBadge status={r.status} /></Td>
@@ -244,13 +244,13 @@ export default function MyRent() {
                 </div>
               )}
               {paying.lateFee > 0 && (
-                <div className="flex items-center justify-between text-red-600">
+                <div className="flex items-center justify-between text-rose-500">
                   <dt>Late fee</dt>
                   <dd className="font-medium tabular-nums">{inr(paying.lateFee)}</dd>
                 </div>
               )}
               {paying.discount > 0 && (
-                <div className="flex items-center justify-between text-emerald-600">
+                <div className="flex items-center justify-between text-emerald-500">
                   <dt>Discount</dt>
                   <dd className="font-medium tabular-nums">-{inr(paying.discount)}</dd>
                 </div>

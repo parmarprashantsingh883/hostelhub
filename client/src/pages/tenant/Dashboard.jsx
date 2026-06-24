@@ -120,8 +120,8 @@ export default function TenantDashboard() {
               </>
             ) : (
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/30 flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-300" />
+                <div className="w-11 h-11 rounded-xl bg-white/15 ring-1 ring-white/25 flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <p className="font-semibold">All dues cleared</p>

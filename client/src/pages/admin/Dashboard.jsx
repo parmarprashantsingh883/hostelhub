@@ -29,7 +29,7 @@ function DeltaChip({ pct }) {
   if (pct == null) return null;
   const up = pct >= 0;
   return (
-    <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold ${up ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+    <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold ${up ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500'}`}>
       {up ? '▲' : '▼'} {Math.abs(pct)}%
     </span>
   );
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
           <GlanceRow icon={Users} tile="bg-brand-50 text-brand-600" label="Active tenants" value={stats.totalTenants} />
           <GlanceRow icon={Wrench} tile="bg-amber-50 text-amber-600" label="Open complaints" value={stats.openComplaints} />
           <GlanceRow icon={CheckCircle2} tile="bg-emerald-50 text-emerald-600" label="Resolved" value={stats.resolvedComplaints} />
-          <GlanceRow icon={AlertCircle} tile="bg-red-50 text-red-600" label="Pending rent" value={inr(stats.monthPending)} />
+          <GlanceRow icon={AlertCircle} tile="bg-rose-50 text-rose-500" label="Pending rent" value={inr(stats.monthPending)} />
         </Card>
       </div>
 
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                     <p className="truncate text-sm font-medium text-slate-800">{p.tenantId?.name || '—'}</p>
                     <p className="text-xs capitalize text-slate-400">{fmtDate(p.paidAt)} · {String(p.paymentMethod || '').replace(/_/g, ' ')}</p>
                   </div>
-                  <p className="text-sm font-semibold tabular-nums text-emerald-600">{inr(p.totalAmount)}</p>
+                  <p className="text-sm font-semibold tabular-nums text-emerald-500">{inr(p.totalAmount)}</p>
                 </div>
               ))}
             </div>

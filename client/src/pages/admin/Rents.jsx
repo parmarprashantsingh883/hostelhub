@@ -257,7 +257,7 @@ export default function Rents() {
                 </>
               )}
               <span className="ml-auto flex items-center gap-1.5">
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-700">Email ✓</span>
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-600">Email ✓</span>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">WhatsApp soon</span>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">SMS soon</span>
               </span>
@@ -292,8 +292,8 @@ export default function Rents() {
                     </span>
                   ) : '—'}
                 </Td>
-                <Td className={r.lateFee ? 'text-red-600 font-medium tabular-nums' : 'text-slate-400'}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
-                <Td className={r.discount ? 'text-emerald-600 font-medium tabular-nums' : 'text-slate-400'}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
+                <Td className={r.lateFee ? 'text-rose-500 font-medium tabular-nums' : 'text-slate-400'}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
+                <Td className={r.discount ? 'text-emerald-500 font-medium tabular-nums' : 'text-slate-400'}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
                 <Td className="font-bold text-slate-900 tabular-nums">{inr(r.totalAmount)}</Td>
                 <Td className="text-slate-500">{fmtDate(r.dueDate)}</Td>
                 <Td><StatusBadge status={r.status} /></Td>
