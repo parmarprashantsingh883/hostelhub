@@ -33,9 +33,9 @@ export function Button({ variant = 'primary', size = 'md', loading, className = 
 }
 
 /* ── Inputs ─────────────────────────────────────────────────────────── */
-export function Field({ label, error, required, children, hint }) {
+export function Field({ label, error, required, children, hint, className = '' }) {
   return (
-    <div>
+    <div className={className}>
       {label && (
         <label className="block text-sm font-medium text-slate-700 mb-1.5">
           {label} {required && <span className="text-red-500">*</span>}
