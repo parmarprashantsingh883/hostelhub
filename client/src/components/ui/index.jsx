@@ -131,9 +131,15 @@ export function StatusBadge({ status }) {
 /* ── Modal ──────────────────────────────────────────────────────────── */
 export function Modal({ open, onClose, title, children, wide }) {
   useEffect(() => {
+    if (!open) return undefined;
     const onEsc = (e) => e.key === 'Escape' && onClose?.();
-    if (open) document.addEventListener('keydown', onEsc);
-    return () => document.removeEventListener('keydown', onEsc);
+    document.addEventListener('keydown', onEsc);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden'; // lock background scroll while open
+    return () => {
+      document.removeEventListener('keydown', onEsc);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [open, onClose]);
 
   return (
@@ -193,9 +199,15 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
 /* ── Drawer (slide-over quick-view) ─────────────────────────────────── */
 export function Drawer({ open, onClose, title, subtitle, children, footer }) {
   useEffect(() => {
+    if (!open) return undefined;
     const onEsc = (e) => e.key === 'Escape' && onClose?.();
-    if (open) document.addEventListener('keydown', onEsc);
-    return () => document.removeEventListener('keydown', onEsc);
+    document.addEventListener('keydown', onEsc);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden'; // lock background scroll while open
+    return () => {
+      document.removeEventListener('keydown', onEsc);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [open, onClose]);
 
   return (
