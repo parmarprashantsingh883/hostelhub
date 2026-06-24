@@ -288,14 +288,22 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { rent, paymentMode: paymentMode() } });
 });
 
-/** GET /api/rents/:id/receipt — download URL */
+/** GET /api/rents/:id/receipt — download URL.
+ *  Lazily generates the PDF for a paid rent that doesn't have one yet
+ *  (e.g. seeded/imported records), so the receipt is always downloadable. */
 export const getReceipt = asyncHandler(async (req, res) => {
-  const rent = await Rent.findById(req.params.id);
+  const rent = await Rent.findById(req.params.id)
+    .populate('tenantId', 'name email')
+    .populate('roomId', 'roomNumber floor roomType');
   if (!rent) throw new ApiError(404, 'Rent record not found');
-  if (req.user.role === 'tenant' && String(rent.tenantId) !== String(req.user._id)) {
+  if (req.user.role === 'tenant' && String(rent.tenantId?._id) !== String(req.user._id)) {
     throw new ApiError(403, 'Not your rent record');
   }
-  if (!rent.receiptUrl) throw new ApiError(404, 'Receipt not generated yet — rent may be unpaid');
+  if (!rent.receiptUrl) {
+    if (rent.status !== 'paid') throw new ApiError(404, 'Receipt is available once the rent is paid');
+    rent.receiptUrl = await generateReceipt({ rent, tenant: rent.tenantId, room: rent.roomId });
+    await rent.save();
+  }
   res.json({ success: true, data: { receiptUrl: rent.receiptUrl } });
 });
 
