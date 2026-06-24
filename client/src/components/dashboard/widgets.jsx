@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const ARC = { brand: '#243047', green: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
@@ -7,12 +8,22 @@ export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(100, value));
-  const dash = (pct / 100) * c;
+  // Draw the arc in on mount for a premium feel.
+  const [drawn, setDrawn] = useState(0);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDrawn(pct));
+    return () => cancelAnimationFrame(id);
+  }, [pct]);
+  const dash = (drawn / 100) * c;
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={ARC[tone]} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={`${dash} ${c - dash}`} />
+        <circle
+          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={ARC[tone]} strokeWidth={stroke}
+          strokeLinecap="round" strokeDasharray={`${dash} ${c - dash}`}
+          style={{ transition: 'stroke-dasharray 0.9s cubic-bezier(0.16, 1, 0.3, 1)' }}
+        />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className={`font-display text-[28px] font-semibold leading-none tabular-nums ${centerClass}`}>
