@@ -2,7 +2,7 @@
 # MongoDB: use a free MongoDB Atlas cluster and paste its URI into MONGO_URI.
 services:
   - type: web
-    name: hostelhub-api
+    name: quarters-api
     runtime: node
     rootDir: server
     plan: free
@@ -19,7 +19,7 @@ services:
       - key: MONGO_URI
         sync: false # paste your Atlas connection string
       - key: CLIENT_URL
-        sync: false # the hostelhub-web URL, e.g. https://hostelhub-web.onrender.com
+        sync: false # your Vercel web URL, e.g. https://quarters.vercel.app
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
@@ -30,14 +30,14 @@ services:
         value: 7d
 
   - type: web
-    name: hostelhub-web
+    name: quarters-web
     runtime: static
     rootDir: client
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        sync: false # the API URL + /api, e.g. https://hostelhub-api.onrender.com/api
+        sync: false # the API URL + /api, e.g. https://quarters-api.onrender.com/api
     routes:
       - type: rewrite
         source: /*

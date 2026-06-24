@@ -21,10 +21,16 @@ export const sha256 = (v) => crypto.createHash('sha256').update(v).digest('hex')
 
 export const REFRESH_COOKIE = 'hh_refresh';
 
-export const refreshCookieOptions = () => ({
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  path: '/api/auth',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+export const refreshCookieOptions = () => {
+  const isProd = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    // SameSite=None (with Secure) lets the cookie ride cross-site requests —
+    // required when the frontend (Vercel) and API (Render) are on different
+    // origins. Locally we stay on Lax over http.
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    path: '/api/auth',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+};
