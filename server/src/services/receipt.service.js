@@ -12,7 +12,7 @@ const MONTHS = ['January','February','March','April','May','June','July','August
 
 // Business identity printed on the invoice (configurable per deployment).
 const BUSINESS = {
-  name: process.env.BUSINESS_NAME || 'HostelHub',
+  name: process.env.BUSINESS_NAME || 'Quarters',
   address: process.env.BUSINESS_ADDRESS || '',
   gstin: process.env.BUSINESS_GSTIN || '',
 };
@@ -62,7 +62,7 @@ export async function generateReceipt({ rent, tenant, room }) {
     doc.rect(0, 0, W, 124).fill(NAVY);
     // little logo square
     doc.roundedRect(L, 40, 30, 30, 7).fill('#33425e');
-    doc.fillColor('#ffffff').font(FB).fontSize(15).text('H', L, 47, { width: 30, align: 'center' });
+    doc.fillColor('#ffffff').font(FB).fontSize(15).text('Q', L, 47, { width: 30, align: 'center' });
     doc.fillColor('#ffffff').font(FB).fontSize(22).text(BUSINESS.name, L + 42, 40);
     doc.font(FN).fontSize(10).fillColor('#c2cbd9').text('Smart PG & Hostel Management', L + 42, 69);
     doc.font(FB).fontSize(15).fillColor('#ffffff').text('RENT RECEIPT', L, 44, { width: CW, align: 'right' });

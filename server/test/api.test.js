@@ -8,9 +8,9 @@ import { runSeed } from '../src/seed/seed.js';
 let mem;
 
 const DEMO = {
-  admin: { email: 'admin@hostelhub.com', password: 'Admin@123' },
-  tenant: { email: 'tenant@hostelhub.com', password: 'Tenant@123' },
-  staff: { email: 'staff@hostelhub.com', password: 'Staff@123' },
+  admin: { email: 'admin@quarters.app', password: 'Admin@123' },
+  tenant: { email: 'tenant@quarters.app', password: 'Tenant@123' },
+  staff: { email: 'staff@quarters.app', password: 'Staff@123' },
 };
 
 const login = (creds) => request(app).post('/api/auth/login').send(creds);
@@ -19,7 +19,7 @@ const auth = (t) => ({ Authorization: `Bearer ${t}` });
 
 beforeAll(async () => {
   mem = await MongoMemoryServer.create();
-  await mongoose.connect(mem.getUri('hostelhub_test'));
+  await mongoose.connect(mem.getUri('quarters_test'));
   await runSeed({ exitAfter: false });
 }, 60000);
 

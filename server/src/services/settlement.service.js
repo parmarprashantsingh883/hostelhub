@@ -9,7 +9,7 @@ if (!fs.existsSync(SETTLEMENT_DIR)) fs.mkdirSync(SETTLEMENT_DIR, { recursive: tr
 
 // Business identity printed on the document (configurable per deployment).
 const BUSINESS = {
-  name: process.env.BUSINESS_NAME || 'HostelHub',
+  name: process.env.BUSINESS_NAME || 'Quarters',
   address: process.env.BUSINESS_ADDRESS || '',
   gstin: process.env.BUSINESS_GSTIN || '',
 };

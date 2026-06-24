@@ -77,7 +77,7 @@ export default function Book() {
         <Link to="/" className="group relative z-10 flex w-fit items-center gap-3">
           <LogoMark size={46} className="drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-transform group-hover:scale-105" />
           <div>
-            <div className="text-[22px] font-extrabold leading-none tracking-tight">HostelHub</div>
+            <div className="text-[22px] font-extrabold leading-none tracking-tight">Quarters</div>
             <div className="mt-1 text-[11px] font-medium uppercase tracking-wider text-slate-300/80">Book your stay</div>
           </div>
         </Link>
@@ -124,7 +124,7 @@ export default function Book() {
           </ul>
         </div>
 
-        <p className="relative z-10 text-[11px] text-white/45">© {new Date().getFullYear()} HostelHub · All rights reserved</p>
+        <p className="relative z-10 text-[11px] text-white/45">© {new Date().getFullYear()} Quarters · All rights reserved</p>
       </div>
 
       {/* ─────────────  FORM PANE  ───────────── */}
@@ -135,7 +135,7 @@ export default function Book() {
         >
           <Link to="/" className="mb-8 flex items-center gap-3 lg:hidden">
             <LogoMark size={40} />
-            <span className="text-lg font-extrabold tracking-tight text-slate-900">HostelHub</span>
+            <span className="text-lg font-extrabold tracking-tight text-slate-900">Quarters</span>
           </Link>
 
           {done ? (

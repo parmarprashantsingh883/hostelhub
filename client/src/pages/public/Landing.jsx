@@ -49,7 +49,7 @@ const TESTIMONIALS = [
 ];
 
 const FAQS = [
-  { q: 'Is it for a single PG or a big hostel?', a: 'Either. One 20-bed PG or a multi-floor hostel — HostelHub scales to your rooms, residents and staff, and you only switch on what you use.' },
+  { q: 'Is it for a single PG or a big hostel?', a: 'Either. One 20-bed PG or a multi-floor hostel — Quarters scales to your rooms, residents and staff, and you only switch on what you use.' },
   { q: 'How does online rent work?', a: 'Rent auto-raises each month. Residents pay by UPI, card or net-banking through Razorpay and get an instant PDF receipt. Cash and bank transfers can be recorded by hand too.' },
   { q: 'Do residents and staff get their own logins?', a: 'Yes — owner, resident and staff each get a separate, permission-scoped portal. Everyone sees exactly their slice and nothing more.' },
   { q: 'Do I need to be technical?', a: 'No. Add rooms, invite people, done. It’s built to feel like any app you already use on your phone.' },
@@ -139,7 +139,7 @@ export default function Landing() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="#top" className="flex items-center gap-2.5">
             <LogoMark size={34} />
-            <span className="text-[18px] font-extrabold tracking-tight">HostelHub</span>
+            <span className="text-[18px] font-extrabold tracking-tight">Quarters</span>
           </a>
           <nav className="hidden items-center gap-8 md:flex">
             {navLinks.map(([l, h]) => (
@@ -179,7 +179,7 @@ export default function Landing() {
               Run the whole building from <span className="italic text-brand-600">one calm screen.</span>
             </h1>
             <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-slate-600">
-              HostelHub retires the rent register, the complaints diary and the resident WhatsApp group — rooms, rent,
+              Quarters retires the rent register, the complaints diary and the resident WhatsApp group — rooms, rent,
               complaints, visitors and reports, finally in one place.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -278,7 +278,7 @@ export default function Landing() {
       <Section className="pb-20">
         <motion.div {...reveal} className="relative rounded-[2rem] bg-paper p-3 ring-1 ring-slate-200/70 shadow-soft sm:p-4">
           <span className="absolute -top-3 left-8 z-10 rounded-full bg-night-900 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-cream-50">The owner’s view</span>
-          <img src="/preview-admin.png" alt="HostelHub admin dashboard" className="w-full rounded-2xl ring-1 ring-slate-200" loading="lazy" />
+          <img src="/preview-admin.png" alt="Quarters admin dashboard" className="w-full rounded-2xl ring-1 ring-slate-200" loading="lazy" />
         </motion.div>
       </Section>
 
@@ -360,15 +360,15 @@ export default function Landing() {
         <Section className="flex flex-col items-center justify-between gap-6 py-10 sm:flex-row">
           <div className="flex items-center gap-2.5">
             <LogoMark size={30} />
-            <span className="font-extrabold tracking-tight">HostelHub</span>
+            <span className="font-extrabold tracking-tight">Quarters</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-wider text-slate-400">
             <a href="#features" className="hover:text-brand-700">Features</a>
             <a href="#pricing" className="hover:text-brand-700">Pricing</a>
             <Link to="/login" className="hover:text-brand-700">Live demo</Link>
-            <a href="mailto:hello@hostelhub.com" className="hover:text-brand-700">Contact</a>
+            <a href="mailto:hello@quarters.app" className="hover:text-brand-700">Contact</a>
           </div>
-          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-400">© {year} HostelHub</p>
+          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-400">© {year} Quarters</p>
         </Section>
       </footer>
     </div>

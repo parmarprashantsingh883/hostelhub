@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏠 HostelHub
+# 🏠 Quarters
 
 ### Smart PG &amp; Hostel Management — run your entire property from one dashboard
 
@@ -16,7 +16,7 @@ Rooms &amp; beds · online rent collection · complaints · visitors · food men
 </div>
 
 <p align="center">
-  <img src="client/public/preview-admin.png" alt="HostelHub admin dashboard" width="800" />
+  <img src="client/public/preview-admin.png" alt="Quarters admin dashboard" width="800" />
 </p>
 
 ---
@@ -82,9 +82,9 @@ Open **http://localhost:8080**.
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | `admin@hostelhub.com` | `Admin@123` |
-| Resident | `tenant@hostelhub.com` | `Tenant@123` |
-| Staff | `staff@hostelhub.com` | `Staff@123` |
+| Admin | `admin@quarters.app` | `Admin@123` |
+| Resident | `tenant@quarters.app` | `Tenant@123` |
+| Staff | `staff@quarters.app` | `Staff@123` |
 
 > Dev shortcut: `http://localhost:8080/login?demo=admin` (also `?demo=tenant` / `?demo=staff`) auto-logs in.
 
@@ -134,4 +134,4 @@ The web image (nginx) serves the SPA and proxies `/api` + `/uploads` to the API 
 
 ## 📄 License
 
-[MIT](LICENSE) © HostelHub
+[MIT](LICENSE) © Quarters

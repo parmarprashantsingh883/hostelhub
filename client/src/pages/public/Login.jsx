@@ -16,9 +16,9 @@ const schema = z.object({
 });
 
 const DEMO = [
-  { label: 'Admin',  email: 'admin@hostelhub.com',  password: 'Admin@123',  icon: ShieldCheck, tone: 'from-brand-500 to-brand-700', ring: 'ring-brand-200', text: 'text-brand-700', bg: 'hover:bg-brand-50' },
-  { label: 'Tenant', email: 'tenant@hostelhub.com', password: 'Tenant@123', icon: User,        tone: 'from-sky-500 to-indigo-600',     ring: 'ring-sky-200',     text: 'text-sky-700',     bg: 'hover:bg-sky-50' },
-  { label: 'Staff',  email: 'staff@hostelhub.com',  password: 'Staff@123',  icon: Wrench,      tone: 'from-amber-500 to-orange-600',   ring: 'ring-amber-200',   text: 'text-amber-700',   bg: 'hover:bg-amber-50' },
+  { label: 'Admin',  email: 'admin@quarters.app',  password: 'Admin@123',  icon: ShieldCheck, tone: 'from-brand-500 to-brand-700', ring: 'ring-brand-200', text: 'text-brand-700', bg: 'hover:bg-brand-50' },
+  { label: 'Tenant', email: 'tenant@quarters.app', password: 'Tenant@123', icon: User,        tone: 'from-brand-500 to-brand-700', ring: 'ring-brand-200', text: 'text-brand-700', bg: 'hover:bg-brand-50' },
+  { label: 'Staff',  email: 'staff@quarters.app',  password: 'Staff@123',  icon: Wrench,      tone: 'from-brand-500 to-brand-700', ring: 'ring-brand-200', text: 'text-brand-700', bg: 'hover:bg-brand-50' },
 ];
 
 export default function Login() {

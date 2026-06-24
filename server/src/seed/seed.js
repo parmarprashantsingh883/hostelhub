@@ -1,5 +1,5 @@
 /**
- * Seed script — demo data for HostelHub.
+ * Seed script — demo data for Quarters.
  * Run standalone: `npm run seed` (uses MONGO_URI)
  * Or auto-runs on boot when USE_MEMORY_DB=true.
  */
@@ -24,7 +24,7 @@ export async function runSeed({ exitAfter = true } = {}) {
     await connectDB();
   }
 
-  const already = await User.findOne({ email: 'admin@hostelhub.com' });
+  const already = await User.findOne({ email: 'admin@quarters.app' });
   if (already) {
     console.log('🌱 Seed skipped — demo data already present');
     if (exitAfter) process.exit(0);
@@ -36,7 +36,7 @@ export async function runSeed({ exitAfter = true } = {}) {
   // ── Admin ──────────────────────────────────────────────
   const admin = await User.create({
     name: 'Demo Admin',
-    email: 'admin@hostelhub.com',
+    email: 'admin@quarters.app',
     phone: '+91 9000000001',
     password: 'Admin@123',
     role: 'admin',
@@ -77,7 +77,7 @@ export async function runSeed({ exitAfter = true } = {}) {
     const room = roomByNumber[roomNo];
     for (let j = 0; j < count; j++) {
       const name = NAMES[ni] || `Resident ${ni + 1}`;
-      const email = ni === 0 ? 'tenant@hostelhub.com' : `${name.toLowerCase().replace(/[^a-z]+/g, '.')}@example.com`;
+      const email = ni === 0 ? 'tenant@quarters.app' : `${name.toLowerCase().replace(/[^a-z]+/g, '.')}@example.com`;
       const tenant = await User.create({
         name,
         email,
@@ -107,7 +107,7 @@ export async function runSeed({ exitAfter = true } = {}) {
 
   // ── Staff (3) ─────────────────────────────────────────
   const staffSpecs = [
-    { name: 'Demo Staff', email: 'staff@hostelhub.com', phone: '+91 9000000007', staffType: 'maintenance' },
+    { name: 'Demo Staff', email: 'staff@quarters.app', phone: '+91 9000000007', staffType: 'maintenance' },
     { name: 'Ganesh Kumar', email: 'ganesh@example.com', phone: '+91 9000000008', staffType: 'security' },
     { name: 'Lakshmi Devi', email: 'lakshmi@example.com', phone: '+91 9000000009', staffType: 'cook' },
   ];
@@ -353,9 +353,9 @@ export async function runSeed({ exitAfter = true } = {}) {
   });
 
   console.log('🌱 Seed complete:');
-  console.log('   admin@hostelhub.com / Admin@123');
-  console.log('   tenant@hostelhub.com / Tenant@123');
-  console.log('   staff@hostelhub.com / Staff@123');
+  console.log('   admin@quarters.app / Admin@123');
+  console.log('   tenant@quarters.app / Tenant@123');
+  console.log('   staff@quarters.app / Staff@123');
 
   if (exitAfter) {
     await mongoose.disconnect();

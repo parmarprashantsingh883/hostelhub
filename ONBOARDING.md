@@ -1,11 +1,11 @@
-# HostelHub — Project Handoff for Nova 2.0
+# Quarters — Project Handoff for Nova 2.0
 
-> **Ownership:** As of **2026-06-17**, HostelHub is owned and maintained by **Nova 2.0**.
+> **Ownership:** As of **2026-06-17**, Quarters is owned and maintained by **Nova 2.0**.
 > This document is everything you need to take it over. Read it top-to-bottom once, then use it as a map.
 
 ---
 
-## 1. What HostelHub is
+## 1. What Quarters is
 
 A full-stack **MERN** SaaS for running a **PG / hostel / co-living** property: rooms & beds, tenants,
 staff, **rent collection (online payments)**, complaints, visitors, food menu, notices, documents and
@@ -14,7 +14,7 @@ reports — with **role-based portals** for **Admin**, **Tenant**, and **Staff**
 It's India-focused (₹ / INR, Razorpay, PG terminology). The concept is validated by real products in
 this market — model features/UX on **RentOk**, **TrackMyPG**, and **Crib** (India PG SaaS).
 
-**Location:** `~/Desktop/prashant/fullstack/HostelHub` — two apps: `client/` (React) and `server/` (Express).
+**Location:** `~/Desktop/prashant/fullstack/Quarters` — two apps: `client/` (React) and `server/` (Express).
 
 ---
 
@@ -50,7 +50,7 @@ cd client && npm install && npm run dev -- --port 8080 --strictPort
 
 - App: **http://localhost:8080** · API proxied to `:5000`
 - **Dev shortcut:** `http://localhost:8080/login?demo=tenant` auto-logs in (also `?demo=admin` / `?demo=staff`) — dev-only, guarded by `import.meta.env.DEV`.
-- **Demo creds:** `admin@hostelhub.com / Admin@123` · `tenant@hostelhub.com / Tenant@123` · `staff@hostelhub.com / Staff@123`
+- **Demo creds:** `admin@quarters.app / Admin@123` · `tenant@quarters.app / Tenant@123` · `staff@quarters.app / Staff@123`
 
 > ⚠️ **Gotchas:** in-memory DB **wipes on every restart** (re-seeds automatically). If `npm install` hits a root-owned cache, use `npm install --cache /tmp/npm-cache-hostelhub`. Client runs on **:8080** (not 5173) to avoid a favicon-cache clash with another local app.
 

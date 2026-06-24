@@ -1,5 +1,5 @@
 /**
- * HostelHub motion primitives — a thin, opinionated layer over framer-motion so
+ * Quarters motion primitives — a thin, opinionated layer over framer-motion so
  * every page gets the same premium, restrained motion language:
  *   • Reveal      — fade + rise on mount (one-shot)
  *   • Stagger     — container that cascades its children in

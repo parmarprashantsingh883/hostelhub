@@ -38,7 +38,7 @@ export default function Register() {
     setBusy(true);
     try {
       await signup({ name, email, phone, password });
-      toast.success('Account created — welcome to HostelHub!');
+      toast.success('Account created — welcome to Quarters!');
       navigate('/tenant');
     } catch (e) {
       toast.error(errMsg(e, 'Registration failed'));

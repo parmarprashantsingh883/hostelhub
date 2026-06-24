@@ -1,7 +1,7 @@
 {
-  "name": "hostelhub-server",
+  "name": "quarters-server",
   "version": "1.0.0",
-  "description": "HostelHub — Smart PG & Hostel Management System (API)",
+  "description": "Quarters — Smart PG & Hostel Management System (API)",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

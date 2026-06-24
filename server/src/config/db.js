@@ -13,7 +13,7 @@ export async function connectDB() {
   if (process.env.USE_MEMORY_DB === 'true' || !uri) {
     const { MongoMemoryServer } = await import('mongodb-memory-server');
     const mem = await MongoMemoryServer.create();
-    uri = mem.getUri('hostelhub');
+    uri = mem.getUri('quarters');
     console.log('⚡ Using in-memory MongoDB (dev mode):', uri);
   }
 

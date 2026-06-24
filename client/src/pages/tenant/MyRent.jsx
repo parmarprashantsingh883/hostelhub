@@ -73,7 +73,7 @@ export default function MyRent() {
         key: keyId,
         amount: order.amount,
         currency: order.currency,
-        name: 'HostelHub',
+        name: 'Quarters',
         description: `Rent — ${MONTHS[rent.month - 1]} ${rent.year}`,
         order_id: order.id,
         prefill: { name: user?.name, email: user?.email, contact: user?.phone },

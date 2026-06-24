@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
     }
 
     const server = app.listen(PORT, () => {
-      console.log(`🚀 HostelHub API running at http://localhost:${PORT}`);
+      console.log(`🚀 Quarters API running at http://localhost:${PORT}`);
     });
 
     // ── Graceful shutdown ──────────────────────────────────────────────

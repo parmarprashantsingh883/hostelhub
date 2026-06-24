@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 /**
  * The product's thesis, as a visual: a front-desk room board.
  * Each cell is a numbered room; fill encodes status (occupied / vacant /
- * cleaning), a few rooms "settled today" pulse. This is what HostelHub runs.
+ * cleaning), a few rooms "settled today" pulse. This is what Quarters runs.
  */
 const ROOMS = [
   { n: 201, s: 'occ' }, { n: 202, s: 'hot' }, { n: 203, s: 'occ' }, { n: 204, s: 'vac' }, { n: 205, s: 'occ' },

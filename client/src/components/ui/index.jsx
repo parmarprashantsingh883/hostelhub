@@ -1,5 +1,5 @@
 /**
- * HostelHub UI kit — small, composable building blocks shared by every page.
+ * Quarters UI kit — small, composable building blocks shared by every page.
  * Production-grade: layered shadows, focus rings, subtle motion, slate palette.
  */
 import { useEffect, useState, useMemo } from 'react';

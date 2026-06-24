@@ -154,7 +154,7 @@ export default function DashboardLayout() {
         <div className="h-16 flex items-center gap-3 px-5">
           <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(36,48,71,0.45)]" />
           <div className="min-w-0">
-            <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px]">HostelHub</p>
+            <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px]">Quarters</p>
             <p className="text-[10px] text-brand-600 font-semibold uppercase tracking-widest">{ROLE_LABEL[user?.role] || 'Portal'}</p>
           </div>
           <button className="ml-auto lg:hidden text-slate-400 hover:text-slate-700" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X className="w-5 h-5" /></button>
