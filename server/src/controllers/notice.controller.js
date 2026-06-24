@@ -4,9 +4,15 @@ import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import { sendEmail, emailTemplates } from '../services/email.service.js';
 import { notifyMany } from '../services/notification.service.js';
 
+// Whitelist of client-settable notice fields — guards against mass assignment
+// of internal fields (createdBy, timestamps, etc.).
+const NOTICE_FIELDS = ['title', 'content', 'category', 'priority', 'isPinned', 'targetAudience'];
+const pickNotice = (body = {}) =>
+  Object.fromEntries(NOTICE_FIELDS.filter((k) => body[k] !== undefined).map((k) => [k, body[k]]));
+
 /** POST /api/notices (admin) */
 export const createNotice = asyncHandler(async (req, res) => {
-  const notice = await Notice.create({ ...req.body, createdBy: req.user._id });
+  const notice = await Notice.create({ ...pickNotice(req.body), createdBy: req.user._id });
 
   // Push in-app notifications to the target audience
   const roleFilter =
@@ -64,7 +70,7 @@ export const getNotice = asyncHandler(async (req, res) => {
 
 /** PUT /api/notices/:id (admin) */
 export const updateNotice = asyncHandler(async (req, res) => {
-  const notice = await Notice.findByIdAndUpdate(req.params.id, req.body, {
+  const notice = await Notice.findByIdAndUpdate(req.params.id, pickNotice(req.body), {
     new: true,
     runValidators: true,
   });

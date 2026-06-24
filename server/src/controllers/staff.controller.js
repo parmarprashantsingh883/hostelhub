@@ -75,6 +75,14 @@ export const deactivateStaff = asyncHandler(async (req, res) => {
   staff.isActive = false;
   staff.staffProfile = { ...(staff.staffProfile?.toObject?.() || {}), status: 'inactive' };
   await staff.save({ validateBeforeSave: false });
+
+  // Don't strand open complaints on an inactive staff member — return them to
+  // the unassigned/pending pool so they get reassigned.
+  await Complaint.updateMany(
+    { assignedStaffId: staff._id, status: { $in: ['assigned', 'in_progress'] } },
+    { $set: { assignedStaffId: null, status: 'pending' } },
+  );
+
   res.json({ success: true, message: 'Staff member deactivated' });
 });
 

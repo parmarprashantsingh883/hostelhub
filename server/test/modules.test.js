@@ -199,3 +199,45 @@ describe('rent receipt', () => {
     expect(no.status).toBe(404);
   });
 });
+
+// ── Hardening regressions ─────────────────────────────────────────────
+describe('payment idempotency', () => {
+  it('a verified payment cannot be processed twice (409)', async () => {
+    const rents = (await request(app).get('/api/rents').set(auth(tenantT))).body.data.rents;
+    const unpaid = rents.find((r) => r.status !== 'paid');
+    expect(unpaid).toBeTruthy();
+
+    const pay = await request(app).post(`/api/rents/${unpaid._id}/pay`).set(auth(tenantT));
+    expect(pay.status).toBe(200);
+    const verifyBody = { orderId: pay.body.data.order.id, paymentId: `pay_test_${Date.now()}`, signature: 'mock' };
+
+    const ok = await request(app).post(`/api/rents/${unpaid._id}/verify`).set(auth(tenantT)).send(verifyBody);
+    expect(ok.status).toBe(200);
+    // replaying the same verification is rejected
+    const again = await request(app).post(`/api/rents/${unpaid._id}/verify`).set(auth(tenantT)).send(verifyBody);
+    expect(again.status).toBe(409);
+  });
+});
+
+describe('notice mass-assignment guard', () => {
+  it('ignores an injected createdBy field', async () => {
+    const res = await request(app).post('/api/notices').set(auth(adminT)).send({
+      title: 'Whitelist test', content: 'body text', category: 'general', priority: 'normal',
+      targetAudience: 'all', createdBy: '000000000000000000000000',
+    });
+    expect(res.status).toBe(201);
+    expect(String(res.body.data.notice.createdBy)).not.toBe('000000000000000000000000');
+  });
+});
+
+describe('electricity split — 3 occupants', () => {
+  it('computes per-head = floor(total / occupants)', async () => {
+    const rooms = (await request(app).get('/api/rooms?limit=200').set(auth(adminT))).body.data.rooms;
+    const r203 = rooms.find((r) => r.roomNumber === '203'); // triple → 3 active occupants
+    const res = await request(app).post('/api/rents/electricity').set(auth(adminT)).send({ roomId: r203._id, amount: 1000 });
+    expect(res.status).toBe(200);
+    expect(res.body.data.occupants).toBe(3);
+    expect(res.body.data.total).toBe(1000);
+    expect(res.body.data.perHead).toBe(333);
+  });
+});

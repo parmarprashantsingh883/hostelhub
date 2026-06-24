@@ -155,6 +155,9 @@ export function Modal({ open, onClose, title, children, wide }) {
             transition={{ duration: 0.18 }}
           />
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={typeof title === 'string' ? title : undefined}
             className={`relative bg-white rounded-3xl shadow-pop w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-y-auto scrollbar-thin`}
             initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -223,6 +226,9 @@ export function Drawer({ open, onClose, title, subtitle, children, footer }) {
             transition={{ duration: 0.18 }}
           />
           <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label={typeof title === 'string' ? title : undefined}
             className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-pop flex flex-col"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}

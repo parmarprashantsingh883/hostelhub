@@ -46,6 +46,12 @@ const PORT = process.env.PORT || 5000;
     process.on('unhandledRejection', (reason) => {
       console.error('Unhandled promise rejection:', reason);
     });
+    // A synchronous error that escapes all handlers leaves the process in an
+    // undefined state — log it and shut down cleanly rather than limp on.
+    process.on('uncaughtException', (err) => {
+      console.error('Uncaught exception:', err);
+      shutdown('uncaughtException');
+    });
   } catch (err) {
     console.error('Failed to start server:', err);
     process.exit(1);

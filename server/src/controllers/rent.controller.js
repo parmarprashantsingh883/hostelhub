@@ -254,6 +254,10 @@ export const verifyPayment = asyncHandler(async (req, res) => {
 
   const payment = await Payment.findOne({ rentId: rent._id, gatewayOrderId: orderId });
   if (!payment) throw new ApiError(404, 'Payment order not found');
+  // Idempotency / replay guard — never process the same payment twice.
+  if (payment.status === 'success' || rent.status === 'paid') {
+    throw new ApiError(409, 'This payment has already been processed');
+  }
 
   const valid = verifySignature({ orderId, paymentId, signature });
   if (!valid) {

@@ -164,7 +164,7 @@ export default function TenantComplaints() {
                     {c.assignedStaffId && (
                       <p className="text-xs text-slate-500 mt-3 flex items-center gap-1.5">
                         <User className="w-3.5 h-3.5 text-slate-400" />
-                        Assigned to <b className="text-slate-700">{c.assignedStaffId.name}</b>
+                        Assigned to <b className="text-slate-700">{c.assignedStaffId?.name || 'staff'}</b>
                       </p>
                     )}
 
