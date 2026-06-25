@@ -244,22 +244,22 @@ export default function Rents() {
           />
         ) : (
           <>
-            <div className="mb-3 flex flex-wrap items-center gap-3 rounded-xl bg-slate-50/70 px-3 py-2">
-              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
-                <input type="checkbox" checked={allUnpaidSelected} onChange={toggleAll} disabled={!unpaid.length} className="h-4 w-4 rounded border-slate-300 accent-brand-600" />
+            <div className="mb-3 flex flex-wrap items-center gap-3 rounded-xl bg-slate-50/70 dark:bg-white/5 px-3 py-2">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                <input type="checkbox" checked={allUnpaidSelected} onChange={toggleAll} disabled={!unpaid.length} className="h-4 w-4 rounded border-slate-300 dark:border-white/10 accent-brand-600" />
                 Select unpaid ({unpaid.length})
               </label>
               {selected.size > 0 && (
                 <>
-                  <span className="text-xs font-semibold text-slate-700">{selected.size} selected</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{selected.size} selected</span>
                   <Button size="sm" onClick={() => remind([...selected])} loading={busy}><BellRing className="w-3.5 h-3.5" /> Remind selected</Button>
                   <button onClick={() => setSelected(new Set())} className="text-xs text-slate-400 hover:text-slate-600">Clear</button>
                 </>
               )}
               <span className="ml-auto flex items-center gap-1.5">
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-600">Email ✓</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">WhatsApp soon</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">SMS soon</span>
+                <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-300">Email ✓</span>
+                <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">WhatsApp soon</span>
+                <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">SMS soon</span>
               </span>
             </div>
             <Table headers={['', 'Tenant', 'Room', 'Rent', 'Electricity', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
@@ -267,25 +267,25 @@ export default function Rents() {
               <TableRow key={r._id} className="hover:bg-brand-50/40 transition-colors">
                 <Td>
                   {r.status !== 'paid' && (
-                    <input type="checkbox" checked={selected.has(r._id)} onChange={() => toggleSel(r._id)} className="h-4 w-4 rounded border-slate-300 accent-brand-600" aria-label="Select rent row" />
+                    <input type="checkbox" checked={selected.has(r._id)} onChange={() => toggleSel(r._id)} className="h-4 w-4 rounded border-slate-300 dark:border-white/10 accent-brand-600" aria-label="Select rent row" />
                   )}
                 </Td>
                 <Td>
                   <div className="flex items-center gap-3">
                     <Avatar name={r.tenantId?.name} size="sm" />
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 truncate">{r.tenantId?.name || '—'}</p>
+                      <p className="font-semibold text-slate-900 dark:text-white truncate">{r.tenantId?.name || '—'}</p>
                       <p className="text-xs text-slate-400 truncate">{r.tenantId?.phone || 'No phone'}</p>
                     </div>
                   </div>
                 </Td>
                 <Td>
                   {r.roomId?.roomNumber
-                    ? <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">Room {r.roomId.roomNumber}</span>
+                    ? <span className="inline-flex items-center rounded-md bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-200">Room {r.roomId.roomNumber}</span>
                     : <span className="text-slate-400">—</span>}
                 </Td>
                 <Td className="tabular-nums">{inr(r.rentAmount)}</Td>
-                <Td className={r.electricityCharge ? 'tabular-nums text-slate-700' : 'text-slate-400'}>
+                <Td className={r.electricityCharge ? 'tabular-nums text-slate-700 dark:text-slate-200' : 'text-slate-400'}>
                   {r.electricityCharge ? (
                     <span title={r.electricityMeta?.units ? `${r.electricityMeta.units} units ÷ ${r.electricityMeta.occupants}` : 'Electricity share'}>
                       {inr(r.electricityCharge)}
@@ -294,7 +294,7 @@ export default function Rents() {
                 </Td>
                 <Td className={r.lateFee ? 'text-rose-500 font-medium tabular-nums' : 'text-slate-400'}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
                 <Td className={r.discount ? 'text-emerald-500 font-medium tabular-nums' : 'text-slate-400'}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
-                <Td className="font-bold text-slate-900 tabular-nums">{inr(r.totalAmount)}</Td>
+                <Td className="font-bold text-slate-900 dark:text-white tabular-nums">{inr(r.totalAmount)}</Td>
                 <Td className="text-slate-500">{fmtDate(r.dueDate)}</Td>
                 <Td><StatusBadge status={r.status} /></Td>
                 <Td>
@@ -303,14 +303,14 @@ export default function Rents() {
                       <>
                         <button
                           onClick={() => remind([r._id])}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
                           title="Send reminder"
                         >
                           <BellRing className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => { setAdjustFor(r); setAdjust({ lateFee: r.lateFee || 0, discount: r.discount || 0 }); }}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
                           title="Adjust late fee / discount"
                         >
                           <Pencil className="w-4 h-4" />
@@ -326,7 +326,7 @@ export default function Rents() {
                     ) : (
                       <button
                         onClick={() => receipt(r)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
                         title="Download receipt"
                       >
                         <FileDown className="w-4 h-4" />
@@ -345,7 +345,7 @@ export default function Rents() {
       {/* Generate modal */}
       <Modal open={genOpen} onClose={() => setGenOpen(false)} title="Generate monthly rent">
         <p className="text-sm text-slate-500 mb-4">
-          Creates a rent record for every <b className="text-slate-700">active tenant with a room</b>. Existing records for the month are skipped — safe to re-run.
+          Creates a rent record for every <b className="text-slate-700 dark:text-slate-200">active tenant with a room</b>. Existing records for the month are skipped — safe to re-run.
         </p>
         <div className="grid grid-cols-3 gap-3">
           <Field label="Month">
@@ -378,7 +378,7 @@ export default function Rents() {
           return (
             <div className="space-y-4">
               <p className="text-sm text-slate-500">
-                Splits the bill equally across the room's <b className="text-slate-700">active occupants</b> and adds each share to their {MONTHS[filter.month - 1]} {filter.year} rent. Paid invoices are left untouched.
+                Splits the bill equally across the room's <b className="text-slate-700 dark:text-slate-200">active occupants</b> and adds each share to their {MONTHS[filter.month - 1]} {filter.year} rent. Paid invoices are left untouched.
               </p>
               <Field label="Room">
                 <Select value={elec.roomId} onChange={(e) => setElec((s) => ({ ...s, roomId: e.target.value }))}>
@@ -391,18 +391,18 @@ export default function Rents() {
                 </Select>
               </Field>
 
-              <div className="inline-flex rounded-xl bg-slate-100 p-1 text-sm">
+              <div className="inline-flex rounded-xl bg-slate-100 dark:bg-white/10 p-1 text-sm">
                 <button
                   type="button"
                   onClick={() => setElec((s) => ({ ...s, mode: 'units' }))}
-                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'units' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'units' ? 'bg-white dark:bg-night-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500'}`}
                 >
                   Units × rate
                 </button>
                 <button
                   type="button"
                   onClick={() => setElec((s) => ({ ...s, mode: 'flat' }))}
-                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'flat' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'flat' ? 'bg-white dark:bg-night-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500'}`}
                 >
                   Flat amount
                 </button>
@@ -423,18 +423,18 @@ export default function Rents() {
                 </Field>
               )}
 
-              <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 text-sm">
+              <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-4 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Bill total</span>
-                  <span className="font-semibold tabular-nums text-slate-900">{inr(total)}</span>
+                  <span className="font-semibold tabular-nums text-slate-900 dark:text-white">{inr(total)}</span>
                 </div>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-slate-500">Split across</span>
-                  <span className="font-semibold tabular-nums text-slate-900">{occ} occupant{occ === 1 ? '' : 's'}</span>
+                  <span className="font-semibold tabular-nums text-slate-900 dark:text-white">{occ} occupant{occ === 1 ? '' : 's'}</span>
                 </div>
-                <div className="mt-2 flex items-center justify-between border-t border-slate-200/70 pt-2">
-                  <span className="font-medium text-brand-700">Per head</span>
-                  <span className="text-lg font-bold tabular-nums text-brand-700">{inr(perHead)}</span>
+                <div className="mt-2 flex items-center justify-between border-t border-slate-200/70 dark:border-white/10 pt-2">
+                  <span className="font-medium text-brand-700 dark:text-brand-300">Per head</span>
+                  <span className="text-lg font-bold tabular-nums text-brand-700 dark:text-brand-300">{inr(perHead)}</span>
                 </div>
               </div>
 
@@ -451,13 +451,13 @@ export default function Rents() {
 
       {/* Mark paid modal */}
       <Modal open={!!markFor} onClose={() => setMarkFor(null)} title={`Mark paid — ${markFor?.tenantId?.name}`}>
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 mb-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-4 mb-4">
           <Avatar name={markFor?.tenantId?.name} size="md" />
           <div className="min-w-0">
-            <p className="font-semibold text-slate-900 truncate">{markFor?.tenantId?.name}</p>
+            <p className="font-semibold text-slate-900 dark:text-white truncate">{markFor?.tenantId?.name}</p>
             <p className="text-xs text-slate-500">{MONTHS[(markFor?.month || 1) - 1]} {markFor?.year}</p>
           </div>
-          <p className="ml-auto text-lg font-bold text-slate-900 tabular-nums">{inr(markFor?.totalAmount)}</p>
+          <p className="ml-auto text-lg font-bold text-slate-900 dark:text-white tabular-nums">{inr(markFor?.totalAmount)}</p>
         </div>
         <p className="text-sm text-slate-500 mb-4">
           A PDF receipt is generated automatically once the payment is recorded.
@@ -486,9 +486,9 @@ export default function Rents() {
             <Input type="number" min={0} value={adjust.discount} onChange={(e) => setAdjust((a) => ({ ...a, discount: Number(e.target.value) }))} />
           </Field>
         </div>
-        <div className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 mt-4">
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-4 mt-4">
           <span className="text-sm font-medium text-slate-500">New total</span>
-          <span className="text-lg font-bold text-slate-900 tabular-nums">{inr((adjustFor?.rentAmount || 0) + (adjustFor?.electricityCharge || 0) + (adjust.lateFee || 0) - (adjust.discount || 0))}</span>
+          <span className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">{inr((adjustFor?.rentAmount || 0) + (adjustFor?.electricityCharge || 0) + (adjust.lateFee || 0) - (adjust.discount || 0))}</span>
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <Button variant="secondary" onClick={() => setAdjustFor(null)}>Cancel</Button>

@@ -15,14 +15,14 @@ const EMPTY = { title: '', content: '', category: 'general', priority: 'normal',
 
 /* Per-category colour + icon so the feed scans at a glance. */
 const CATEGORY = {
-  general:     { icon: Info,             tile: 'bg-blue-50 text-blue-600',       badge: 'blue' },
-  rent:        { icon: Banknote,         tile: 'bg-emerald-50 text-emerald-600', badge: 'green' },
-  maintenance: { icon: Wrench,           tile: 'bg-amber-50 text-amber-600',     badge: 'yellow' },
-  food:        { icon: UtensilsCrossed,  tile: 'bg-brand-50 text-brand-600',     badge: 'indigo' },
-  rules:       { icon: ShieldCheck,      tile: 'bg-slate-100 text-slate-600',    badge: 'gray' },
-  emergency:   { icon: AlertTriangle,    tile: 'bg-red-50 text-red-600',         badge: 'red' },
+  general:     { icon: Info,             tile: 'bg-blue-50 text-blue-600 dark:bg-sky-500/15 dark:text-sky-300',         badge: 'blue' },
+  rent:        { icon: Banknote,         tile: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300', badge: 'green' },
+  maintenance: { icon: Wrench,           tile: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',  badge: 'yellow' },
+  food:        { icon: UtensilsCrossed,  tile: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300',  badge: 'indigo' },
+  rules:       { icon: ShieldCheck,      tile: 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300',    badge: 'gray' },
+  emergency:   { icon: AlertTriangle,    tile: 'bg-red-50 text-red-600 dark:bg-rose-500/15 dark:text-rose-300',       badge: 'red' },
 };
-const catStyle = (c) => CATEGORY[c] || { icon: Megaphone, tile: 'bg-brand-50 text-brand-600', badge: 'indigo' };
+const catStyle = (c) => CATEGORY[c] || { icon: Megaphone, tile: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300', badge: 'indigo' };
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 export default function AdminNotices() {
@@ -132,7 +132,7 @@ export default function AdminNotices() {
             const { icon: Icon, tile, badge } = catStyle(n.category);
             return (
               <StaggerItem key={n._id}>
-                <Card className={`group hover:shadow-soft transition ${n.isPinned ? 'ring-2 ring-brand-200 bg-brand-50/30' : ''}`}>
+                <Card className={`group hover:shadow-soft transition ${n.isPinned ? 'ring-2 ring-brand-200 bg-brand-50/30 dark:bg-brand-500/15' : ''}`}>
                   <div className="flex gap-4">
                     <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${tile}`}>
                       <Icon className="w-5 h-5" />
@@ -144,22 +144,22 @@ export default function AdminNotices() {
                             <Pin className="w-3 h-3" /> Pinned
                           </span>
                         )}
-                        <h3 className="font-semibold text-slate-900">{n.title}</h3>
+                        <h3 className="font-semibold text-slate-900 dark:text-white">{n.title}</h3>
                         <Badge tone={badge}>{cap(n.category)}</Badge>
                         {n.priority !== 'normal' && <StatusBadge status={n.priority} />}
                         <Badge tone="gray">{cap(n.targetAudience)}</Badge>
                       </div>
-                      <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap leading-relaxed">{n.content}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 whitespace-pre-wrap leading-relaxed">{n.content}</p>
                       <p className="text-xs text-slate-400 mt-3">{n.createdBy?.name} · {fmtDateTime(n.createdAt)}</p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <button onClick={() => togglePin(n)} className={`p-1.5 rounded-lg transition-colors ${n.isPinned ? 'text-brand-600 bg-brand-50' : 'text-slate-400 hover:text-brand-600 hover:bg-brand-50'}`} title={n.isPinned ? 'Unpin' : 'Pin'}>
+                      <button onClick={() => togglePin(n)} className={`p-1.5 rounded-lg transition-colors ${n.isPinned ? 'text-brand-600 dark:text-brand-300 bg-brand-50 dark:bg-brand-500/15' : 'text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5'}`} title={n.isPinned ? 'Unpin' : 'Pin'}>
                         <Pin className="w-4 h-4" />
                       </button>
-                      <button onClick={() => setForm({ ...n })} className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors" title="Edit">
+                      <button onClick={() => setForm({ ...n })} className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors" title="Edit">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button onClick={() => setConfirmDelete(n)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete">
+                      <button onClick={() => setConfirmDelete(n)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-rose-500/15 transition-colors" title="Delete">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -201,7 +201,7 @@ export default function AdminNotices() {
                 </Select>
               </Field>
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.isPinned}

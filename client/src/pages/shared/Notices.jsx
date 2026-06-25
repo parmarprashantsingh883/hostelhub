@@ -11,14 +11,14 @@ import {
 
 /* Per-category colour + icon so the feed scans at a glance. */
 const CATEGORY = {
-  general:     { icon: Info,          tile: 'bg-blue-50 text-blue-600',       badge: 'blue' },
-  maintenance: { icon: Wrench,        tile: 'bg-amber-50 text-amber-600',     badge: 'yellow' },
-  event:       { icon: CalendarDays,  tile: 'bg-brand-50 text-brand-600',     badge: 'indigo' },
-  payment:     { icon: Banknote,      tile: 'bg-emerald-50 text-emerald-600', badge: 'green' },
-  emergency:   { icon: AlertTriangle, tile: 'bg-red-50 text-red-600',         badge: 'red' },
-  rules:       { icon: ShieldCheck,   tile: 'bg-slate-100 text-slate-600',    badge: 'gray' },
+  general:     { icon: Info,          tile: 'bg-blue-50 dark:bg-sky-500/15 text-blue-600 dark:text-sky-300',          badge: 'blue' },
+  maintenance: { icon: Wrench,        tile: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300',  badge: 'yellow' },
+  event:       { icon: CalendarDays,  tile: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300',  badge: 'indigo' },
+  payment:     { icon: Banknote,      tile: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300', badge: 'green' },
+  emergency:   { icon: AlertTriangle, tile: 'bg-red-50 dark:bg-rose-500/15 text-red-600 dark:text-rose-300',         badge: 'red' },
+  rules:       { icon: ShieldCheck,   tile: 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300',     badge: 'gray' },
 };
-const catStyle = (c) => CATEGORY[c] || { icon: Megaphone, tile: 'bg-brand-50 text-brand-600', badge: 'indigo' };
+const catStyle = (c) => CATEGORY[c] || { icon: Megaphone, tile: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300', badge: 'indigo' };
 const initials = (name) => (name || 'A').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
 export default function Notices() {
@@ -71,13 +71,13 @@ export default function Notices() {
                             <Pin className="w-3 h-3" /> Pinned
                           </span>
                         )}
-                        <h3 className="font-semibold text-slate-900">{n.title}</h3>
+                        <h3 className="font-semibold text-slate-900 dark:text-white">{n.title}</h3>
                         <Badge tone={badge}>{n.category}</Badge>
                         {n.priority && n.priority !== 'normal' && <StatusBadge status={n.priority} />}
                       </div>
-                      <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap leading-relaxed">{n.content}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 whitespace-pre-wrap leading-relaxed">{n.content}</p>
                       <p className="text-xs text-slate-400 mt-3 flex items-center gap-1.5">
-                        <span className="inline-flex w-5 h-5 rounded-full bg-slate-100 text-slate-500 items-center justify-center text-[9px] font-bold">
+                        <span className="inline-flex w-5 h-5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 items-center justify-center text-[9px] font-bold">
                           {initials(n.createdBy?.name)}
                         </span>
                         {n.createdBy?.name || 'Admin'} · {fmtDateTime(n.createdAt)}

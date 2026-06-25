@@ -131,12 +131,12 @@ export default function Staff() {
         ) : (
           <Table headers={['Member', 'Role', 'Phone', 'Salary', 'Joined', 'Status', 'Actions']}>
             {pageItems.map((s) => (
-              <TableRow key={s._id} className="hover:bg-brand-50/40 transition-colors">
+              <TableRow key={s._id} className="hover:bg-brand-50/40 dark:hover:bg-white/5 transition-colors">
                 <Td>
                   <div className="flex items-center gap-3">
                     <Avatar name={s.name} size="sm" />
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 truncate">{s.name}</p>
+                      <p className="font-semibold text-slate-900 dark:text-white truncate">{s.name}</p>
                       <p className="text-xs text-slate-400 truncate">{s.email}</p>
                     </div>
                   </div>
@@ -147,7 +147,7 @@ export default function Staff() {
                     : <span className="text-slate-400">—</span>}
                 </Td>
                 <Td className="tabular-nums">{s.phone || <span className="text-slate-400">—</span>}</Td>
-                <Td className="font-semibold text-slate-700 tabular-nums">
+                <Td className="font-semibold text-slate-700 dark:text-slate-200 tabular-nums">
                   {s.staffProfile?.salary ? inr(s.staffProfile.salary) : <span className="font-normal text-slate-400">—</span>}
                 </Td>
                 <Td className="text-slate-500">{fmtDate(s.staffProfile?.joinedAt)}</Td>
@@ -162,13 +162,13 @@ export default function Staff() {
                           salary: s.staffProfile?.salary ?? '',
                         })
                       }
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
                       title="Edit"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     {s.staffProfile?.status === 'active' && (
-                      <button onClick={() => setConfirmOut(s)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Deactivate">
+                      <button onClick={() => setConfirmOut(s)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-rose-500/15 transition-colors" title="Deactivate">
                         <UserX className="w-4 h-4" />
                       </button>
                     )}

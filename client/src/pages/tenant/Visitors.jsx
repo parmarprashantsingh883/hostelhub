@@ -92,14 +92,14 @@ export default function TenantVisitors() {
                   <div className="flex items-center gap-3">
                     <Avatar name={v.visitorName} />
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 truncate">{v.visitorName}</p>
+                      <p className="font-semibold text-slate-900 dark:text-white truncate">{v.visitorName}</p>
                       <p className="flex items-center gap-1 text-xs text-slate-400 truncate">
                         <Phone className="w-3 h-3 shrink-0" />{v.visitorPhone}
                       </p>
                     </div>
                   </div>
                 </Td>
-                <Td className="max-w-xs"><span className="line-clamp-2 text-slate-600">{v.purpose}</span></Td>
+                <Td className="max-w-xs"><span className="line-clamp-2 text-slate-600 dark:text-slate-300">{v.purpose}</span></Td>
                 <Td className="whitespace-nowrap text-slate-500 tabular-nums">{fmtDateTime(v.expectedDateTime)}</Td>
                 <Td><StatusBadge status={v.status} /></Td>
               </TableRow>

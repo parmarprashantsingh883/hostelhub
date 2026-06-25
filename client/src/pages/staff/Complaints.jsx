@@ -12,15 +12,15 @@ import {
 
 /* Per-category icon + tile colour so each task scans at a glance. */
 const CATEGORY = {
-  plumbing:     { icon: Droplets,   tile: 'bg-blue-50 text-blue-600' },
-  electrical:   { icon: Zap,        tile: 'bg-amber-50 text-amber-600' },
-  cleaning:     { icon: Sparkles,   tile: 'bg-emerald-50 text-emerald-600' },
-  security:     { icon: ShieldAlert,tile: 'bg-red-50 text-red-600' },
+  plumbing:     { icon: Droplets,   tile: 'bg-blue-50 dark:bg-sky-500/15 text-blue-600 dark:text-sky-300' },
+  electrical:   { icon: Zap,        tile: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300' },
+  cleaning:     { icon: Sparkles,   tile: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' },
+  security:     { icon: ShieldAlert,tile: 'bg-red-50 dark:bg-rose-500/15 text-red-600 dark:text-rose-300' },
   internet:     { icon: Wifi,       tile: 'bg-indigo-50 text-indigo-500' },
   pest:         { icon: Bug,        tile: 'bg-lime-50 text-lime-600' },
   furniture:    { icon: DoorOpen,   tile: 'bg-orange-50 text-orange-500' },
 };
-const catStyle = (c) => CATEGORY[c] || { icon: Wrench, tile: 'bg-slate-100 text-slate-600' };
+const catStyle = (c) => CATEGORY[c] || { icon: Wrench, tile: 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300' };
 
 /* Priority drives the left accent strip. */
 const PRIORITY = {
@@ -98,7 +98,7 @@ export default function StaffComplaints() {
               const canUpdate = ['assigned', 'in_progress'].includes(c.status);
               return (
                 <StaggerItem key={c._id} className="h-full">
-                  <div className="group relative h-full bg-white rounded-2xl border border-slate-200/70 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex overflow-hidden">
+                  <div className="group relative h-full bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex overflow-hidden">
                     <span className={`w-1.5 shrink-0 ${priorityStrip(c.priority)}`} aria-hidden />
                     <div className="flex-1 min-w-0 p-5 flex flex-col">
                       <div className="flex items-start gap-3">
@@ -107,11 +107,11 @@ export default function StaffComplaints() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-semibold text-slate-900 leading-snug truncate">{c.title}</h3>
+                            <h3 className="font-semibold text-slate-900 dark:text-white leading-snug truncate">{c.title}</h3>
                             <StatusBadge status={c.status} />
                           </div>
                           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                            <span className="inline-flex items-center rounded-full bg-slate-100 text-slate-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                               {titleCase(c.category)}
                             </span>
                             <StatusBadge status={c.priority} />
@@ -149,7 +149,7 @@ export default function StaffComplaints() {
       <Modal open={!!detail} onClose={() => setDetail(null)} title={detail?.title}>
         {detail && (
           <div className="space-y-4">
-            <p className="text-sm text-slate-600 leading-relaxed">{detail.description}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{detail.description}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
               <span className="inline-flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5" /> {detail.tenantId?.name} {detail.tenantId?.phone ? `(${detail.tenantId.phone})` : ''}

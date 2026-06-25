@@ -22,7 +22,7 @@ function BedMap({ rooms, onAssign }) {
     <div className="space-y-7">
       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-brand-600" /> Occupied</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md border border-dashed border-slate-300 bg-white" /> Vacant</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md border border-dashed border-slate-300 bg-white dark:bg-night-900" /> Vacant</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-amber-100 ring-1 ring-amber-200" /> Maintenance</span>
       </div>
       {floors.map((floor) => {
@@ -32,32 +32,32 @@ function BedMap({ rooms, onAssign }) {
         const pct = cap ? Math.round((occ / cap) * 100) : 0;
         return (
           <div key={floor}>
-            <div className="mb-3 flex items-center justify-between border-b border-slate-200/70 pb-2">
-              <h3 className="font-display text-lg font-semibold text-slate-900">Floor {floor}</h3>
+            <div className="mb-3 flex items-center justify-between border-b border-slate-200/70 dark:border-white/10 pb-2">
+              <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Floor {floor}</h3>
               <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">{occ}/{cap} beds · {pct}% full</span>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {fr.map((r) => {
                 const maint = r.status === 'maintenance';
                 return (
-                  <div key={r._id} className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-card">
+                  <div key={r._id} className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-4 shadow-card">
                     <div className="flex items-start justify-between">
                       <div className="min-w-0">
-                        <p className="font-semibold text-slate-900">Room {r.roomNumber}</p>
+                        <p className="font-semibold text-slate-900 dark:text-white">Room {r.roomNumber}</p>
                         <p className="text-xs capitalize text-slate-400">{r.roomType} · {inr(r.rentAmount)}</p>
                       </div>
                       {maint
-                        ? <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 ring-1 ring-amber-200">Upkeep</span>
+                        ? <span className="shrink-0 rounded-full bg-amber-50 dark:bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300 ring-1 ring-amber-200">Upkeep</span>
                         : <span className="shrink-0 font-mono text-[11px] text-slate-400">{r.currentOccupancy}/{r.capacity}</span>}
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
                       {Array.from({ length: r.capacity }).map((_, i) => {
                         const t = r.assignedTenants?.[i];
-                        if (maint) return <span key={i} className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-500 ring-1 ring-amber-200"><Wrench className="h-4 w-4" /></span>;
+                        if (maint) return <span key={i} className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-500 ring-1 ring-amber-200"><Wrench className="h-4 w-4" /></span>;
                         if (t) return <span key={i} title={t.name} className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-[11px] font-bold text-white" aria-label={`Bed occupied by ${t.name}`}>{initials(t.name)}</span>;
                         return (
                           <button key={i} onClick={() => onAssign(r)} title="Assign a tenant to this bed" aria-label="Assign a tenant to this bed"
-                            className="flex h-11 w-11 items-center justify-center rounded-xl border border-dashed border-slate-300 text-slate-300 transition-colors hover:border-brand-400 hover:bg-brand-50 hover:text-brand-500">
+                            className="flex h-11 w-11 items-center justify-center rounded-xl border border-dashed border-slate-300 text-slate-300 transition-colors hover:border-brand-400 hover:bg-brand-50 dark:hover:bg-white/5 hover:text-brand-500">
                             <Plus className="h-4 w-4" />
                           </button>
                         );
@@ -200,9 +200,9 @@ export default function Rooms() {
         subtitle={`${rooms.length} room${rooms.length === 1 ? '' : 's'} across your property`}
         action={
           <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 text-sm">
-              <button onClick={() => setView('beds')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'beds' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}>Beds</button>
-              <button onClick={() => setView('table')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'table' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}>Table</button>
+            <div className="inline-flex rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-night-900 p-1 text-sm">
+              <button onClick={() => setView('beds')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'beds' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Beds</button>
+              <button onClick={() => setView('table')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'table' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Table</button>
             </div>
             <Button onClick={() => setForm({ ...EMPTY_FORM })}>
               <Plus className="w-4 h-4" /> Add room
@@ -272,22 +272,22 @@ export default function Rooms() {
                 <TableRow key={r._id}>
                   <Td>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 flex items-center justify-center shrink-0">
                         <DoorOpen className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-slate-900 truncate">Room {r.roomNumber}</p>
+                        <p className="font-semibold text-slate-900 dark:text-white truncate">Room {r.roomNumber}</p>
                         <p className="text-xs text-slate-400">Floor {r.floor}</p>
                       </div>
                     </div>
                   </Td>
                   <Td><Badge tone={TYPE_TONE[r.roomType] || 'gray'}>{r.roomType}</Badge></Td>
-                  <Td className="font-semibold text-slate-900 tabular-nums">{inr(r.rentAmount)}</Td>
+                  <Td className="font-semibold text-slate-900 dark:text-white tabular-nums">{inr(r.rentAmount)}</Td>
                   <Td>
                     <div className="w-28">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-slate-700 tabular-nums">{r.currentOccupancy}/{r.capacity}</span>
-                        {full && <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">Full</span>}
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 tabular-nums">{r.currentOccupancy}/{r.capacity}</span>
+                        {full && <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">Full</span>}
                       </div>
                       <ProgressBar value={r.currentOccupancy} max={r.capacity} tone={occTone} />
                     </div>
@@ -299,7 +299,7 @@ export default function Rooms() {
                         {r.assignedTenants.map((t) => (
                           <div key={t._id} className="flex items-center gap-2 text-xs group/tenant">
                             <Avatar name={t.name} size="xs" />
-                            <span className="text-slate-700 truncate max-w-[8rem]">{t.name}</span>
+                            <span className="text-slate-700 dark:text-slate-200 truncate max-w-[8rem]">{t.name}</span>
                             <button
                               onClick={() => removeTenant(r, t._id)}
                               className="text-slate-300 hover:text-red-500 opacity-0 group-hover/tenant:opacity-100 transition"
@@ -319,7 +319,7 @@ export default function Rooms() {
                       <button
                         onClick={() => openAssign(r)}
                         disabled={r.status === 'maintenance' || r.currentOccupancy >= r.capacity}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                         title="Assign tenant"
                       >
                         <UserPlus className="w-4 h-4" />
@@ -328,7 +328,7 @@ export default function Rooms() {
                         onClick={() =>
                           setForm({ ...r, facilities: (r.facilities || []).join(', ') })
                         }
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
                         title="Edit"
                       >
                         <Pencil className="w-4 h-4" />

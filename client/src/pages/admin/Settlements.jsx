@@ -22,26 +22,26 @@ function SettlementBreakdown({ s }) {
   if (!s) return null;
   const refundPositive = s.refund >= 0;
   return (
-    <div className="rounded-2xl border border-slate-200/70 bg-white">
-      <ul className="divide-y divide-slate-100 text-sm">
+    <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900">
+      <ul className="divide-y divide-slate-100 dark:divide-white/10 text-sm">
         <li className="flex items-center justify-between px-5 py-3">
-          <span className="text-slate-600">Security deposit held</span>
-          <span className="font-semibold tabular-nums text-slate-900">{inr(s.depositHeld)}</span>
+          <span className="text-slate-600 dark:text-slate-300">Security deposit held</span>
+          <span className="font-semibold tabular-nums text-slate-900 dark:text-white">{inr(s.depositHeld)}</span>
         </li>
         <li className="flex items-center justify-between px-5 py-3">
-          <span className="text-slate-600">Less: pending rent dues</span>
+          <span className="text-slate-600 dark:text-slate-300">Less: pending rent dues</span>
           <span className="font-semibold tabular-nums text-rose-500">− {inr(s.pendingDues)}</span>
         </li>
         <li className="flex items-center justify-between px-5 py-3">
-          <span className="text-slate-600">Less: deductions</span>
+          <span className="text-slate-600 dark:text-slate-300">Less: deductions</span>
           <span className="font-semibold tabular-nums text-rose-500">− {inr(s.totalDeductions)}</span>
         </li>
       </ul>
-      <div className="flex items-center justify-between rounded-b-2xl bg-brand-50 px-5 py-4">
-        <span className="text-sm font-semibold text-brand-700">
+      <div className="flex items-center justify-between rounded-b-2xl bg-brand-50 dark:bg-brand-500/15 px-5 py-4">
+        <span className="text-sm font-semibold text-brand-700 dark:text-brand-300">
           {refundPositive ? 'Net refund to tenant' : 'Recoverable from tenant'}
         </span>
-        <span className="text-xl font-bold tabular-nums text-brand-700">{inr(Math.abs(s.refund))}</span>
+        <span className="text-xl font-bold tabular-nums text-brand-700 dark:text-brand-300">{inr(Math.abs(s.refund))}</span>
       </div>
     </div>
   );
@@ -193,12 +193,12 @@ export default function Settlements() {
                     key={t._id}
                     onClick={() => setSelected(t._id)}
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors ${
-                      selected === t._id ? 'bg-brand-50 ring-1 ring-brand-200' : 'hover:bg-slate-50'
+                      selected === t._id ? 'bg-brand-50 dark:bg-brand-500/15 ring-1 ring-brand-200' : 'hover:bg-slate-50 dark:hover:bg-white/5'
                     }`}
                   >
                     <Avatar name={t.name} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900">{t.name}</p>
+                      <p className="truncate text-sm font-medium text-slate-900 dark:text-white">{t.name}</p>
                       <p className="truncate text-xs text-slate-400">{t.email}</p>
                     </div>
                     <StatusBadge status={t.tenantProfile?.status || 'active'} />
@@ -220,12 +220,12 @@ export default function Settlements() {
                     key={q._id}
                     onClick={() => setSelected(q._id)}
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors ${
-                      selected === q._id ? 'bg-brand-50 ring-1 ring-brand-200' : 'hover:bg-slate-50'
+                      selected === q._id ? 'bg-brand-50 dark:bg-brand-500/15 ring-1 ring-brand-200' : 'hover:bg-slate-50 dark:hover:bg-white/5'
                     }`}
                   >
                     <Avatar name={q.name} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900">{q.name}</p>
+                      <p className="truncate text-sm font-medium text-slate-900 dark:text-white">{q.name}</p>
                       <p className="truncate text-xs text-slate-400">
                         {q.room ? `Room ${q.room.roomNumber}` : 'No room'} · moved {fmtDate(q.moveOutDate)}
                       </p>
@@ -293,8 +293,8 @@ export default function Settlements() {
                     {detail.ledger.entries.map((e) => (
                       <TableRow key={e._id}>
                         <Td><StatusBadge status={e.type === 'deposit' ? 'active' : e.type === 'refund' ? 'resolved' : 'overdue'} /></Td>
-                        <Td className="text-slate-700">{e.reason || <span className="capitalize">{e.type}</span>}</Td>
-                        <Td className={`font-semibold tabular-nums ${e.type === 'deposit' ? 'text-slate-900' : 'text-rose-500'}`}>
+                        <Td className="text-slate-700 dark:text-slate-200">{e.reason || <span className="capitalize">{e.type}</span>}</Td>
+                        <Td className={`font-semibold tabular-nums ${e.type === 'deposit' ? 'text-slate-900 dark:text-white' : 'text-rose-500'}`}>
                           {e.type === 'deposit' ? '' : '− '}{inr(e.amount)}
                         </Td>
                         <Td className="text-slate-500">{fmtDate(e.at)}</Td>

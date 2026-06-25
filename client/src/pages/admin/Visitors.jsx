@@ -59,7 +59,7 @@ export default function AdminVisitors() {
 
       <Card>
         <div className="flex items-center gap-2.5 sm:max-w-xs">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
             <Filter className="h-4 w-4" />
           </span>
           <Select value={status} onChange={(e) => setStatus(e.target.value)}>
@@ -81,7 +81,7 @@ export default function AdminVisitors() {
                 <Td>
                   <div className="flex items-center gap-3">
                     <Avatar name={v.visitorName} size="sm" />
-                    <span className="font-semibold text-slate-900">{v.visitorName}</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{v.visitorName}</span>
                   </div>
                 </Td>
                 <Td className="tabular-nums">{v.visitorPhone}</Td>

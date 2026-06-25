@@ -15,17 +15,17 @@ const CATEGORIES = ['electricity', 'water', 'cleaning', 'wifi', 'food', 'furnitu
 
 /* Per-category colour + icon so the grid scans at a glance. */
 const CATEGORY = {
-  electricity: { icon: Zap,             tile: 'bg-amber-50 text-amber-600' },
-  water:       { icon: Droplet,         tile: 'bg-blue-50 text-blue-600' },
-  cleaning:    { icon: Sparkles,        tile: 'bg-emerald-50 text-emerald-600' },
+  electricity: { icon: Zap,             tile: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300' },
+  water:       { icon: Droplet,         tile: 'bg-blue-50 dark:bg-sky-500/15 text-blue-600 dark:text-sky-300' },
+  cleaning:    { icon: Sparkles,        tile: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' },
   wifi:        { icon: Wifi,            tile: 'bg-indigo-50 text-indigo-600' },
   food:        { icon: UtensilsCrossed, tile: 'bg-orange-50 text-orange-600' },
-  furniture:   { icon: Sofa,            tile: 'bg-rose-50 text-rose-600' },
-  security:    { icon: ShieldCheck,     tile: 'bg-slate-100 text-slate-600' },
-  maintenance: { icon: Wrench,          tile: 'bg-brand-50 text-brand-600' },
-  other:       { icon: MoreHorizontal,  tile: 'bg-slate-100 text-slate-500' },
+  furniture:   { icon: Sofa,            tile: 'bg-rose-50 dark:bg-rose-500/15 text-rose-600 dark:text-rose-300' },
+  security:    { icon: ShieldCheck,     tile: 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300' },
+  maintenance: { icon: Wrench,          tile: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300' },
+  other:       { icon: MoreHorizontal,  tile: 'bg-slate-100 dark:bg-white/10 text-slate-500' },
 };
-const catStyle = (c) => CATEGORY[c] || { icon: Wrench, tile: 'bg-brand-50 text-brand-600' };
+const catStyle = (c) => CATEGORY[c] || { icon: Wrench, tile: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300' };
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 export default function TenantComplaints() {
@@ -138,14 +138,14 @@ export default function TenantComplaints() {
               const { icon: Icon, tile } = catStyle(c.category);
               return (
                 <StaggerItem key={c._id} className="h-full">
-                  <div className="group h-full bg-white rounded-2xl border border-slate-200/70 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 p-5 flex flex-col">
+                  <div className="group h-full bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 p-5 flex flex-col">
                     <div className="flex items-start gap-3">
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105 ${tile}`}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-semibold text-slate-900 leading-snug">{c.title}</h3>
+                          <h3 className="font-semibold text-slate-900 dark:text-white leading-snug">{c.title}</h3>
                           <StatusBadge status={c.status} />
                         </div>
                         <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
@@ -154,7 +154,7 @@ export default function TenantComplaints() {
                       </div>
                     </div>
 
-                    <p className="text-sm text-slate-600 line-clamp-2 mt-3 leading-relaxed">{c.description}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 mt-3 leading-relaxed">{c.description}</p>
 
                     <div className="flex flex-wrap items-center gap-2 mt-3">
                       <Badge tone="gray">{cap(c.category)}</Badge>
@@ -164,7 +164,7 @@ export default function TenantComplaints() {
                     {c.assignedStaffId && (
                       <p className="text-xs text-slate-500 mt-3 flex items-center gap-1.5">
                         <User className="w-3.5 h-3.5 text-slate-400" />
-                        Assigned to <b className="text-slate-700">{c.assignedStaffId?.name || 'staff'}</b>
+                        Assigned to <b className="text-slate-700 dark:text-slate-200">{c.assignedStaffId?.name || 'staff'}</b>
                       </p>
                     )}
 
@@ -228,7 +228,7 @@ export default function TenantComplaints() {
                 accept=".jpg,.jpeg,.png,.webp"
                 multiple
                 onChange={(e) => setForm((f) => ({ ...f, images: Array.from(e.target.files || []).slice(0, 3) }))}
-                className="block w-full text-sm text-slate-600 file:mr-3 file:h-9 file:px-4 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700 file:text-sm file:font-medium hover:file:bg-brand-100 file:cursor-pointer"
+                className="block w-full text-sm text-slate-600 dark:text-slate-300 file:mr-3 file:h-9 file:px-4 file:rounded-lg file:border-0 file:bg-brand-50 dark:file:bg-brand-500/15 file:text-brand-700 dark:file:text-brand-300 file:text-sm file:font-medium hover:file:bg-brand-100 dark:hover:file:bg-white/10 file:cursor-pointer"
               />
             </Field>
             <div className="flex justify-end gap-3 pt-2">

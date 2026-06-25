@@ -33,10 +33,10 @@ const EMPTY_FORM = { name: '', phone: '', email: '', source: 'walk_in', budget: 
 /** A single lead card inside a Kanban column. */
 function LeadCard({ lead, onMove, onConvert, onDelete }) {
   return (
-    <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-card transition-shadow hover:shadow-soft">
+    <div className="rounded-xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-3.5 shadow-card transition-shadow hover:shadow-soft">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate font-semibold text-slate-900">{lead.name}</p>
+          <p className="truncate font-semibold text-slate-900 dark:text-white">{lead.name}</p>
           <a href={`tel:${lead.phone}`} className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-brand-600">
             <Phone className="h-3 w-3" /> {lead.phone}
           </a>
@@ -51,11 +51,11 @@ function LeadCard({ lead, onMove, onConvert, onDelete }) {
       )}
 
       {lead.budget > 0 && (
-        <p className="mt-2 text-xs font-semibold text-slate-700 tabular-nums">Budget {inr(lead.budget)}</p>
+        <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-200 tabular-nums">Budget {inr(lead.budget)}</p>
       )}
       {lead.note && <p className="mt-1.5 line-clamp-2 text-xs text-slate-500">{lead.note}</p>}
 
-      <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3">
+      <div className="mt-3 flex items-center gap-2 border-t border-slate-100 dark:border-white/10 pt-3">
         <Select
           className="h-8 flex-1 text-xs"
           value={lead.stage}
@@ -233,13 +233,13 @@ export default function Leads() {
             const items = byStage(s.key);
             const Icon = s.icon;
             return (
-              <div key={s.key} className="flex w-72 shrink-0 flex-col rounded-2xl border border-slate-200/70 bg-slate-50/60">
-                <div className="flex items-center justify-between border-b border-slate-200/70 px-3.5 py-3">
+              <div key={s.key} className="flex w-72 shrink-0 flex-col rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5">
+                <div className="flex items-center justify-between border-b border-slate-200/70 dark:border-white/10 px-3.5 py-3">
                   <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-brand-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">{s.label}</h3>
+                    <Icon className="h-4 w-4 text-brand-600 dark:text-brand-300" />
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">{s.label}</h3>
                   </div>
-                  <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200 tabular-nums">
+                  <span className="rounded-full bg-white dark:bg-night-900 px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200 tabular-nums">
                     {items.length}
                   </span>
                 </div>
@@ -309,19 +309,19 @@ export default function Leads() {
         {convertFor && (
           <div>
             <div className="flex gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50">
-                <UserCheck className="h-5 w-5 text-emerald-600" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-500/15">
+                <UserCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
               </div>
-              <p className="pt-2 text-sm text-slate-600">
-                Mark <span className="font-semibold text-slate-900">{convertFor.name}</span> as converted? You can then add them
+              <p className="pt-2 text-sm text-slate-600 dark:text-slate-300">
+                Mark <span className="font-semibold text-slate-900 dark:text-white">{convertFor.name}</span> as converted? You can then add them
                 as a resident using these details:
               </p>
             </div>
-            <dl className="mt-4 space-y-1.5 rounded-xl bg-slate-50 p-4 text-sm">
-              <div className="flex justify-between"><dt className="text-slate-400">Name</dt><dd className="font-medium text-slate-800">{convertFor.name}</dd></div>
-              <div className="flex justify-between"><dt className="text-slate-400">Phone</dt><dd className="font-medium text-slate-800">{convertFor.phone}</dd></div>
-              {convertFor.email && <div className="flex justify-between"><dt className="text-slate-400">Email</dt><dd className="font-medium text-slate-800">{convertFor.email}</dd></div>}
-              {convertFor.budget > 0 && <div className="flex justify-between"><dt className="text-slate-400">Budget</dt><dd className="font-medium text-slate-800">{inr(convertFor.budget)}</dd></div>}
+            <dl className="mt-4 space-y-1.5 rounded-xl bg-slate-50 dark:bg-white/5 p-4 text-sm">
+              <div className="flex justify-between"><dt className="text-slate-400">Name</dt><dd className="font-medium text-slate-800 dark:text-slate-200">{convertFor.name}</dd></div>
+              <div className="flex justify-between"><dt className="text-slate-400">Phone</dt><dd className="font-medium text-slate-800 dark:text-slate-200">{convertFor.phone}</dd></div>
+              {convertFor.email && <div className="flex justify-between"><dt className="text-slate-400">Email</dt><dd className="font-medium text-slate-800 dark:text-slate-200">{convertFor.email}</dd></div>}
+              {convertFor.budget > 0 && <div className="flex justify-between"><dt className="text-slate-400">Budget</dt><dd className="font-medium text-slate-800 dark:text-slate-200">{inr(convertFor.budget)}</dd></div>}
             </dl>
             <div className="mt-6 flex justify-end gap-3">
               <Button variant="secondary" onClick={() => setConvertFor(null)}>Cancel</Button>

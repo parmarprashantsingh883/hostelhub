@@ -143,11 +143,11 @@ export default function TenantDashboard() {
       {/* ── Quick actions ────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {QUICK.map((q) => (
-          <Link key={q.to} to={q.to} className="group flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200">
+          <Link key={q.to} to={q.to} className="group flex items-center gap-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-4 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200">
             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${q.tone} text-white flex items-center justify-center shrink-0`}>
               <q.icon className="w-5 h-5" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 flex-1">{q.label}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 flex-1">{q.label}</span>
             <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
           </Link>
         ))}
@@ -190,11 +190,11 @@ export default function TenantDashboard() {
                 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#41506a" strokeWidth="3.2" strokeLinecap="round" strokeDasharray={`${onTimePct} ${100 - onTimePct}`} />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-slate-900">{onTimePct}%</span>
+                <span className="text-2xl font-bold text-slate-900 dark:text-white">{onTimePct}%</span>
                 <span className="text-[10px] text-slate-400 uppercase tracking-wide">paid</span>
               </div>
             </div>
-            <p className="text-sm font-medium text-slate-700 mt-3">{paidCount} of {recentRents.length || 0} months cleared</p>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-3">{paidCount} of {recentRents.length || 0} months cleared</p>
             <p className="text-xs text-slate-400 mt-0.5">{dueRent ? `${MONTHS[dueRent.month - 1]} pending` : 'Great payment record 🎉'}</p>
           </div>
         </Card>
@@ -209,9 +209,9 @@ export default function TenantDashboard() {
             <div className="space-y-3">
               {upcomingVisitors.map((v) => (
                 <div key={v._id} className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">{(v.visitorName || '?').slice(0, 1).toUpperCase()}</div>
+                  <div className="w-9 h-9 rounded-full bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 flex items-center justify-center text-xs font-bold shrink-0">{(v.visitorName || '?').slice(0, 1).toUpperCase()}</div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-slate-800 truncate">{v.visitorName}</p>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{v.visitorName}</p>
                     <p className="text-xs text-slate-400">{fmtDate(v.expectedDateTime)}</p>
                   </div>
                   <StatusBadge status={v.status} />
@@ -225,16 +225,16 @@ export default function TenantDashboard() {
           {recentComplaints.length === 0 ? (
             <div className="flex flex-col items-center py-6 text-center">
               <Sparkles className="w-7 h-7 text-emerald-400 mb-2" />
-              <p className="text-sm font-medium text-slate-600">Nothing to report</p>
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Nothing to report</p>
               <p className="text-xs text-slate-400 mt-0.5">No complaints raised.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {recentComplaints.slice(0, 4).map((c) => (
                 <div key={c._id} className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0"><Wrench className="w-4 h-4" /></div>
+                  <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center shrink-0"><Wrench className="w-4 h-4" /></div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-slate-800 truncate">{c.title}</p>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{c.title}</p>
                     <p className="text-xs text-slate-400 capitalize">{c.category}</p>
                   </div>
                   <StatusBadge status={c.status} />

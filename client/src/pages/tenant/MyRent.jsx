@@ -189,23 +189,23 @@ export default function MyRent() {
               <TableRow key={r._id}>
                 <Td>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex flex-col items-center justify-center shrink-0 leading-none ring-1 ring-brand-100">
+                    <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 flex flex-col items-center justify-center shrink-0 leading-none ring-1 ring-brand-100 dark:ring-white/10">
                       <span className="text-[11px] font-bold uppercase tracking-wide">{MONTHS[r.month - 1].slice(0, 3)}</span>
                       <span className="text-[9px] text-brand-400 mt-0.5">{r.year}</span>
                     </div>
-                    <span className="font-semibold text-slate-900">{monthLabel(r)}</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{monthLabel(r)}</span>
                   </div>
                 </Td>
                 <Td className="tabular-nums">{inr(r.rentAmount)}</Td>
-                <Td className={`tabular-nums ${r.electricityCharge ? 'text-slate-700' : 'text-slate-400'}`}>{r.electricityCharge ? inr(r.electricityCharge) : '—'}</Td>
+                <Td className={`tabular-nums ${r.electricityCharge ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400'}`}>{r.electricityCharge ? inr(r.electricityCharge) : '—'}</Td>
                 <Td className={`tabular-nums ${r.lateFee ? 'text-rose-500 font-medium' : 'text-slate-400'}`}>{r.lateFee ? inr(r.lateFee) : '—'}</Td>
                 <Td className={`tabular-nums ${r.discount ? 'text-emerald-500 font-medium' : 'text-slate-400'}`}>{r.discount ? `-${inr(r.discount)}` : '—'}</Td>
-                <Td className="font-bold text-slate-900 tabular-nums">{inr(r.totalAmount)}</Td>
+                <Td className="font-bold text-slate-900 dark:text-white tabular-nums">{inr(r.totalAmount)}</Td>
                 <Td className="text-slate-500">{fmtDate(r.dueDate)}</Td>
                 <Td><StatusBadge status={r.status} /></Td>
                 <Td>
                   {r.status === 'paid' ? (
-                    <button onClick={() => receipt(r)} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand-600 hover:bg-brand-50 transition-colors">
+                    <button onClick={() => receipt(r)} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand-600 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors">
                       <FileDown className="w-3.5 h-3.5" /> Receipt
                     </button>
                   ) : (
@@ -227,25 +227,25 @@ export default function MyRent() {
       <Modal open={!!paying} onClose={() => setPaying(null)} title="Confirm payment">
         {paying && (
           <>
-            <div className="flex items-center gap-3 rounded-2xl bg-brand-50/70 ring-1 ring-brand-100 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-2xl bg-brand-50/70 dark:bg-brand-500/15 ring-1 ring-brand-100 dark:ring-white/10 px-4 py-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shrink-0">
                 <Banknote className="w-5 h-5" />
               </div>
               <div>
                 <p className="text-xs text-slate-500">Rent for</p>
-                <p className="font-semibold text-slate-900">{monthLabel(paying)}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{monthLabel(paying)}</p>
               </div>
             </div>
 
             <dl className="mt-4 space-y-2.5 text-sm">
               <div className="flex items-center justify-between">
                 <dt className="text-slate-500">Rent</dt>
-                <dd className="font-medium text-slate-800 tabular-nums">{inr(paying.rentAmount)}</dd>
+                <dd className="font-medium text-slate-800 dark:text-slate-200 tabular-nums">{inr(paying.rentAmount)}</dd>
               </div>
               {paying.electricityCharge > 0 && (
                 <div className="flex items-center justify-between">
                   <dt className="text-slate-500">Electricity{paying.electricityMeta?.units ? ` (${paying.electricityMeta.units}u ÷ ${paying.electricityMeta.occupants})` : ''}</dt>
-                  <dd className="font-medium text-slate-800 tabular-nums">{inr(paying.electricityCharge)}</dd>
+                  <dd className="font-medium text-slate-800 dark:text-slate-200 tabular-nums">{inr(paying.electricityCharge)}</dd>
                 </div>
               )}
               {paying.lateFee > 0 && (
@@ -260,9 +260,9 @@ export default function MyRent() {
                   <dd className="font-medium tabular-nums">-{inr(paying.discount)}</dd>
                 </div>
               )}
-              <div className="flex items-center justify-between border-t border-slate-200 pt-3 mt-1">
-                <dt className="text-base font-semibold text-slate-900">Total payable</dt>
-                <dd className="text-xl font-bold text-brand-700 tabular-nums">{inr(paying.totalAmount)}</dd>
+              <div className="flex items-center justify-between border-t border-slate-200 dark:border-white/10 pt-3 mt-1">
+                <dt className="text-base font-semibold text-slate-900 dark:text-white">Total payable</dt>
+                <dd className="text-xl font-bold text-brand-700 dark:text-brand-300 tabular-nums">{inr(paying.totalAmount)}</dd>
               </div>
             </dl>
 

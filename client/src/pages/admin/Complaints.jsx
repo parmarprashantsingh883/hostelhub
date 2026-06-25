@@ -146,10 +146,10 @@ export default function AdminComplaints() {
               <TableRow
                 key={c._id}
                 onClick={() => openDetail(c)}
-                className="hover:bg-brand-50/40 transition-colors cursor-pointer"
+                className="hover:bg-brand-50/40 dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <Td className="max-w-xs">
-                  <p className="font-semibold text-slate-900 line-clamp-1">{c.title}</p>
+                  <p className="font-semibold text-slate-900 dark:text-white line-clamp-1">{c.title}</p>
                   {c.roomId && (
                     <span className="inline-flex items-center gap-1 text-xs text-slate-400 mt-0.5">
                       <MapPin className="w-3 h-3" /> Room {c.roomId.roomNumber}
@@ -160,12 +160,12 @@ export default function AdminComplaints() {
                   {c.tenantId?.name ? (
                     <div className="flex items-center gap-2.5">
                       <Avatar name={c.tenantId.name} size="sm" />
-                      <span className="font-medium text-slate-700 truncate">{c.tenantId.name}</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-200 truncate">{c.tenantId.name}</span>
                     </div>
                   ) : <span className="text-slate-400">—</span>}
                 </Td>
                 <Td>
-                  <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                  <span className="inline-flex items-center rounded-md bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
                     {cap(c.category)}
                   </span>
                 </Td>
@@ -174,7 +174,7 @@ export default function AdminComplaints() {
                   {c.assignedStaffId?.name ? (
                     <div className="flex items-center gap-2">
                       <Avatar name={c.assignedStaffId.name} size="xs" />
-                      <span className="text-slate-700 truncate">{c.assignedStaffId.name}</span>
+                      <span className="text-slate-700 dark:text-slate-200 truncate">{c.assignedStaffId.name}</span>
                     </div>
                   ) : <span className="text-slate-400">Unassigned</span>}
                 </Td>
@@ -196,7 +196,7 @@ export default function AdminComplaints() {
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={detail.status} />
               <StatusBadge status={detail.priority} />
-              <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+              <span className="inline-flex items-center rounded-md bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
                 {cap(detail.category)}
               </span>
             </div>
@@ -216,7 +216,7 @@ export default function AdminComplaints() {
               </span>
             </div>
 
-            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{detail.description}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{detail.description}</p>
 
             {detail.images?.length > 0 && (
               <div className="space-y-2">
@@ -229,7 +229,7 @@ export default function AdminComplaints() {
                       <img
                         src={src}
                         alt="complaint"
-                        className="w-full aspect-square object-cover rounded-xl border border-slate-200 group-hover:opacity-90 group-hover:shadow-soft transition"
+                        className="w-full aspect-square object-cover rounded-xl border border-slate-200 dark:border-white/10 group-hover:opacity-90 group-hover:shadow-soft transition"
                       />
                     </a>
                   ))}
@@ -238,7 +238,7 @@ export default function AdminComplaints() {
             )}
 
             {detail.staffNotes?.length > 0 && (
-              <div className="rounded-2xl bg-slate-50 border border-slate-200/70 p-4 space-y-3">
+              <div className="rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/10 p-4 space-y-3">
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
                   <MessageSquare className="w-3.5 h-3.5" /> Work notes
                 </p>
@@ -247,8 +247,8 @@ export default function AdminComplaints() {
                     <div key={i} className="flex items-start gap-2.5">
                       <Avatar name={n.by?.name || 'Staff'} size="xs" />
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-slate-700">{n.by?.name || 'Staff'}</p>
-                        <p className="text-sm text-slate-600">{n.note}</p>
+                        <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{n.by?.name || 'Staff'}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">{n.note}</p>
                       </div>
                     </div>
                   ))}
@@ -257,9 +257,9 @@ export default function AdminComplaints() {
             )}
 
             {detail.rating && (
-              <div className="rounded-2xl bg-amber-50 border border-amber-200/60 p-4">
+              <div className="rounded-2xl bg-amber-50 dark:bg-amber-500/15 border border-amber-200/60 p-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">Tenant rating</span>
+                  <span className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">Tenant rating</span>
                   <span className="flex items-center gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
@@ -270,12 +270,12 @@ export default function AdminComplaints() {
                   </span>
                 </div>
                 {detail.tenantFeedback && (
-                  <p className="text-sm text-slate-600 italic mt-1.5">&ldquo;{detail.tenantFeedback}&rdquo;</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 italic mt-1.5">&ldquo;{detail.tenantFeedback}&rdquo;</p>
                 )}
               </div>
             )}
 
-            <div className="border-t border-slate-100 pt-5">
+            <div className="border-t border-slate-100 dark:border-white/10 pt-5">
               <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400 mb-4">
                 <UserCog className="w-3.5 h-3.5" /> Manage
               </p>
@@ -308,7 +308,7 @@ export default function AdminComplaints() {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-between gap-3 border-t border-slate-100 pt-5">
+            <div className="flex flex-wrap justify-between gap-3 border-t border-slate-100 dark:border-white/10 pt-5">
               <div className="flex gap-2">
                 {detail.status !== 'resolved' && (
                   <Button variant="success" size="sm" onClick={() => setStatus('resolved')} loading={busy}>Mark resolved</Button>

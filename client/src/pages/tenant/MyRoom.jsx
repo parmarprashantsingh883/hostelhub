@@ -49,12 +49,12 @@ export default function MyRoom() {
   }
 
   const facts = [
-    { icon: Layers, label: 'Floor', value: room.floor, tone: 'bg-blue-50 text-blue-600' },
-    { icon: DoorOpen, label: 'Room type', value: <span className="capitalize">{room.roomType}</span>, tone: 'bg-brand-50 text-brand-600' },
-    { icon: Wallet, label: 'Monthly rent', value: inr(room.rentAmount), tone: 'bg-emerald-50 text-emerald-600' },
+    { icon: Layers, label: 'Floor', value: room.floor, tone: 'bg-blue-50 dark:bg-sky-500/15 text-blue-600 dark:text-sky-300' },
+    { icon: DoorOpen, label: 'Room type', value: <span className="capitalize">{room.roomType}</span>, tone: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300' },
+    { icon: Wallet, label: 'Monthly rent', value: inr(room.rentAmount), tone: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' },
     profile?.securityDeposit != null
-      ? { icon: ShieldCheck, label: 'Deposit', value: inr(profile.securityDeposit), tone: 'bg-amber-50 text-amber-600' }
-      : { icon: Calendar, label: 'Move-in', value: profile?.moveInDate ? fmtDate(profile.moveInDate) : '—', tone: 'bg-amber-50 text-amber-600' },
+      ? { icon: ShieldCheck, label: 'Deposit', value: inr(profile.securityDeposit), tone: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300' }
+      : { icon: Calendar, label: 'Move-in', value: profile?.moveInDate ? fmtDate(profile.moveInDate) : '—', tone: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300' },
   ];
 
   return (
@@ -92,13 +92,13 @@ export default function MyRoom() {
       {/* ── Quick facts ───────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {facts.map((f) => (
-          <div key={f.label} className="bg-white rounded-2xl border border-slate-200/70 shadow-card p-4 flex items-center gap-3">
+          <div key={f.label} className="bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card p-4 flex items-center gap-3">
             <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${f.tone}`}>
               <f.icon className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <p className="text-xs text-slate-500">{f.label}</p>
-              <p className="text-base font-semibold text-slate-900 mt-0.5 truncate">{f.value}</p>
+              <p className="text-base font-semibold text-slate-900 dark:text-white mt-0.5 truncate">{f.value}</p>
             </div>
           </div>
         ))}
@@ -113,11 +113,11 @@ export default function MyRoom() {
                 {room.facilities.map((fac) => {
                   const Icon = iconFor(fac);
                   return (
-                    <div key={fac} className="flex items-center gap-3 rounded-xl bg-slate-50 ring-1 ring-slate-100 px-3.5 py-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-white ring-1 ring-slate-200 text-brand-600 flex items-center justify-center shrink-0">
+                    <div key={fac} className="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-white/5 ring-1 ring-slate-100 dark:ring-white/10 px-3.5 py-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-night-900 ring-1 ring-slate-200 dark:ring-white/10 text-brand-600 dark:text-brand-300 flex items-center justify-center shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
-                      <span className="text-sm font-medium text-slate-700 capitalize">{fac}</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200 capitalize">{fac}</span>
                     </div>
                   );
                 })}
@@ -137,15 +137,15 @@ export default function MyRoom() {
             </div>
             <div className="flex items-center justify-between">
               <dt className="text-sm text-slate-500">Move-in date</dt>
-              <dd className="text-sm font-medium text-slate-900">{profile?.moveInDate ? fmtDate(profile.moveInDate) : '—'}</dd>
+              <dd className="text-sm font-medium text-slate-900 dark:text-white">{profile?.moveInDate ? fmtDate(profile.moveInDate) : '—'}</dd>
             </div>
             <div className="flex items-center justify-between">
               <dt className="text-sm text-slate-500">Security deposit</dt>
-              <dd className="text-sm font-medium text-slate-900">{profile?.securityDeposit != null ? inr(profile.securityDeposit) : '—'}</dd>
+              <dd className="text-sm font-medium text-slate-900 dark:text-white">{profile?.securityDeposit != null ? inr(profile.securityDeposit) : '—'}</dd>
             </div>
-            <div className="flex items-center justify-between border-t border-slate-100 pt-4">
+            <div className="flex items-center justify-between border-t border-slate-100 dark:border-white/10 pt-4">
               <dt className="text-sm text-slate-500">Monthly rent</dt>
-              <dd className="text-base font-bold text-slate-900">{inr(room.rentAmount)}</dd>
+              <dd className="text-base font-bold text-slate-900 dark:text-white">{inr(room.rentAmount)}</dd>
             </div>
           </dl>
         </Card>

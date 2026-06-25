@@ -189,9 +189,9 @@ export default function Expenses() {
               <TableRow key={x._id}>
                 <Td className="whitespace-nowrap">{fmtDate(x.date)}</Td>
                 <Td><Badge tone={CATEGORY_TONE[x.category] || 'gray'}>{x.category}</Badge></Td>
-                <Td className="text-slate-700">{x.vendor || <span className="text-slate-400">—</span>}</Td>
+                <Td className="text-slate-700 dark:text-slate-200">{x.vendor || <span className="text-slate-400">—</span>}</Td>
                 <Td className="max-w-[16rem] truncate text-slate-500">{x.note || <span className="text-slate-400">—</span>}</Td>
-                <Td className="font-semibold text-slate-900 tabular-nums whitespace-nowrap">{inr(x.amount)}</Td>
+                <Td className="font-semibold text-slate-900 dark:text-white tabular-nums whitespace-nowrap">{inr(x.amount)}</Td>
                 <Td>
                   <button
                     onClick={() => setConfirmDelete(x)}
