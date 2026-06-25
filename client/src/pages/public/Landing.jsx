@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  DoorOpen, Banknote, Wrench, Megaphone, ClipboardList, UtensilsCrossed,
+  BedDouble, Banknote, Wrench, Megaphone, ClipboardList, UtensilsCrossed,
   ShieldCheck, BarChart3, ArrowRight, ArrowUpRight, Check, Menu, X, Plus, Minus,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -18,8 +18,8 @@ const reveal = {
 };
 
 const FEATURES = [
-  { icon: DoorOpen, tag: 'Rooms', title: 'Rooms & beds', desc: 'Every floor, room and bed in one board — assign a resident in a tap, watch occupancy update live.' },
-  { icon: Banknote, tag: 'Money', title: 'Rent & payments', desc: 'Auto-raise monthly rent, collect online via Razorpay, hand over a GST-ready receipt the same second.' },
+  { icon: BedDouble, tag: 'Occupancy', title: 'Occupancy & bookings', desc: 'A live bed map of every floor, a reserve-to-move-in pipeline, and vacancy alerts that turn enquiries into filled beds.' },
+  { icon: Banknote, tag: 'Money', title: 'Rent & UPI', desc: 'Auto-raise monthly rent, collect by scan-to-pay UPI, and hand over a GST-ready receipt the same second.' },
   { icon: Wrench, tag: 'Upkeep', title: 'Complaints', desc: 'A leaky tap goes from resident to staff to fixed — with the whole trail visible to everyone.' },
   { icon: ClipboardList, tag: 'Gate', title: 'Visitors', desc: 'Guests pre-register, security checks them in and out, and nothing is left to a paper register.' },
   { icon: Megaphone, tag: 'Voice', title: 'Notices', desc: 'Pin a notice or fire an urgent alert — on every resident’s screen and in their inbox.' },
@@ -40,7 +40,7 @@ const STEPS = [
   { n: '03', title: 'Let it run', desc: 'Rent raises itself, complaints route themselves, the numbers keep themselves. You just watch.' },
 ];
 
-const STATS = ['₹40L+ collected', '500+ beds managed', '12 hrs saved weekly', '99.9% uptime'];
+const STATS = ['92% avg occupancy', '₹40L+ rent collected', '500+ beds managed', '12 hrs saved weekly'];
 
 const TESTIMONIALS = [
   { quote: 'Rent collection used to eat my first week of every month. Now it closes in a day, and I never chase anyone.', name: 'Rahul Mehta', org: 'Sunrise PG · Pune', initials: 'RM', featured: true },
@@ -130,7 +130,7 @@ export default function Landing() {
       <div className="bg-night-900 text-cream-50">
         <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-5 py-2 font-mono text-[11px] tracking-wide">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
-          Now collecting rent online with GST-ready receipts · made in India for ₹
+          New · a live occupancy board + move-in pipeline · made in India for ₹
         </div>
       </div>
 
@@ -174,13 +174,14 @@ export default function Landing() {
       <div id="top">
         <Section className="grid items-center gap-12 pt-14 pb-12 lg:grid-cols-[1.05fr_0.95fr] lg:pt-20 lg:pb-16">
           <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}>
-            <KeyTag>For PG &amp; hostel owners</KeyTag>
-            <h1 className="mt-6 font-display text-[2.9rem] font-semibold leading-[1.04] tracking-[-0.01em] sm:text-6xl">
-              Run the whole building from <span className="italic text-brand-600">one calm screen.</span>
+            <KeyTag>Property OS · made in India</KeyTag>
+            <h1 className="mt-6 font-display text-[3.1rem] font-semibold leading-[0.97] tracking-[-0.025em] sm:text-[5.2rem]">
+              Never run an <span className="italic text-brand-600">empty bed.</span>
             </h1>
             <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-slate-600">
-              Quarters retires the rent register, the complaints diary and the resident WhatsApp group — rooms, rent,
-              complaints, visitors and reports, finally in one place.
+              Quarters is the operating system for PGs &amp; co-living. A live bed map, a move-in
+              pipeline that fills vacancies, and rent that collects itself over UPI — so you see
+              every empty bed and exactly what it’s costing you.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link to="/register" className="inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-7 font-semibold text-white shadow-[0_14px_30px_-10px_rgba(36,48,71,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brand-700">
@@ -287,8 +288,9 @@ export default function Landing() {
         <Section className="py-20">
           <motion.div {...reveal} className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-xl">
-              <Eyebrow>Room-rate pricing</Eyebrow>
+              <Eyebrow>Per-bed pricing</Eyebrow>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Pay for the beds, not the buzzwords.</h2>
+              <p className="mt-3 text-[15px] text-slate-500">A 40-bed PG on Growth runs about <span className="font-semibold text-slate-700">₹1,000/month</span>. No setup fee, cancel anytime.</p>
             </div>
             <div className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white p-1 font-mono text-[12px] uppercase tracking-wider">
               <button onClick={() => setYearly(false)} className={`rounded-full px-4 py-1.5 font-semibold transition-colors ${!yearly ? 'bg-night-900 text-cream-50' : 'text-slate-500'}`}>Monthly</button>
@@ -296,12 +298,12 @@ export default function Landing() {
             </div>
           </motion.div>
           <div className="mt-12 grid items-start gap-6 lg:grid-cols-3">
-            <PriceTier name="Starter" price="₹0" period="/forever" blurb="A single small PG finding its feet." cta="Start free"
-              features={['Up to 15 beds', 'Rooms, residents & rent', 'Complaints & notices', 'Email support']} />
-            <PriceTier name="Growth" price={price(1499)} period={yearly ? '/mo, billed yearly' : '/month'} blurb="A growing hostel that wants it all." popular cta="Start 14-day trial"
-              features={['Unlimited beds', 'Online payments + GST receipts', 'Visitors, food menu & analytics', 'Staff portal & roles', 'Priority support']} />
-            <PriceTier name="Estate" price="Custom" period="" blurb="Chains and multi-property operators." cta="Talk to us"
-              features={['Everything in Growth', 'Multiple properties', 'Onboarding & training', 'Dedicated manager', 'SLA & SSO']} />
+            <PriceTier name="Starter" price="₹0" period="/ up to 15 beds" blurb="A single small PG finding its feet." cta="Start free"
+              features={['Up to 15 beds', 'Live occupancy & bed map', 'Bookings & rent tracking', 'Complaints & notices', 'Email support']} />
+            <PriceTier name="Growth" price={price(25)} period="per bed / month" blurb="The full system for a filling property." popular cta="Start 14-day trial"
+              features={['Unlimited beds', 'Occupancy + booking pipeline', 'UPI collections & GST receipts', 'Visitors, QR passes & analytics', 'Staff portal & roles', 'Priority support']} />
+            <PriceTier name="Scale" price={price(18)} period="per bed / month" blurb="Multi-property operators & chains." cta="Talk to us"
+              features={['Everything in Growth', 'Volume per-bed rate', 'Multiple properties', 'Onboarding & training', 'Dedicated manager · SLA · SSO']} />
           </div>
         </Section>
       </div>
