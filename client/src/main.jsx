@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
+import Toaster from './components/Toaster.jsx';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -13,13 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: { fontSize: '14px', borderRadius: '10px' },
-            success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
-          }}
-        />
+        <Toaster />
       </AuthProvider>
     </BrowserRouter>
     </ErrorBoundary>
