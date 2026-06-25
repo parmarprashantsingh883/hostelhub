@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import {
-  Plus, Trash2, Receipt, Wallet, TrendingUp, PieChart, Calendar,
+  Plus, Trash2, Receipt, Wallet, TrendingUp, PieChart,
 } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../components/ui';
 
 const CATEGORIES = ['maintenance', 'utilities', 'salaries', 'supplies', 'rent', 'marketing', 'other'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const CATEGORY_TONE = {
   maintenance: 'blue',
@@ -25,7 +26,6 @@ const CATEGORY_TONE = {
 const EMPTY_FORM = { category: 'maintenance', amount: '', date: '', vendor: '', note: '' };
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
-const monthInputValue = (m, y) => `${y}-${String(m).padStart(2, '0')}`;
 
 export default function Expenses() {
   const now = new Date();
@@ -56,13 +56,6 @@ export default function Expenses() {
   }, [period, category]);
 
   useEffect(() => { load(); }, [load]);
-
-  const onMonthChange = (e) => {
-    const v = e.target.value; // 'YYYY-MM'
-    if (!v) return;
-    const [y, m] = v.split('-').map(Number);
-    setPeriod({ month: m, year: y });
-  };
 
   const save = async (e) => {
     e.preventDefault();
@@ -151,16 +144,13 @@ export default function Expenses() {
 
       {/* Filters */}
       <Card>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div className="relative">
-            <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <Input
-              type="month"
-              className="pl-9"
-              value={monthInputValue(period.month, period.year)}
-              onChange={onMonthChange}
-            />
-          </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Select value={period.month} onChange={(e) => setPeriod((p) => ({ ...p, month: Number(e.target.value) }))}>
+            {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+          </Select>
+          <Select value={period.year} onChange={(e) => setPeriod((p) => ({ ...p, year: Number(e.target.value) }))}>
+            {[now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1].map((y) => <option key={y} value={y}>{y}</option>)}
+          </Select>
           <Select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">All categories</option>
             {CATEGORIES.map((c) => (
