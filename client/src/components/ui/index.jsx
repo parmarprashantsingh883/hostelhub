@@ -9,7 +9,6 @@ import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight, Eye, EyeOf
 
 /* Motion primitives — re-exported so pages import everything from one place. */
 export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './motion';
-import { containerVariants } from './motion';
 
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
@@ -508,11 +507,13 @@ export function Table({ headers, children }) {
             ))}
           </tr>
         </thead>
+        {/* A one-time fade on mount — NOT a per-row stagger, so paginating
+            (which remounts the keyed rows) doesn't re-animate and "shake". */}
         <motion.tbody
           className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/70 dark:divide-white/10 dark:[&>tr:hover]:bg-white/5"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           {children}
         </motion.tbody>
