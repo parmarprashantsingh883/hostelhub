@@ -4,20 +4,22 @@
  */
 import { inr } from './index.jsx';
 
+// Colours are CSS variables (defined in index.css with .dark overrides) so the
+// SVG charts re-theme instantly when dark mode toggles — no re-render needed.
 export const CHART = {
-  primary: '#243047',      // brand-600 (crimson)
-  primarySoft: '#41506a',  // brand-500
-  primaryFaint: '#ccd5e2', // brand-200
-  grid: '#eef1f5',
-  axis: '#94a3b8',
-  // Categorical series — crimson-anchored, cohesive.
-  series: ['#243047', '#6e8099', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
+  primary: 'var(--chart-line)',
+  primarySoft: 'var(--chart-fill)',
+  primaryFaint: 'var(--chart-faint)',
+  grid: 'var(--chart-grid)',
+  axis: 'var(--chart-axis)',
+  // Categorical series — navy-anchored, cohesive.
+  series: ['var(--chart-line)', '#6e8099', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
   // Occupancy semantics
   occupancy: { Occupied: '#243047', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
 };
 
-export const axisTick = { fontSize: 12, fill: CHART.axis };
-export const gridProps = { strokeDasharray: '3 3', stroke: CHART.grid, vertical: false };
+export const axisTick = { fontSize: 12, fill: 'var(--chart-axis)' };
+export const gridProps = { strokeDasharray: '3 3', stroke: 'var(--chart-grid)', vertical: false };
 
 /** Dark emerald tooltip used across charts. `money` formats values as ₹. */
 export function BrandTooltip({ active, payload, label, money = false }) {

@@ -8,7 +8,7 @@ import { LogoMark, LogoMono } from '../../components/brand/Logo';
  */
 export default function AuthShell({ title, subtitle, children, footer }) {
   return (
-    <div className="grid min-h-screen bg-white lg:grid-cols-2">
+    <div className="grid min-h-screen bg-white lg:grid-cols-2 dark:bg-night-950">
       {/* ───────────────── FORM (left) ───────────────── */}
       <div className="flex items-center justify-center px-6 py-12 sm:px-12">
         <motion.div
@@ -19,10 +19,10 @@ export default function AuthShell({ title, subtitle, children, footer }) {
         >
           <Link to="/" className="group mb-10 inline-flex items-center gap-2.5">
             <LogoMark size={40} className="transition-transform group-hover:scale-105" />
-            <span className="text-xl font-extrabold tracking-tight text-slate-900">Quarters</span>
+            <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Quarters</span>
           </Link>
-          <h1 className="text-[26px] font-extrabold leading-tight tracking-tight text-slate-900">{title}</h1>
-          {subtitle && <p className="mt-1.5 text-sm text-slate-500">{subtitle}</p>}
+          <h1 className="text-[26px] font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white">{title}</h1>
+          {subtitle && <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>}
           <div className="mt-8">{children}</div>
           {footer && <div className="mt-6 text-center text-sm text-slate-500">{footer}</div>}
         </motion.div>

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const ARC = { brand: '#243047', green: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
+const ARC = { brand: 'var(--ring-brand)', green: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
 
 /** SVG progress donut with a centered value. Works on light or dark cards. */
-export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', track = '#eef1f5', centerClass = 'text-slate-900', subClass = 'text-slate-400', label }) {
+export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', track = 'var(--ring-track)', centerClass = 'text-slate-900 dark:text-white', subClass = 'text-slate-400', label }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(100, value));

@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import { LogoMark } from '../components/brand/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 
 const NAV = {
   admin: [
@@ -79,20 +80,20 @@ function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:bg-brand-50 hover:text-brand-600 transition-colors"
+        className="relative w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:bg-brand-50 hover:text-brand-600 transition-colors dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
         {unread > 0 && (
-          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-sun-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-sun-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-night-900">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 overflow-hidden animate-pop-in">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-ink-100">
-            <p className="text-sm font-semibold text-slate-900">Notifications</p>
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 overflow-hidden animate-pop-in dark:bg-night-900 dark:border-white/10">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-ink-100 dark:border-white/10">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</p>
             {unread > 0 && <button onClick={markAll} className="text-xs font-semibold text-brand-600 hover:text-brand-700">Mark all read</button>}
           </div>
           <div className="max-h-80 overflow-y-auto scrollbar-thin">
@@ -105,12 +106,12 @@ function NotificationBell() {
               <button
                 key={n._id}
                 onClick={async () => { await api.put(`/notifications/${n._id}/read`).catch(() => {}); setOpen(false); if (n.link) navigate(n.link); load(); }}
-                className={`w-full text-left px-4 py-3 border-b border-ink-100/70 hover:bg-ink-50 transition-colors ${!n.isRead ? 'bg-brand-50/50' : ''}`}
+                className={`w-full text-left px-4 py-3 border-b border-ink-100/70 hover:bg-ink-50 transition-colors dark:border-white/5 dark:hover:bg-white/5 ${!n.isRead ? 'bg-brand-50/50 dark:bg-brand-500/10' : ''}`}
               >
                 <div className="flex items-start gap-2">
                   {!n.isRead && <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-500 shrink-0" />}
                   <div className={n.isRead ? 'pl-3.5' : ''}>
-                    <p className="text-sm font-medium text-slate-800">{n.title}</p>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{n.title}</p>
                     <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
                     <p className="text-[10px] text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
@@ -149,12 +150,12 @@ export default function DashboardLayout() {
       {sidebarOpen && <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Sidebar — light & warm */}
-      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-ink-200 z-40 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-ink-200 z-40 flex flex-col transition-transform duration-200 dark:bg-night-950 dark:border-white/10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Brand */}
         <div className="h-16 flex items-center gap-3 px-5">
           <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(36,48,71,0.45)]" />
           <div className="min-w-0">
-            <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px]">Quarters</p>
+            <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px] dark:text-white">Quarters</p>
             <p className="text-[10px] text-brand-600 font-semibold uppercase tracking-widest">{ROLE_LABEL[user?.role] || 'Portal'}</p>
           </div>
           <button className="ml-auto lg:hidden text-slate-400 hover:text-slate-700" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X className="w-5 h-5" /></button>
@@ -170,14 +171,14 @@ export default function DashboardLayout() {
               className={({ isActive }) =>
                 `group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-brand-600 text-white shadow-[0_8px_18px_-6px_rgba(36,48,71,0.55)]'
-                    : 'text-slate-500 hover:bg-brand-50 hover:text-brand-700'
+                    ? 'bg-brand-600 text-white shadow-[0_8px_18px_-6px_rgba(36,48,71,0.55)] dark:bg-brand-500'
+                    : 'text-slate-500 hover:bg-brand-50 hover:text-brand-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-brand-600'}`} strokeWidth={2.2} />
+                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-brand-600 dark:group-hover:text-white'}`} strokeWidth={2.2} />
                   {label}
                 </>
               )}
@@ -185,15 +186,15 @@ export default function DashboardLayout() {
           ))}
         </nav>
 
-        <div className="p-3 border-t border-ink-100">
+        <div className="p-3 border-t border-ink-100 dark:border-white/10">
           <div className="flex items-center gap-3 px-2 py-2 mb-1">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials}</div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900 truncate">{user?.name}</p>
+              <p className="text-sm font-semibold text-slate-900 truncate dark:text-slate-100">{user?.name}</p>
               <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
             </div>
           </div>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors dark:text-slate-400 dark:hover:bg-rose-500/15 dark:hover:text-rose-300">
             <LogOut className="w-[18px] h-[18px]" /> Log out
           </button>
         </div>
@@ -201,29 +202,30 @@ export default function DashboardLayout() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-white/80 backdrop-blur border-b border-ink-200 flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20">
-          <button className="lg:hidden text-slate-500 hover:text-slate-800" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu className="w-6 h-6" /></button>
+        <header className="h-16 bg-white/80 backdrop-blur border-b border-ink-200 flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20 dark:bg-night-950/80 dark:border-white/10">
+          <button className="lg:hidden text-slate-500 hover:text-slate-800 dark:text-slate-300" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu className="w-6 h-6" /></button>
           <p className="hidden lg:block text-sm font-medium text-slate-400">Welcome back 👋</p>
           <div className="ml-auto flex items-center gap-1.5">
+            <ThemeToggle />
             <NotificationBell />
-            <div className="w-px h-6 bg-ink-200 mx-1" />
+            <div className="w-px h-6 bg-ink-200 mx-1 dark:bg-white/10" />
             <div className="relative" ref={menuRef}>
-              <button onClick={() => setUserMenu((o) => !o)} className="flex items-center gap-2 pl-1.5 pr-2 h-10 rounded-full hover:bg-brand-50 transition-colors">
+              <button onClick={() => setUserMenu((o) => !o)} className="flex items-center gap-2 pl-1.5 pr-2 h-10 rounded-full hover:bg-brand-50 transition-colors dark:hover:bg-white/10">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center">{initials}</div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-semibold text-slate-800 leading-tight">{user?.name}</p>
+                  <p className="text-sm font-semibold text-slate-800 leading-tight dark:text-slate-100">{user?.name}</p>
                   <p className="text-[10px] text-slate-400 capitalize">{user?.role}</p>
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-400" />
               </button>
               {userMenu && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 py-1.5 animate-pop-in">
-                  <div className="px-4 py-2 border-b border-ink-100 mb-1">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{user?.name}</p>
+                <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 py-1.5 animate-pop-in dark:bg-night-900 dark:border-white/10">
+                  <div className="px-4 py-2 border-b border-ink-100 mb-1 dark:border-white/10">
+                    <p className="text-sm font-semibold text-slate-800 truncate dark:text-slate-100">{user?.name}</p>
                     <p className="text-xs text-slate-400 truncate">{user?.email}</p>
                   </div>
-                  <button onClick={() => { setUserMenu(false); navigate(`/${user.role}/profile`); }} className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-ink-50"><User className="w-4 h-4 text-slate-400" /> My Profile</button>
-                  <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50"><LogOut className="w-4 h-4" /> Log out</button>
+                  <button onClick={() => { setUserMenu(false); navigate(`/${user.role}/profile`); }} className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-ink-50 dark:text-slate-200 dark:hover:bg-white/5"><User className="w-4 h-4 text-slate-400" /> My Profile</button>
+                  <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-rose-300 dark:hover:bg-rose-500/15"><LogOut className="w-4 h-4" /> Log out</button>
                 </div>
               )}
             </div>

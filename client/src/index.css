@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 
+/* Class-based dark mode: `dark:` applies when <html> (or an ancestor) has .dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
+  /* Dark canvas */
+  --color-night-950: #0b1018;
   /* Brand — ink navy (minimal monochrome identity) */
   --color-brand-50: #f4f6f9;
   --color-brand-100: #e5eaf1;
@@ -51,11 +56,44 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+/* Data-viz colours — reactive to dark mode via CSS variables (used by charts
+   and the SVG progress donut). */
+:root {
+  --chart-line: #243047;
+  --chart-fill: #41506a;
+  --chart-faint: #ccd5e2;
+  --chart-grid: #eef1f5;
+  --chart-axis: #94a3b8;
+  --ring-track: #eef1f5;
+  --ring-brand: #243047;
+}
+.dark {
+  --chart-line: #93a3c0;
+  --chart-fill: #4a5a78;
+  --chart-faint: #2a3548;
+  --chart-grid: rgba(255, 255, 255, 0.07);
+  --chart-axis: #64748b;
+  --ring-track: rgba(255, 255, 255, 0.08);
+  --ring-brand: #9db0d4;
+}
+
 body {
   @apply text-slate-900;
   background-color: #f6f8fa; /* cool light-gray canvas (minimal) */
   font-feature-settings: 'ss01';
 }
+
+/* ── Dark theme ───────────────────────────────────────────────── */
+.dark body {
+  background-color: #0b1018; /* deep ink-navy canvas */
+  @apply text-slate-200;
+}
+.dark ::selection {
+  background: var(--color-brand-500);
+  color: #fff;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-thumb { background: #2a3548; }
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #3a4760; }
 
 /* Friendly, confident headings */
 h1, h2, h3 {

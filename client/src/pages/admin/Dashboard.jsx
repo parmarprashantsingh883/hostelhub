@@ -36,11 +36,11 @@ function healthBand(score) {
 
 function MiniStat({ label, value, tone = 'slate' }) {
   const tones = {
-    slate: 'text-slate-900', amber: 'text-amber-600', rose: 'text-rose-500',
-    emerald: 'text-emerald-600', blue: 'text-sky-600',
+    slate: 'text-slate-900 dark:text-white', amber: 'text-amber-600 dark:text-amber-300', rose: 'text-rose-500 dark:text-rose-300',
+    emerald: 'text-emerald-600 dark:text-emerald-300', blue: 'text-sky-600 dark:text-sky-300',
   };
   return (
-    <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 px-3 py-2.5">
+    <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 px-3 py-2.5 dark:border-white/10 dark:bg-white/5">
       <p className={`text-xl font-bold tabular-nums ${tones[tone]}`}>{value}</p>
       <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</p>
     </div>
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
     s.avgFoodRating != null && s.avgFoodRating < 3 && { icon: AlertTriangle, tone: 'rose', text: `Low food rating (${s.avgFoodRating}/5)`, to: '/admin/food-menu' },
   ].filter(Boolean);
 
-  const alertTone = { amber: 'bg-amber-50 text-amber-600', rose: 'bg-rose-50 text-rose-500', slate: 'bg-slate-100 text-slate-500' };
+  const alertTone = { amber: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300', rose: 'bg-rose-50 text-rose-500 dark:bg-rose-500/15 dark:text-rose-300', slate: 'bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-slate-300' };
 
   return (
     <div className="space-y-5">
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-400">{dateStr} <span className="text-slate-300">·</span> updated just now</p>
-          <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900">{greeting()}, {firstName} 👋</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{greeting()}, {firstName} 👋</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {QUICK_ACTIONS.map((a, i) => (
@@ -142,8 +142,8 @@ export default function AdminDashboard() {
             {health.breakdown.map((b) => (
               <div key={b.key}>
                 <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">{b.key}</span>
-                  <span className="font-semibold tabular-nums text-slate-700">{b.pct}%</span>
+                  <span className="text-slate-500 dark:text-slate-400">{b.key}</span>
+                  <span className="font-semibold tabular-nums text-slate-700 dark:text-slate-200">{b.pct}%</span>
                 </div>
                 <ProgressBar value={b.pct} />
               </div>
@@ -158,9 +158,9 @@ export default function AdminDashboard() {
         >
           {/* paid vs unpaid chips */}
           <div className="mb-4 flex flex-wrap gap-2 text-xs">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-600">{charts.paidVsUnpaid?.[0]?.value || 0} paid</span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 font-semibold text-rose-500">{charts.paidVsUnpaid?.[1]?.value || 0} unpaid</span>
-            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 font-semibold text-brand-700">{collectionPct}% collected</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">{charts.paidVsUnpaid?.[0]?.value || 0} paid</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 font-semibold text-rose-500 dark:bg-rose-500/15 dark:text-rose-300">{charts.paidVsUnpaid?.[1]?.value || 0} unpaid</span>
+            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 font-semibold text-brand-700 dark:bg-brand-500/20 dark:text-brand-200">{collectionPct}% collected</span>
           </div>
           {rev.length ? (
             <div className="h-56">
@@ -191,16 +191,16 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-3 py-6">
               <CheckCircle2 className="h-8 w-8 text-emerald-500" />
               <div>
-                <p className="text-sm font-semibold text-slate-800">All clear</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">All clear</p>
                 <p className="text-xs text-slate-400">No pending issues need your attention.</p>
               </div>
             </div>
           ) : (
             <div className="space-y-1.5">
               {alerts.map((a, i) => (
-                <Link key={i} to={a.to} className="flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-slate-50">
+                <Link key={i} to={a.to} className="flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-white/5">
                   <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${alertTone[a.tone]}`}><a.icon className="h-4 w-4" /></span>
-                  <span className="min-w-0 flex-1 text-sm text-slate-700">{a.text}</span>
+                  <span className="min-w-0 flex-1 text-sm text-slate-700 dark:text-slate-200">{a.text}</span>
                   <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" />
                 </Link>
               ))}
@@ -217,11 +217,11 @@ export default function AdminDashboard() {
                 <div key={r._id} className="flex items-center gap-3 py-1.5">
                   <Avatar name={r.tenant} size="sm" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-800">{r.tenant}</p>
+                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{r.tenant}</p>
                     <p className="text-xs text-slate-400">{r.room ? `Room ${r.room}` : 'No room'} · due {fmtDate(r.dueDate)}</p>
                   </div>
                   <StatusBadge status={r.status} />
-                  <span className="w-20 text-right text-sm font-semibold tabular-nums text-slate-900">{inr(r.amount)}</span>
+                  <span className="w-20 text-right text-sm font-semibold tabular-nums text-slate-900 dark:text-white">{inr(r.amount)}</span>
                 </div>
               ))}
             </div>
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
               {recentComplaints.slice(0, 4).map((c) => (
                 <div key={c._id} className="flex items-center justify-between gap-2 py-1.5">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-800">{c.title}</p>
+                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{c.title}</p>
                     <p className="truncate text-xs capitalize text-slate-400">{c.tenantId?.name || '—'} · {c.category}</p>
                   </div>
                   <StatusBadge status={c.status} />
@@ -261,9 +261,9 @@ export default function AdminDashboard() {
             <MiniStat label="Inside now" value={s.visitorsInside} tone="emerald" />
             <MiniStat label="Pending" value={s.visitorsPending} tone="amber" />
           </div>
-          <div className="mt-5 flex items-start gap-3 rounded-xl bg-brand-50 px-3.5 py-3 ring-1 ring-brand-600/10">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-            <p className="text-xs leading-relaxed text-slate-600">
+          <div className="mt-5 flex items-start gap-3 rounded-xl bg-brand-50 px-3.5 py-3 ring-1 ring-brand-600/10 dark:bg-brand-500/10 dark:ring-white/10">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-600 dark:text-brand-300" />
+            <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
               {s.visitorsInside === 0
                 ? 'Everyone has checked out — no visitors are currently inside the premises.'
                 : `${s.visitorsInside} visitor${s.visitorsInside === 1 ? ' is' : 's are'} currently inside. Check them out on exit to keep the log accurate.`}
@@ -279,12 +279,12 @@ export default function AdminDashboard() {
         ) : (
           <div className="grid gap-2 sm:grid-cols-2">
             {recentNotices.map((n) => (
-              <div key={n._id} className="flex items-start gap-3 rounded-xl border border-slate-200/70 px-3.5 py-3">
-                <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.priority === 'urgent' ? 'bg-rose-50 text-rose-500' : 'bg-brand-50 text-brand-600'}`}>
+              <div key={n._id} className="flex items-start gap-3 rounded-xl border border-slate-200/70 px-3.5 py-3 dark:border-white/10">
+                <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.priority === 'urgent' ? 'bg-rose-50 text-rose-500 dark:bg-rose-500/15 dark:text-rose-300' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300'}`}>
                   {n.isPinned ? <Pin className="h-4 w-4" /> : <Megaphone className="h-4 w-4" />}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-800">{n.title}</p>
+                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{n.title}</p>
                   <div className="mt-1 flex items-center gap-2">
                     <Badge tone={n.priority === 'urgent' ? 'red' : 'gray'}>{n.category}</Badge>
                     <span className="text-[11px] text-slate-400">{fmtDate(n.createdAt)}</span>

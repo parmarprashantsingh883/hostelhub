@@ -109,7 +109,7 @@ export default function Login() {
                 type="button"
                 disabled={busy}
                 onClick={() => doLogin(d.email, d.password, d.label)}
-                className={`group relative h-[58px] rounded-xl border border-slate-200 bg-white px-2 flex flex-col items-center justify-center gap-1 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-soft hover:border-transparent hover:ring-2 ${d.ring} ${d.bg} disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:cursor-not-allowed`}
+                className={`group relative h-[58px] rounded-xl border border-slate-200 bg-white px-2 flex flex-col items-center justify-center gap-1 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-soft hover:border-transparent hover:ring-2 dark:border-white/10 dark:bg-white/5 ${d.ring} ${d.bg} disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:cursor-not-allowed`}
               >
                 <span className={`w-7 h-7 rounded-lg bg-gradient-to-br ${d.tone} flex items-center justify-center text-white shadow-sm`}>
                   <d.icon className="w-3.5 h-3.5" strokeWidth={2.4} />
