@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Banknote, BellRing, FileDown, CheckCircle2, CalendarPlus, Pencil, Wallet, Clock, AlertTriangle, Zap } from 'lucide-react';
+import { Banknote, BellRing, FileDown, CheckCircle2, CalendarPlus, Pencil, Wallet, Clock, AlertTriangle, Zap, MessageCircle, Smartphone } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, TableSkeleton, EmptyState,
@@ -131,6 +131,33 @@ export default function Rents() {
     }
   };
 
+  // Per-tenant reminder via WhatsApp / SMS / Email.
+  //  • Free mode (no provider keys): the API returns a click-to-send link we open
+  //    (WhatsApp Web / the phone's SMS app) with the message pre-filled.
+  //  • Live mode (provider configured): the API sends it directly.
+  const remindVia = async (rent, channel) => {
+    if (channel !== 'email' && !rent.tenantId?.phone) {
+      return toast.error(`${rent.tenantId?.name || 'This tenant'} has no phone number on file`);
+    }
+    try {
+      const { data } = await api.post(`/rents/${rent._id}/remind`, { channel });
+      const d = data.data;
+      const who = rent.tenantId?.name || 'tenant';
+      if (d.url) {
+        window.open(d.url, '_blank', 'noopener');
+        toast.success(`Opening ${channel === 'whatsapp' ? 'WhatsApp' : 'SMS'} for ${who}…`);
+      } else if (d.sent) {
+        toast.success(`${channel === 'whatsapp' ? 'WhatsApp' : 'SMS'} reminder sent to ${who}`);
+      } else if (d.mode === 'sent') {
+        toast.success(`Email reminder sent to ${who}`);
+      } else {
+        toast.error(d.error || 'Could not send the reminder');
+      }
+    } catch (err) {
+      toast.error(errMsg(err));
+    }
+  };
+
   const toggleSel = (id) => setSelected((s) => {
     const n = new Set(s);
     n.has(id) ? n.delete(id) : n.add(id);
@@ -258,8 +285,8 @@ export default function Rents() {
               )}
               <span className="ml-auto flex items-center gap-1.5">
                 <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-300">Email ✓</span>
-                <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">WhatsApp soon</span>
-                <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">SMS soon</span>
+                <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-300">WhatsApp ✓</span>
+                <span className="rounded-full bg-blue-50 dark:bg-blue-500/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-blue-600 dark:text-blue-300">SMS ✓</span>
               </span>
             </div>
             <Table headers={['', 'Tenant', 'Room', 'Rent', 'Electricity', 'Late fee', 'Discount', 'Total', 'Due', 'Status', 'Actions']}>
@@ -302,9 +329,23 @@ export default function Rents() {
                     {r.status !== 'paid' ? (
                       <>
                         <button
+                          onClick={() => remindVia(r, 'whatsapp')}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-white/5 transition-colors"
+                          title="Remind on WhatsApp"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => remindVia(r, 'sms')}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-white/5 transition-colors"
+                          title="Remind by SMS"
+                        >
+                          <Smartphone className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => remind([r._id])}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
-                          title="Send reminder"
+                          title="Email reminder"
                         >
                           <BellRing className="w-4 h-4" />
                         </button>

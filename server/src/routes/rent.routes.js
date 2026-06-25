@@ -8,6 +8,7 @@ router.use(protect);
 router.post('/generate', authorize('admin'), ctrl.generateRents);
 router.post('/electricity', authorize('admin'), ctrl.applyElectricity);
 router.post('/send-reminders', authorize('admin'), ctrl.sendReminders);
+router.post('/:id/remind', authorize('admin'), ctrl.remindRent);
 router.get('/', ctrl.listRents);
 router.get('/:id', ctrl.getRent);
 router.put('/:id', authorize('admin'), ctrl.updateRent);

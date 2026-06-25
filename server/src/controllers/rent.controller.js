@@ -6,6 +6,7 @@ import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import { createOrder, verifySignature, paymentMode } from '../services/payment.service.js';
 import { generateReceipt } from '../services/receipt.service.js';
 import { sendEmail, emailTemplates } from '../services/email.service.js';
+import { sendWhatsApp, sendSms, messageTemplates } from '../services/messaging.service.js';
 import { notify } from '../services/notification.service.js';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -333,6 +334,43 @@ export const getReceipt = asyncHandler(async (req, res) => {
     await rent.save();
   }
   res.json({ success: true, data: { receiptUrl: rent.receiptUrl } });
+});
+
+/** POST /api/rents/:id/remind { channel: 'whatsapp'|'sms'|'email' } (admin)
+ *  WhatsApp/SMS: in free (link) mode returns a click-to-send URL the admin opens;
+ *  in live mode (provider configured) it sends directly. Email sends immediately. */
+export const remindRent = asyncHandler(async (req, res) => {
+  const channel = String(req.body.channel || 'whatsapp').toLowerCase();
+  const rent = await Rent.findById(req.params.id).populate('tenantId', 'name email phone');
+  if (!rent) throw new ApiError(404, 'Rent record not found');
+  const tenant = rent.tenantId;
+  if (!tenant) throw new ApiError(422, 'This rent has no tenant attached');
+
+  const label = monthLabel(rent.month, rent.year);
+  const dueDate = rent.dueDate ? new Date(rent.dueDate).toLocaleDateString('en-IN') : '';
+
+  if (channel === 'email') {
+    const tpl = emailTemplates.rentReminder(tenant.name, label, rent.totalAmount, dueDate);
+    await sendEmail({ to: tenant.email, ...tpl });
+    await notify(tenant._id, { title: 'Rent reminder', message: `₹${rent.totalAmount} for ${label} is ${rent.status}.`, type: 'rent_due', link: '/tenant/rent' });
+    return res.json({ success: true, data: { channel: 'email', mode: 'sent' } });
+  }
+
+  if (channel === 'whatsapp' || channel === 'sms') {
+    if (!tenant.phone) throw new ApiError(422, `${tenant.name} has no phone number on file`);
+    const text = messageTemplates.rentReminder(tenant.name, label, rent.totalAmount, dueDate);
+    const result = channel === 'whatsapp'
+      ? await sendWhatsApp({ to: tenant.phone, text })
+      : await sendSms({ to: tenant.phone, text });
+    // Only record a notification once the message is actually delivered (live mode);
+    // in link mode the admin still has to tap "send", so we don't claim it was sent.
+    if (result.sent) {
+      await notify(tenant._id, { title: 'Rent reminder sent', message: `A ${label} rent reminder was sent via ${channel}.`, type: 'rent_due', link: '/tenant/rent' });
+    }
+    return res.json({ success: true, data: { channel, message: text, ...result } });
+  }
+
+  throw new ApiError(400, 'Invalid channel — use whatsapp, sms or email');
 });
 
 /** POST /api/rents/send-reminders (admin) — email + notify all pending/overdue */
