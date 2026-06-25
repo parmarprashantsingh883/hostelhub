@@ -23,10 +23,10 @@ function greeting() {
 }
 
 const QUICK = [
-  { to: '/tenant/rent', label: 'Pay rent', icon: CreditCard, tone: 'from-brand-500 to-brand-600' },
+  { to: '/tenant/rent', label: 'Pay rent', icon: CreditCard, tone: 'from-sky-400 to-sky-500' },
   { to: '/tenant/complaints', label: 'Raise complaint', icon: Wrench, tone: 'from-amber-400 to-amber-500' },
-  { to: '/tenant/visitors', label: 'Add visitor', icon: Plus, tone: 'from-brand-500 to-brand-700' },
-  { to: '/tenant/food-menu', label: 'Food menu', icon: UtensilsCrossed, tone: 'from-blue-500 to-blue-600' },
+  { to: '/tenant/visitors', label: 'Add visitor', icon: Plus, tone: 'from-cyan-400 to-sky-500' },
+  { to: '/tenant/food-menu', label: 'Food menu', icon: UtensilsCrossed, tone: 'from-blue-500 to-indigo-500' },
 ];
 
 function RentTooltip({ active, payload, label }) {
