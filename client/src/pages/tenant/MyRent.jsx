@@ -1,15 +1,135 @@
 import { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import {
   Banknote, FileDown, CreditCard, AlertTriangle, CheckCircle2, Wallet,
-  Clock, TrendingUp, ShieldCheck,
+  Clock, TrendingUp, ShieldCheck, Smartphone, Landmark, Lock, Loader2,
 } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Modal, Spinner, EmptyState, StatusBadge, Table, TableRow, Td,
-  PageHeader, StatCard, inr, fmtDate, Pagination, usePagination,
+  PageHeader, StatCard, Field, Input, Select, inr, fmtDate, Pagination, usePagination,
 } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
+
+const PAY_METHODS = [
+  { id: 'upi', label: 'UPI', icon: Smartphone },
+  { id: 'card', label: 'Card', icon: CreditCard },
+  { id: 'netbanking', label: 'Net banking', icon: Landmark },
+];
+
+/** Simulated secure checkout for demo/mock mode — verifies the order on "pay". */
+function CheckoutModal({ checkout, onClose, onDone }) {
+  const [method, setMethod] = useState('upi');
+  const [phase, setPhase] = useState('select'); // select | processing | done
+  if (!checkout) return null;
+  const { rent, order } = checkout;
+  const amount = rent.totalAmount;
+
+  const payNow = async () => {
+    setPhase('processing');
+    try {
+      await new Promise((r) => setTimeout(r, 1500)); // gateway latency
+      await api.post(`/rents/${rent._id}/verify`, {
+        orderId: order.id,
+        paymentId: `pay_${method}_${Date.now()}`,
+        signature: 'mock',
+      });
+      setPhase('done');
+      setTimeout(() => onDone(), 1200);
+    } catch (e) {
+      toast.error(errMsg(e, 'Payment failed'));
+      setPhase('select');
+    }
+  };
+
+  return (
+    <Modal open onClose={phase === 'processing' ? undefined : onClose} title="Secure checkout">
+      {/* amount strip */}
+      <div className="flex items-center justify-between rounded-2xl bg-slate-50 dark:bg-white/5 px-4 py-3">
+        <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+          <Lock className="h-3.5 w-3.5" /> Paying for {monthLabel(rent)}
+        </div>
+        <span className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{inr(amount)}</span>
+      </div>
+
+      {phase === 'select' && (
+        <div className="mt-5">
+          <div className="grid grid-cols-3 gap-2">
+            {PAY_METHODS.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setMethod(m.id)}
+                className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-xs font-semibold transition-colors ${
+                  method === m.id
+                    ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200'
+                    : 'border-slate-200 text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5'
+                }`}
+              >
+                <m.icon className="h-5 w-5" /> {m.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {method === 'upi' && (
+              <Field label="UPI ID"><Input defaultValue="demo@okhdfcbank" /></Field>
+            )}
+            {method === 'card' && (
+              <>
+                <Field label="Card number"><Input defaultValue="4111 1111 1111 1111" /></Field>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Expiry"><Input defaultValue="12/27" /></Field>
+                  <Field label="CVV"><Input type="password" defaultValue="123" /></Field>
+                </div>
+              </>
+            )}
+            {method === 'netbanking' && (
+              <Field label="Bank">
+                <Select defaultValue="HDFC Bank">
+                  {['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Mahindra'].map((bk) => (
+                    <option key={bk} value={bk}>{bk}</option>
+                  ))}
+                </Select>
+              </Field>
+            )}
+          </div>
+
+          <Button onClick={payNow} size="lg" className="mt-5 w-full">
+            <Lock className="h-4 w-4" /> Pay {inr(amount)}
+          </Button>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+            <ShieldCheck className="h-3.5 w-3.5" /> 256-bit encrypted · demo gateway — no real charge
+          </p>
+        </div>
+      )}
+
+      {phase === 'processing' && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Loader2 className="h-9 w-9 animate-spin text-brand-500" />
+          <p className="mt-4 text-sm font-semibold text-slate-800 dark:text-slate-100">Processing payment…</p>
+          <p className="mt-1 text-xs text-slate-400">Contacting your bank — don't close this window.</p>
+        </div>
+      )}
+
+      {phase === 'done' && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 18 }}
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500 dark:bg-emerald-500/15"
+          >
+            <CheckCircle2 className="h-9 w-9" />
+          </motion.div>
+          <p className="mt-4 text-base font-bold text-slate-900 dark:text-white">Payment successful</p>
+          <p className="mt-1 text-sm text-slate-500">{inr(amount)} received · receipt is ready</p>
+        </div>
+      )}
+    </Modal>
+  );
+}
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const monthLabel = (r) => `${MONTHS[r.month - 1]} ${r.year}`;
@@ -18,7 +138,8 @@ export default function MyRent() {
   const { user } = useAuth();
   const [rents, setRents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [paying, setPaying] = useState(null); // rent being paid
+  const [paying, setPaying] = useState(null); // rent being paid (confirm modal)
+  const [checkout, setCheckout] = useState(null); // { rent, order } — demo gateway
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
@@ -48,15 +169,9 @@ export default function MyRent() {
       const { mode, keyId, order } = data.data;
 
       if (mode === 'mock') {
-        // Dev mode — no gateway needed, complete the flow immediately
-        await api.post(`/rents/${rent._id}/verify`, {
-          orderId: order.id,
-          paymentId: `pay_mock_${Date.now()}`,
-          signature: 'mock',
-        });
-        toast.success('Payment successful (dev mock mode) 🎉');
+        // Demo mode — open the in-app secure checkout to complete the flow.
         setPaying(null);
-        load();
+        setCheckout({ rent, order });
         return;
       }
 
@@ -268,17 +383,24 @@ export default function MyRent() {
 
             <p className="text-xs text-slate-400 mt-3 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              Processed securely via Razorpay. In dev mode the payment completes instantly without a gateway.
+              You'll continue to a secure checkout (UPI, card or net banking).
             </p>
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="secondary" onClick={() => setPaying(null)}>Cancel</Button>
               <Button onClick={() => pay(paying)} loading={busy}>
-                <CreditCard className="w-4 h-4" /> Pay {inr(paying.totalAmount)}
+                <CreditCard className="w-4 h-4" /> Continue to pay
               </Button>
             </div>
           </>
         )}
       </Modal>
+
+      {/* Demo secure checkout (mock mode) */}
+      <CheckoutModal
+        checkout={checkout}
+        onClose={() => setCheckout(null)}
+        onDone={() => { setCheckout(null); toast.success('Payment successful 🎉'); load(); }}
+      />
     </div>
   );
 }
