@@ -75,6 +75,34 @@ export const checkIn = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { visitor } });
 });
 
+/** POST /api/visitors/check-in-by-code { code } (staff/admin)
+ *  Gate flow: scan (or type) the visitor's QR pass code and check them in.
+ *  Same effect as /:id/check-in, keyed by the pass code instead of the id. */
+export const checkInByCode = asyncHandler(async (req, res) => {
+  const code = String(req.body.code || '').trim().toUpperCase();
+  if (!code) throw new ApiError(400, 'A pass code is required');
+
+  const visitor = await Visitor.findOne({ passCode: code }).populate('tenantId', 'name');
+  if (!visitor) throw new ApiError(404, 'No visitor found for this pass code');
+  if (visitor.status !== 'expected') {
+    throw new ApiError(422, `This pass is already ${visitor.status.replace(/_/g, ' ')}`);
+  }
+
+  visitor.status = 'checked_in';
+  visitor.entryTime = new Date();
+  visitor.approvedBy = req.user._id;
+  await visitor.save();
+
+  await notify(visitor.tenantId._id || visitor.tenantId, {
+    title: 'Visitor arrived',
+    message: `${visitor.visitorName} has checked in.`,
+    type: 'visitor',
+    link: '/tenant/visitors',
+  });
+
+  res.json({ success: true, data: { visitor } });
+});
+
 /** PUT /api/visitors/:id/check-out (staff/admin) */
 export const checkOut = asyncHandler(async (req, res) => {
   const visitor = await Visitor.findById(req.params.id);

@@ -28,6 +28,7 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import expenseRoutes from './routes/expense.routes.js';
 import leadRoutes from './routes/lead.routes.js';
 import settlementRoutes from './routes/settlement.routes.js';
+import publicRoutes from './routes/public.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
@@ -84,6 +85,7 @@ app.get('/api/ready', (_req, res) => {
   const ready = mongoose.connection.readyState === 1;
   res.status(ready ? 200 : 503).json({ success: ready, status: ready ? 'ready' : 'connecting' });
 });
+app.use('/api/public', publicRoutes); // unauthenticated (QR receipt verification)
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/tenants', tenantRoutes);

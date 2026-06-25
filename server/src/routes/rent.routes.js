@@ -13,6 +13,7 @@ router.get('/:id', ctrl.getRent);
 router.put('/:id', authorize('admin'), ctrl.updateRent);
 router.put('/:id/mark-paid', authorize('admin'), ctrl.markPaid);
 router.post('/:id/pay', authorize('tenant'), ctrl.initiatePayment);
+router.get('/:id/upi', authorize('tenant'), ctrl.getUpiIntent);
 router.post('/:id/verify', authorize('tenant'), ctrl.verifyPayment);
 router.get('/:id/receipt', ctrl.getReceipt);
 

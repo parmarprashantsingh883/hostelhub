@@ -6,6 +6,7 @@ const router = Router();
 router.use(protect);
 
 router.post('/', authorize('tenant'), ctrl.createVisitor);
+router.post('/check-in-by-code', authorize('admin', 'staff'), ctrl.checkInByCode);
 router.get('/', ctrl.listVisitors);
 router.get('/:id', ctrl.getVisitor);
 router.put('/:id/check-in', authorize('admin', 'staff'), ctrl.checkIn);

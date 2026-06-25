@@ -245,6 +245,30 @@ export const initiatePayment = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { mode, keyId, order } });
 });
 
+/** GET /api/rents/:id/upi (tenant) — UPI deep-link + payee for a scan-to-pay QR.
+ *  Payee details come from config (UPI_VPA / UPI_PAYEE_NAME), never hardcoded.
+ *  In dev (no config) a demo VPA is returned so the QR is demonstrable; in
+ *  production UPI_VPA must be set or the QR is omitted. */
+export const getUpiIntent = asyncHandler(async (req, res) => {
+  const rent = await Rent.findById(req.params.id);
+  if (!rent) throw new ApiError(404, 'Rent record not found');
+  if (String(rent.tenantId) !== String(req.user._id)) throw new ApiError(403, 'Not your rent record');
+  if (rent.status === 'paid') throw new ApiError(409, 'This rent is already paid');
+
+  const isProd = process.env.NODE_ENV === 'production';
+  const vpa = process.env.UPI_VPA || (isProd ? '' : 'quarters.demo@okhdfcbank');
+  const payeeName = process.env.UPI_PAYEE_NAME || process.env.BUSINESS_NAME || 'Quarters';
+  if (!vpa) return res.json({ success: true, data: { configured: false } });
+
+  const amount = Number(rent.totalAmount || 0).toFixed(2);
+  const note = `Rent ${monthLabel(rent.month, rent.year)}`;
+  const enc = encodeURIComponent;
+  const intent =
+    `upi://pay?pa=${enc(vpa)}&pn=${enc(payeeName)}&am=${amount}&cu=INR&tn=${enc(note)}&tr=${enc(String(rent._id))}`;
+
+  res.json({ success: true, data: { configured: true, vpa, payeeName, amount, note, intent } });
+});
+
 /** POST /api/rents/:id/verify — payment callback verification */
 export const verifyPayment = asyncHandler(async (req, res) => {
   const { orderId, paymentId, signature } = req.body;

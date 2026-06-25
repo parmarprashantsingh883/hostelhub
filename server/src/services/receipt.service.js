@@ -1,4 +1,5 @@
 import PDFDocument from 'pdfkit';
+import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -42,6 +43,21 @@ export async function generateReceipt({ rent, tenant, room }) {
   const FN = uni ? 'Body' : 'Helvetica';
   const FB = uni ? 'BodyB' : 'Helvetica-Bold';
   const money = (n) => `${uni ? '₹' : 'Rs. '}${Number(n || 0).toLocaleString('en-IN')}`;
+
+  // Verification QR — resolves to the public page that confirms this receipt
+  // is genuine. Generated best-effort; a failure must not break the receipt.
+  const clientUrl = (process.env.CLIENT_URL || 'http://localhost:8080').split(',')[0].trim();
+  const verifyUrl = `${clientUrl}/verify/${rent._id}`;
+  let qrBuffer = null;
+  try {
+    qrBuffer = await QRCode.toBuffer(verifyUrl, {
+      margin: 1,
+      width: 240,
+      color: { dark: INK, light: '#ffffff' },
+    });
+  } catch {
+    qrBuffer = null;
+  }
 
   await new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 0 });
@@ -147,17 +163,28 @@ export async function generateReceipt({ rent, tenant, room }) {
       if (BUSINESS.gstin) doc.text(`GSTIN: ${BUSINESS.gstin}`, L, y);
     }
 
-    // ── Footer ─────────────────────────────────────────────────────────
-    const fy = H - 92;
+    // ── Footer (verification QR + notes) ───────────────────────────────
+    const fy = H - 116;
     doc.moveTo(L, fy).lineTo(R, fy).lineWidth(0.5).strokeColor(LINE).stroke();
-    doc.font(FB).fontSize(10.5).fillColor(INK).text('Thank you for staying with us.', L, fy + 14, { width: CW, align: 'center' });
+
+    const qrSize = 64;
+    const blockY = fy + 18;
+    let textX = L;
+    let textW = CW;
+    if (qrBuffer) {
+      doc.image(qrBuffer, L, blockY, { width: qrSize, height: qrSize });
+      doc.font(FB).fontSize(6.5).fillColor(MUTE).text('SCAN TO VERIFY', L, blockY + qrSize + 3, { width: qrSize, align: 'center', characterSpacing: 0.4 });
+      textX = L + qrSize + 18;
+      textW = R - textX;
+    }
+    doc.font(FB).fontSize(10.5).fillColor(INK).text('Thank you for staying with us.', textX, blockY + 2, { width: textW });
     doc.font(FN).fontSize(8).fillColor(MUTE).text(
-      'This is a computer-generated receipt and does not require a signature.',
-      L, fy + 32, { width: CW, align: 'center' },
+      'This is a computer-generated receipt and does not require a signature. Scan the QR to verify its authenticity online.',
+      textX, blockY + 19, { width: textW },
     );
     doc.font(FN).fontSize(7.5).fillColor('#b6bfcd').text(
       `${BUSINESS.name} · generated ${new Date().toLocaleString('en-IN')}`,
-      L, fy + 46, { width: CW, align: 'center' },
+      textX, blockY + 46, { width: textW },
     );
 
     doc.end();

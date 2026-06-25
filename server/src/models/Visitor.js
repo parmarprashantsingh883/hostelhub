@@ -1,4 +1,9 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
+
+/** Short, unambiguous gate pass — e.g. "QV-9F3A21". Encoded into the visitor's
+ *  QR pass; security scans (or types) it to check the visitor in. */
+export const genPassCode = () => `QV-${crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 6)}`;
 
 const visitorSchema = new mongoose.Schema(
   {
@@ -7,6 +12,8 @@ const visitorSchema = new mongoose.Schema(
     visitorPhone: { type: String, required: true, trim: true, maxlength: 20 },
     purpose: { type: String, required: true, trim: true, maxlength: 300 },
     expectedDateTime: { type: Date, required: true },
+    // Gate-pass code carried by the visitor's QR pass (unique per visit).
+    passCode: { type: String, unique: true, index: true, default: genPassCode },
     entryTime: { type: Date, default: null },
     exitTime: { type: Date, default: null },
     status: {
