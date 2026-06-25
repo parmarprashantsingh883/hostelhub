@@ -14,6 +14,7 @@ import Visitor from '../models/Visitor.js';
 import FoodMenu from '../models/FoodMenu.js';
 import Expense from '../models/Expense.js';
 import Lead from '../models/Lead.js';
+import Booking from '../models/Booking.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -51,7 +52,7 @@ export async function runSeed({ exitAfter = true } = {}) {
     { roomNumber: '201', floor: 2, roomType: 'single', capacity: 1, rentAmount: 9500, facilities: ['AC', 'Wi-Fi'] },
     { roomNumber: '202', floor: 2, roomType: 'double', capacity: 2, rentAmount: 7200, facilities: ['Wi-Fi'] },
     { roomNumber: '203', floor: 2, roomType: 'triple', capacity: 3, rentAmount: 6200, facilities: ['Wi-Fi', 'Balcony'] },
-    { roomNumber: '204', floor: 2, roomType: 'dormitory', capacity: 6, rentAmount: 4500, facilities: ['Wi-Fi', 'Lockers'] },
+    { roomNumber: '204', floor: 2, roomType: 'dormitory', capacity: 8, rentAmount: 4500, facilities: ['Wi-Fi', 'Lockers'] },
     { roomNumber: '301', floor: 3, roomType: 'single', capacity: 1, rentAmount: 10000, facilities: ['AC', 'Wi-Fi', 'Attached bath'] },
     { roomNumber: '302', floor: 3, roomType: 'double', capacity: 2, rentAmount: 7500, facilities: ['Wi-Fi'], status: 'maintenance' },
   ];
@@ -333,6 +334,29 @@ export async function runSeed({ exitAfter = true } = {}) {
     { name: 'Deepika Menon', phone: '+91 9812000010', source: 'social', stage: 'lost', budget: 5000, note: 'Chose a closer PG. Budget mismatch.' },
   ];
   for (const l of leadSpecs) await Lead.create({ ...l, createdBy: admin._id });
+
+  // ── Bookings — a reservation pipeline holding beds in the dorm (204) ──
+  const r204 = roomByNumber['204'];
+  await Booking.create([
+    {
+      name: 'Tanvi Kapoor', phone: '+91 9812000008', email: 'tanvi.k@example.com',
+      roomId: r204._id, moveInDate: new Date(Date.now() + 3 * day),
+      rentAmount: r204.rentAmount, securityDeposit: r204.rentAmount, tokenAmount: 2000,
+      status: 'reserved', note: 'Paid ₹2000 token to block a dorm bed.', createdBy: admin._id,
+    },
+    {
+      name: 'Vivek Malhotra', phone: '+91 9812000005',
+      roomId: r204._id, moveInDate: new Date(Date.now() + 7 * day),
+      rentAmount: r204.rentAmount, securityDeposit: r204.rentAmount, tokenAmount: 3000,
+      status: 'confirmed', note: 'Token cleared. Moving in next week.', createdBy: admin._id,
+    },
+    {
+      name: 'Deepika Menon', phone: '+91 9812000010',
+      roomId: r204._id, moveInDate: new Date(Date.now() - 2 * day),
+      rentAmount: r204.rentAmount, securityDeposit: 0, tokenAmount: 0,
+      status: 'cancelled', note: 'Chose a closer PG.', createdBy: admin._id,
+    },
+  ]);
 
   // ── Move-out queue — two former residents for the settlement demo ─────
   // These are NOT counted in room occupancy; they reference a former room only

@@ -28,6 +28,8 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import expenseRoutes from './routes/expense.routes.js';
 import leadRoutes from './routes/lead.routes.js';
 import settlementRoutes from './routes/settlement.routes.js';
+import occupancyRoutes from './routes/occupancy.routes.js';
+import bookingRoutes from './routes/booking.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -102,6 +104,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/settlements', settlementRoutes);
+app.use('/api/occupancy', occupancyRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);
