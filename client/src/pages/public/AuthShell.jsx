@@ -40,10 +40,13 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       </div>
 
       {/* ───────────────── BRAND PANEL (right) ───────────────── */}
-      <div className="surface-hero relative hidden flex-col overflow-hidden p-10 lg:flex">
-        {/* soft ambient glows */}
-        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-        <div className="pointer-events-none absolute -left-24 bottom-8 h-72 w-72 rounded-full bg-brand-400/25 blur-3xl" />
+      <div className="relative hidden flex-col overflow-hidden bg-brand-900 p-10 lg:flex">
+        {/* a real co-living room, tinted to the brand (Pexels — free/commercial license) */}
+        <img src="/auth-room.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-brand-800/55 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-900/92 via-brand-900/35 to-brand-900/45" />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 120% at 50% 38%, transparent 50%, rgba(11,16,24,0.6) 100%)' }} />
+        <div className="pointer-events-none absolute -left-24 bottom-8 h-72 w-72 rounded-full bg-brand-400/20 blur-3xl" />
 
         {/* wordmark */}
         <div className="relative flex items-center gap-2.5">
