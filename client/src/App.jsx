@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { Protected, GuestOnly } from './routes/Protected.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
+import RouteProgress from './components/RouteProgress.jsx';
 
 // Public
 const Landing = lazy(() => import('./pages/public/Landing.jsx'));
@@ -56,7 +57,9 @@ function PageLoader() {
 
 export default function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <>
+      <RouteProgress />
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />
@@ -116,6 +119,7 @@ export default function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Suspense>
+      </Suspense>
+    </>
   );
 }

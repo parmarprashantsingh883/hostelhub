@@ -36,7 +36,7 @@
   --color-ink-100: #e9edf2;
   --color-ink-200: #dbe1ea;
 
-  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   /* Editorial display + ledger mono (used on the marketing site) */
   --font-display: 'Fraunces', 'Plus Jakarta Sans', ui-serif, Georgia, serif;
   --font-mono: 'Spline Sans Mono', ui-monospace, 'SFMono-Regular', monospace;
@@ -56,7 +56,11 @@
 html {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Always reserve the scrollbar gutter so pages of different heights (and
+     modal scroll-locks) never shift content sideways — kills the nav "shake". */
+  scrollbar-gutter: stable;
 }
 
 /* Data-viz colours — reactive to dark mode via CSS variables (used by charts
@@ -83,7 +87,14 @@ html {
 body {
   @apply text-slate-900;
   background-color: #f6f8fa; /* cool light-gray canvas (minimal) */
-  font-feature-settings: 'ss01';
+  /* Inter: tabular-ish lining, subtle optical tracking for a crisp SaaS feel */
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.006em;
+}
+
+/* Confident, tightly-tracked headings (Inter looks best slightly negative). */
+h1, h2, h3, h4 {
+  letter-spacing: -0.021em;
 }
 
 /* ── Dark theme ───────────────────────────────────────────────── */
