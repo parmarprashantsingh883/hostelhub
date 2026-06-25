@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { BedDouble, IndianRupee, QrCode, Check } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { BedDouble, IndianRupee, QrCode, Check, TrendingUp } from 'lucide-react';
 import { LogoMark, LogoMono } from '../../components/brand/Logo';
+import { AnimatedNumber } from '../../components/ui';
 
 const PROOF = [
   { icon: BedDouble, label: 'Live occupancy' },
@@ -18,6 +19,7 @@ const BARS = [38, 50, 46, 64, 78, 95];
  * (the product's signature) and the Quarters motto.
  */
 export default function AuthShell({ title, subtitle, children, footer }) {
+  const reduce = useReducedMotion();
   return (
     <div className="grid min-h-screen bg-white lg:grid-cols-2 dark:bg-sidebar">
       {/* ───────────────── FORM (left) ───────────────── */}
@@ -54,42 +56,60 @@ export default function AuthShell({ title, subtitle, children, footer }) {
           <span className="text-lg font-extrabold tracking-tight text-white">Quarters</span>
         </div>
 
-        {/* signature — a polished product snapshot (occupancy ring + revenue) */}
+        {/* signature — an animated product snapshot (occupancy ring + revenue) */}
         <div className="relative flex flex-1 items-center justify-center py-8">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="animate-float-soft relative w-full max-w-sm"
           >
+            {/* stacked-card depth behind the main card */}
+            <div aria-hidden className="absolute -bottom-2.5 left-3.5 right-3.5 h-full rounded-2xl bg-white/15 ring-1 ring-white/10 backdrop-blur-sm" />
+
             {/* main product card — solid white so it reads as a real app screen */}
-            <div className="rounded-2xl bg-white p-5 shadow-[0_34px_90px_-26px_rgba(0,0,0,0.6)] ring-1 ring-black/5">
+            <div className="relative rounded-2xl bg-white p-5 shadow-[0_34px_90px_-26px_rgba(0,0,0,0.6)] ring-1 ring-black/5">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-900">This month</span>
                 <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" /> Live
+                  <span className="relative flex h-2 w-2">
+                    {!reduce && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span> Live
                 </span>
               </div>
 
               <div className="mt-4 flex items-center gap-5">
-                {/* occupancy ring */}
+                {/* occupancy ring (draws on mount) */}
                 <div className="relative h-[88px] w-[88px] shrink-0">
                   <svg viewBox="0 0 100 100" className="h-[88px] w-[88px] -rotate-90">
                     <circle cx="50" cy="50" r="42" fill="none" stroke="#eef1f5" strokeWidth="11" />
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="#2563eb" strokeWidth="11" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="21" />
+                    <motion.circle
+                      cx="50" cy="50" r="42" fill="none" stroke="#2563eb" strokeWidth="11" strokeLinecap="round"
+                      strokeDasharray="264"
+                      initial={reduce ? false : { strokeDashoffset: 264 }}
+                      animate={{ strokeDashoffset: 21 }}
+                      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                    />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xl font-extrabold tracking-tight text-slate-900">92%</span>
+                    <AnimatedNumber value={92} format={(n) => `${Math.round(n)}%`} className="text-xl font-extrabold tracking-tight text-slate-900" />
                     <span className="text-[10px] font-medium text-slate-400">occupied</span>
                   </div>
                 </div>
-                {/* revenue + mini bars */}
+                {/* revenue + mini bars (rise on mount) */}
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Collected</p>
-                  <p className="text-2xl font-extrabold tracking-tight text-slate-900">₹1.24L</p>
+                  <AnimatedNumber value={124000} format={(n) => `₹${(n / 100000).toFixed(2)}L`} className="block text-2xl font-extrabold tracking-tight text-slate-900" />
                   <div className="mt-2 flex h-9 items-end gap-1.5">
                     {BARS.map((h, i) => (
-                      <span key={i} style={{ height: `${h}%` }} className={`w-2.5 rounded-sm ${i === BARS.length - 1 ? 'bg-brand-600' : 'bg-brand-200'}`} />
+                      <motion.span
+                        key={i}
+                        initial={reduce ? false : { height: 0 }}
+                        animate={{ height: `${h}%` }}
+                        transition={{ duration: 0.5, delay: 0.35 + i * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                        className={`w-2.5 rounded-sm ${i === BARS.length - 1 ? 'bg-brand-600' : 'bg-brand-200'}`}
+                      />
                     ))}
                   </div>
                 </div>
@@ -97,17 +117,38 @@ export default function AuthShell({ title, subtitle, children, footer }) {
 
               <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
                 <span className="text-slate-400">Sunrise PG · 22 beds</span>
-                <span className="font-semibold text-emerald-600">+8% vs last month</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-emerald-600"><TrendingUp className="h-3.5 w-3.5" /> +8% vs last month</span>
               </div>
             </div>
 
-            {/* floating receipt toast — echoes the in-app payment flow */}
-            <div className="absolute -right-3 -top-4 flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-[0_16px_36px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
+            {/* floating receipt toast — slides in like a live notification */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: -8, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: reduce ? 0 : 1.0, type: 'spring', stiffness: 300, damping: 20 }}
+              className="absolute -right-3 -top-4 flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-[0_16px_36px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5"
+            >
               <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-100 text-emerald-600">
                 <Check className="h-3.5 w-3.5" strokeWidth={3} />
               </span>
               <span className="text-xs font-semibold text-slate-700">Rent received · ₹6,200</span>
-            </div>
+            </motion.div>
+
+            {/* bottom-left proof chip */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: reduce ? 0 : 1.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute left-1 top-full mt-3 flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-[0_16px_36px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5"
+            >
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-50 text-brand-600">
+                <TrendingUp className="h-3.5 w-3.5" />
+              </span>
+              <div className="leading-tight">
+                <p className="text-[10px] font-medium text-slate-400">On-time rent</p>
+                <p className="text-xs font-bold text-slate-800">98% this month</p>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
 
