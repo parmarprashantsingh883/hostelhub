@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { ClipboardList, Plus, UserPlus, CalendarClock, CalendarDays, Phone } from 'lucide-react';
+import { ClipboardList, Plus, UserPlus, CalendarClock, CalendarDays, Phone, QrCode } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Field, Input, Textarea, Modal, Spinner, EmptyState, StatusBadge,
   Table, TableRow, Td, PageHeader, StatCard, Avatar, fmtDateTime,
   Pagination, usePagination,
 } from '../../components/ui';
+import QRCodeTile from '../../components/QRCode';
 
 const EMPTY = { visitorName: '', visitorPhone: '', purpose: '', expectedDateTime: '' };
 
@@ -16,6 +17,7 @@ export default function TenantVisitors() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
   const [busy, setBusy] = useState(false);
+  const [pass, setPass] = useState(null); // visitor whose QR pass is shown
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -85,7 +87,7 @@ export default function TenantVisitors() {
             action={<Button onClick={() => setOpen(true)}><Plus className="w-4 h-4" /> Add visitor</Button>}
           />
         ) : (
-          <Table headers={['Visitor', 'Purpose', 'Expected', 'Status']}>
+          <Table headers={['Visitor', 'Purpose', 'Expected', 'Status', 'Pass']}>
             {pageItems.map((v) => (
               <TableRow key={v._id}>
                 <Td>
@@ -102,6 +104,18 @@ export default function TenantVisitors() {
                 <Td className="max-w-xs"><span className="line-clamp-2 text-slate-600 dark:text-slate-300">{v.purpose}</span></Td>
                 <Td className="whitespace-nowrap text-slate-500 tabular-nums">{fmtDateTime(v.expectedDateTime)}</Td>
                 <Td><StatusBadge status={v.status} /></Td>
+                <Td>
+                  {v.status === 'expected' ? (
+                    <button
+                      onClick={() => setPass(v)}
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand-600 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <QrCode className="w-3.5 h-3.5" /> Show pass
+                    </button>
+                  ) : (
+                    <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
+                  )}
+                </Td>
               </TableRow>
             ))}
           </Table>
@@ -130,6 +144,35 @@ export default function TenantVisitors() {
             <Button onClick={submit} loading={busy}><UserPlus className="w-4 h-4" /> Add visitor</Button>
           </div>
         </div>
+      </Modal>
+
+      {/* Visitor QR pass */}
+      <Modal open={!!pass} onClose={() => setPass(null)} title="Visitor gate pass">
+        {pass && (
+          <div className="flex flex-col items-center text-center">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Show this pass at the gate — security scans it to check in
+            </p>
+            <div className="mt-4">
+              <QRCodeTile value={pass.passCode} size={188} download={`pass-${pass.passCode}`} />
+            </div>
+            <p className="mt-3 font-mono text-lg font-bold tracking-[0.2em] text-slate-900 dark:text-white">{pass.passCode}</p>
+            <div className="mt-4 w-full rounded-2xl bg-slate-50 dark:bg-white/5 px-4 py-3 text-left text-sm">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-slate-500">Visitor</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{pass.visitorName}</span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-slate-500">Phone</span>
+                <span className="font-medium text-slate-700 dark:text-slate-200 tabular-nums">{pass.visitorPhone}</span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-slate-500">Expected</span>
+                <span className="font-medium text-slate-700 dark:text-slate-200">{fmtDateTime(pass.expectedDateTime)}</span>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

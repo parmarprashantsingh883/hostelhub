@@ -10,6 +10,7 @@ import {
   Button, Card, Modal, Spinner, EmptyState, StatusBadge, Table, TableRow, Td,
   PageHeader, StatCard, Field, Input, Select, inr, fmtDate, Pagination, usePagination,
 } from '../../components/ui';
+import QRCode from '../../components/QRCode';
 import { useAuth } from '../../context/AuthContext';
 
 const PAY_METHODS = [
@@ -22,6 +23,18 @@ const PAY_METHODS = [
 function CheckoutModal({ checkout, onClose, onDone }) {
   const [method, setMethod] = useState('upi');
   const [phase, setPhase] = useState('select'); // select | processing | done
+  const [upi, setUpi] = useState(null); // { configured, vpa, intent, ... }
+  const [upiView, setUpiView] = useState('qr'); // qr | id
+
+  useEffect(() => {
+    if (!checkout) return undefined;
+    let on = true;
+    api.get(`/rents/${checkout.rent._id}/upi`)
+      .then(({ data }) => { if (on) setUpi(data.data); })
+      .catch(() => {});
+    return () => { on = false; };
+  }, [checkout]);
+
   if (!checkout) return null;
   const { rent, order } = checkout;
   const amount = rent.totalAmount;
@@ -74,7 +87,38 @@ function CheckoutModal({ checkout, onClose, onDone }) {
 
           <div className="mt-4 space-y-3">
             {method === 'upi' && (
-              <Field label="UPI ID"><Input defaultValue="demo@okhdfcbank" /></Field>
+              upi?.configured ? (
+                <div className="space-y-3">
+                  <div className="flex justify-center gap-2">
+                    {[{ id: 'qr', label: 'Scan QR' }, { id: 'id', label: 'Enter UPI ID' }].map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => setUpiView(v.id)}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                          upiView === v.id
+                            ? 'bg-brand-600 text-white'
+                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'
+                        }`}
+                      >
+                        {v.label}
+                      </button>
+                    ))}
+                  </div>
+                  {upiView === 'qr' ? (
+                    <div className="flex flex-col items-center pt-1">
+                      <QRCode value={upi.intent} size={168} caption={`Scan with any UPI app to pay ${inr(amount)} to ${upi.vpa}`} />
+                      <a href={upi.intent} className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:underline dark:text-brand-300">
+                        Open in a UPI app →
+                      </a>
+                    </div>
+                  ) : (
+                    <Field label="UPI ID"><Input defaultValue={upi.vpa} /></Field>
+                  )}
+                </div>
+              ) : (
+                <Field label="UPI ID"><Input defaultValue="demo@okhdfcbank" /></Field>
+              )
             )}
             {method === 'card' && (
               <>

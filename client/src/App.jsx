@@ -13,6 +13,7 @@ const Register = lazy(() => import('./pages/public/Register.jsx'));
 const ForgotPassword = lazy(() => import('./pages/public/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/public/ResetPassword.jsx'));
 const Book = lazy(() => import('./pages/public/Book.jsx'));
+const VerifyReceipt = lazy(() => import('./pages/public/VerifyReceipt.jsx'));
 
 // Admin
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard.jsx'));
@@ -64,6 +65,7 @@ export default function App() {
         {/* Public */}
         <Route path="/" element={<Landing />} />
         <Route path="/book" element={<Book />} />
+        <Route path="/verify/:id" element={<VerifyReceipt />} />
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { ClipboardList, LogIn, LogOut, Ban, Clock, UserCheck, UserMinus, Filter } from 'lucide-react';
+import { ClipboardList, LogIn, LogOut, Ban, Clock, UserCheck, UserMinus, Filter, ScanLine } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import {
   Button, Card, Select, Spinner, EmptyState, StatusBadge, Table, TableRow, Td,
   PageHeader, StatCard, Avatar, fmtDateTime, Pagination, usePagination,
 } from '../../components/ui';
+import VisitorScanner from '../../components/VisitorScanner';
 
 const STATUSES = ['expected', 'checked_in', 'checked_out', 'rejected'];
 
@@ -14,6 +15,7 @@ export default function StaffVisitors() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(null);
+  const [scan, setScan] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -48,7 +50,11 @@ export default function StaffVisitors() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Visitor Log" subtitle="Check visitors in and out at the gate" />
+      <PageHeader
+        title="Visitor Log"
+        subtitle="Check visitors in and out at the gate"
+        action={<Button onClick={() => setScan(true)}><ScanLine className="w-4 h-4" /> Check in by pass</Button>}
+      />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Clock} tone="amber" label="Expected" value={countBy('expected')} sub="Awaiting arrival" />
@@ -117,6 +123,8 @@ export default function StaffVisitors() {
           <Pagination page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={setPage} />
         )}
       </Card>
+
+      <VisitorScanner open={scan} onClose={() => setScan(false)} onChecked={load} />
     </div>
   );
 }
