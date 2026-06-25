@@ -13,7 +13,7 @@ import { containerVariants } from './motion';
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
   primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(36,48,71,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(36,48,71,0.55)] focus-visible:ring-brand-500/40 dark:bg-brand-500 dark:hover:bg-brand-400',
-  secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40 dark:bg-night-800 dark:text-slate-200 dark:border-white/15 dark:hover:bg-white/5 dark:hover:border-white/25 dark:shadow-none',
+  secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40 dark:bg-surface2 dark:text-slate-200 dark:border-white/15 dark:hover:bg-white/5 dark:hover:border-white/25 dark:shadow-none',
   danger: 'bg-rose-50 text-rose-600 border border-rose-500/25 hover:bg-rose-100 focus-visible:ring-rose-400/40 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-400/20 dark:hover:bg-rose-500/25',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40 dark:text-slate-300 dark:hover:bg-white/10',
   success: 'bg-emerald-50 text-emerald-700 border border-emerald-600/25 hover:bg-emerald-100 focus-visible:ring-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-400/20 dark:hover:bg-emerald-500/25',
@@ -49,7 +49,7 @@ export function Field({ label, error, required, children, hint, className = '' }
 }
 
 export const inputCls = (error) =>
-  `w-full h-10 px-3.5 rounded-xl border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 dark:bg-night-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-400 ${
+  `w-full h-10 px-3.5 rounded-xl border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 dark:bg-surface2 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-400 ${
     error ? 'border-red-400 focus:ring-red-500/10 focus:border-red-500' : 'border-slate-300 hover:border-slate-400 dark:border-white/10 dark:hover:border-white/20'
   }`;
 
@@ -88,7 +88,7 @@ export function Textarea({ error, className = '', rows = 3, ...rest }) {
   return (
     <textarea
       rows={rows}
-      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 dark:bg-night-800 dark:text-slate-100 dark:placeholder:text-slate-500 ${
+      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 dark:bg-surface2 dark:text-slate-100 dark:placeholder:text-slate-500 ${
         error ? 'border-red-400' : 'border-slate-300 hover:border-slate-400 dark:border-white/10 dark:hover:border-white/20'
       } ${className}`}
       {...rest}
@@ -99,7 +99,7 @@ export function Textarea({ error, className = '', rows = 3, ...rest }) {
 /* ── Card ───────────────────────────────────────────────────────────── */
 export function Card({ title, action, className = '', children }) {
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200/70 shadow-card dark:bg-night-900 dark:border-white/10 dark:shadow-none ${className}`}>
+    <div className={`bg-white rounded-2xl border border-slate-200/70 shadow-card dark:bg-surface dark:border-white/10 dark:shadow-none ${className}`}>
       {(title || action) && (
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-white/10">
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h3>
@@ -177,13 +177,13 @@ export function Modal({ open, onClose, title, children, wide }) {
             role="dialog"
             aria-modal="true"
             aria-label={typeof title === 'string' ? title : undefined}
-            className={`relative bg-white rounded-3xl shadow-pop w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-y-auto scrollbar-thin dark:bg-night-900 dark:ring-1 dark:ring-white/10`}
+            className={`relative bg-white rounded-3xl shadow-pop w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-y-auto scrollbar-thin dark:bg-surface dark:ring-1 dark:ring-white/10`}
             initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}
             transition={{ type: 'spring', stiffness: 320, damping: 26 }}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur rounded-t-3xl z-10 dark:border-white/10 dark:bg-night-900/95">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur rounded-t-3xl z-10 dark:border-white/10 dark:bg-surface/95">
               <h3 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h3>
               <button onClick={onClose} className="w-8 h-8 -mr-1 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors dark:hover:text-white dark:hover:bg-white/10" aria-label="Close">
                 <X className="w-5 h-5" />
@@ -248,7 +248,7 @@ export function Drawer({ open, onClose, title, subtitle, children, footer }) {
             role="dialog"
             aria-modal="true"
             aria-label={typeof title === 'string' ? title : undefined}
-            className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-pop flex flex-col dark:bg-night-900 dark:border-l dark:border-white/10"
+            className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-pop flex flex-col dark:bg-surface dark:border-l dark:border-white/10"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -329,7 +329,7 @@ export function StatStripSkeleton({ count = 4 }) {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card dark:bg-night-900 dark:border-white/10 dark:shadow-none">
+        <div key={i} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card dark:bg-surface dark:border-white/10 dark:shadow-none">
           <div className="flex items-start justify-between">
             <Skeleton className="h-2.5 w-20" />
             <Skeleton className="h-9 w-9 rounded-xl" />
@@ -385,7 +385,7 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
   }
   return (
     <motion.div
-      className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card transition-shadow duration-200 hover:shadow-soft dark:bg-night-900 dark:border-white/10 dark:shadow-none"
+      className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card transition-shadow duration-200 hover:shadow-soft dark:bg-surface dark:border-white/10 dark:shadow-none"
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}

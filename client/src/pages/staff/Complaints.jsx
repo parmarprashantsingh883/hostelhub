@@ -98,7 +98,7 @@ export default function StaffComplaints() {
               const canUpdate = ['assigned', 'in_progress'].includes(c.status);
               return (
                 <StaggerItem key={c._id} className="h-full">
-                  <div className="group relative h-full bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex overflow-hidden">
+                  <div className="group relative h-full bg-white dark:bg-surface rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex overflow-hidden">
                     <span className={`w-1.5 shrink-0 ${priorityStrip(c.priority)}`} aria-hidden />
                     <div className="flex-1 min-w-0 p-5 flex flex-col">
                       <div className="flex items-start gap-3">

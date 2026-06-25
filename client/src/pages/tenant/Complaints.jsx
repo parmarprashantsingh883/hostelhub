@@ -138,7 +138,7 @@ export default function TenantComplaints() {
               const { icon: Icon, tile } = catStyle(c.category);
               return (
                 <StaggerItem key={c._id} className="h-full">
-                  <div className="group h-full bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 p-5 flex flex-col">
+                  <div className="group h-full bg-white dark:bg-surface rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 p-5 flex flex-col">
                     <div className="flex items-start gap-3">
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105 ${tile}`}>
                         <Icon className="w-5 h-5" />

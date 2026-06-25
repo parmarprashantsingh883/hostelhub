@@ -33,7 +33,7 @@ const EMPTY_FORM = { name: '', phone: '', email: '', source: 'walk_in', budget: 
 /** A single lead card inside a Kanban column. */
 function LeadCard({ lead, onMove, onConvert, onDelete }) {
   return (
-    <div className="rounded-xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-3.5 shadow-card transition-shadow hover:shadow-soft">
+    <div className="rounded-xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-3.5 shadow-card transition-shadow hover:shadow-soft">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate font-semibold text-slate-900 dark:text-white">{lead.name}</p>
@@ -239,7 +239,7 @@ export default function Leads() {
                     <Icon className="h-4 w-4 text-brand-600 dark:text-brand-300" />
                     <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">{s.label}</h3>
                   </div>
-                  <span className="rounded-full bg-white dark:bg-night-900 px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200 tabular-nums">
+                  <span className="rounded-full bg-white dark:bg-surface px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200 tabular-nums">
                     {items.length}
                   </span>
                 </div>

@@ -395,14 +395,14 @@ export default function Rents() {
                 <button
                   type="button"
                   onClick={() => setElec((s) => ({ ...s, mode: 'units' }))}
-                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'units' ? 'bg-white dark:bg-night-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500'}`}
+                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'units' ? 'bg-white dark:bg-surface text-slate-900 dark:text-white shadow-sm' : 'text-slate-500'}`}
                 >
                   Units × rate
                 </button>
                 <button
                   type="button"
                   onClick={() => setElec((s) => ({ ...s, mode: 'flat' }))}
-                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'flat' ? 'bg-white dark:bg-night-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500'}`}
+                  className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${elec.mode === 'flat' ? 'bg-white dark:bg-surface text-slate-900 dark:text-white shadow-sm' : 'text-slate-500'}`}
                 >
                   Flat amount
                 </button>

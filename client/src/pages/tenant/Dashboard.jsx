@@ -143,7 +143,7 @@ export default function TenantDashboard() {
       {/* ── Quick actions ────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {QUICK.map((q) => (
-          <Link key={q.to} to={q.to} className="group flex items-center gap-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-4 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200">
+          <Link key={q.to} to={q.to} className="group flex items-center gap-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-4 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200">
             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${q.tone} text-white flex items-center justify-center shrink-0`}>
               <q.icon className="w-5 h-5" />
             </div>

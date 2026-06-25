@@ -92,7 +92,7 @@ export default function MyRoom() {
       {/* ── Quick facts ───────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {facts.map((f) => (
-          <div key={f.label} className="bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card p-4 flex items-center gap-3">
+          <div key={f.label} className="bg-white dark:bg-surface rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card p-4 flex items-center gap-3">
             <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${f.tone}`}>
               <f.icon className="w-5 h-5" />
             </div>
@@ -114,7 +114,7 @@ export default function MyRoom() {
                   const Icon = iconFor(fac);
                   return (
                     <div key={fac} className="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-white/5 ring-1 ring-slate-100 dark:ring-white/10 px-3.5 py-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-night-900 ring-1 ring-slate-200 dark:ring-white/10 text-brand-600 dark:text-brand-300 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-surface ring-1 ring-slate-200 dark:ring-white/10 text-brand-600 dark:text-brand-300 flex items-center justify-center shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-200 capitalize">{fac}</span>

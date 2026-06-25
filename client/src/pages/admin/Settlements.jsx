@@ -22,7 +22,7 @@ function SettlementBreakdown({ s }) {
   if (!s) return null;
   const refundPositive = s.refund >= 0;
   return (
-    <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900">
+    <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface">
       <ul className="divide-y divide-slate-100 dark:divide-white/10 text-sm">
         <li className="flex items-center justify-between px-5 py-3">
           <span className="text-slate-600 dark:text-slate-300">Security deposit held</span>

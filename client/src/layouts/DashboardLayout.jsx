@@ -85,13 +85,13 @@ function NotificationBell() {
       >
         <Bell className="w-5 h-5" />
         {unread > 0 && (
-          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-sun-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-night-900">
+          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-sun-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-sidebar">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 overflow-hidden animate-pop-in dark:bg-night-900 dark:border-white/10">
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 overflow-hidden animate-pop-in dark:bg-surface dark:border-white/10">
           <div className="flex items-center justify-between px-4 py-3 border-b border-ink-100 dark:border-white/10">
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</p>
             {unread > 0 && <button onClick={markAll} className="text-xs font-semibold text-brand-600 hover:text-brand-700">Mark all read</button>}
@@ -150,7 +150,7 @@ export default function DashboardLayout() {
       {sidebarOpen && <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Sidebar — light & warm */}
-      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-ink-200 z-40 flex flex-col transition-transform duration-200 dark:bg-night-950 dark:border-white/10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-ink-200 z-40 flex flex-col transition-transform duration-200 dark:bg-sidebar dark:border-white/10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Brand */}
         <div className="h-16 flex items-center gap-3 px-5">
           <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(36,48,71,0.45)]" />
@@ -202,7 +202,7 @@ export default function DashboardLayout() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-white/80 backdrop-blur border-b border-ink-200 flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20 dark:bg-night-950/80 dark:border-white/10">
+        <header className="h-16 bg-white/80 backdrop-blur border-b border-ink-200 flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20 dark:bg-sidebar/80 dark:border-white/10">
           <button className="lg:hidden text-slate-500 hover:text-slate-800 dark:text-slate-300" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu className="w-6 h-6" /></button>
           <p className="hidden lg:block text-sm font-medium text-slate-400">Welcome back 👋</p>
           <div className="ml-auto flex items-center gap-1.5">
@@ -219,7 +219,7 @@ export default function DashboardLayout() {
                 <ChevronDown className="w-4 h-4 text-slate-400" />
               </button>
               {userMenu && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 py-1.5 animate-pop-in dark:bg-night-900 dark:border-white/10">
+                <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-ink-200 shadow-pop z-50 py-1.5 animate-pop-in dark:bg-surface dark:border-white/10">
                   <div className="px-4 py-2 border-b border-ink-100 mb-1 dark:border-white/10">
                     <p className="text-sm font-semibold text-slate-800 truncate dark:text-slate-100">{user?.name}</p>
                     <p className="text-xs text-slate-400 truncate">{user?.email}</p>

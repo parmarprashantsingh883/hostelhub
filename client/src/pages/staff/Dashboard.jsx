@@ -56,7 +56,7 @@ export default function StaffDashboard() {
 
       <div className="grid gap-5 lg:grid-cols-12">
         {/* Queue summary */}
-        <div className="flex flex-col rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-6 shadow-card lg:col-span-5">
+        <div className="flex flex-col rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-6 shadow-card lg:col-span-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Your queue</p>
           <div className="mt-1">
             <Stat icon={ClipboardList} tile="bg-blue-50 dark:bg-sky-500/15 text-blue-600 dark:text-sky-300" label="Assigned" value={stats.assigned} />
@@ -73,14 +73,14 @@ export default function StaffDashboard() {
         </div>
 
         {/* Progress donut */}
-        <div className="flex flex-col items-center rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-6 shadow-card lg:col-span-4">
+        <div className="flex flex-col items-center rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-6 shadow-card lg:col-span-4">
           <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Today's progress</p>
           <div className="my-3"><StatDonut value={pct} size={148} stroke={14} /></div>
           <p className="text-sm text-slate-500">{stats.resolvedToday} of {total || 0} cleared</p>
         </div>
 
         {/* Visitors expected */}
-        <div className="flex flex-col rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-6 shadow-card lg:col-span-3">
+        <div className="flex flex-col rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-6 shadow-card lg:col-span-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300"><ClipboardList className="h-5 w-5" /></span>
           <p className="mt-auto pt-6 font-display text-4xl font-semibold tabular-nums text-slate-900 dark:text-white">{stats.expectedVisitors}</p>
           <p className="mt-1 text-sm text-slate-500">visitors expected today</p>

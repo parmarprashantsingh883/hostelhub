@@ -8,7 +8,7 @@ import { LogoMark, LogoMono } from '../../components/brand/Logo';
  */
 export default function AuthShell({ title, subtitle, children, footer }) {
   return (
-    <div className="grid min-h-screen bg-white lg:grid-cols-2 dark:bg-night-950">
+    <div className="grid min-h-screen bg-white lg:grid-cols-2 dark:bg-sidebar">
       {/* ───────────────── FORM (left) ───────────────── */}
       <div className="flex items-center justify-center px-6 py-12 sm:px-12">
         <motion.div

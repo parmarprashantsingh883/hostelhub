@@ -22,7 +22,7 @@ function BedMap({ rooms, onAssign }) {
     <div className="space-y-7">
       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-brand-600" /> Occupied</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md border border-dashed border-slate-300 bg-white dark:bg-night-900" /> Vacant</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md border border-dashed border-slate-300 bg-white dark:bg-surface" /> Vacant</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-amber-100 ring-1 ring-amber-200" /> Maintenance</span>
       </div>
       {floors.map((floor) => {
@@ -40,7 +40,7 @@ function BedMap({ rooms, onAssign }) {
               {fr.map((r) => {
                 const maint = r.status === 'maintenance';
                 return (
-                  <div key={r._id} className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-night-900 p-4 shadow-card">
+                  <div key={r._id} className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-4 shadow-card">
                     <div className="flex items-start justify-between">
                       <div className="min-w-0">
                         <p className="font-semibold text-slate-900 dark:text-white">Room {r.roomNumber}</p>
@@ -200,7 +200,7 @@ export default function Rooms() {
         subtitle={`${rooms.length} room${rooms.length === 1 ? '' : 's'} across your property`}
         action={
           <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-night-900 p-1 text-sm">
+            <div className="inline-flex rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface p-1 text-sm">
               <button onClick={() => setView('beds')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'beds' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Beds</button>
               <button onClick={() => setView('table')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'table' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Table</button>
             </div>

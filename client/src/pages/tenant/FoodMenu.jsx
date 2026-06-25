@@ -82,7 +82,7 @@ export default function TenantFoodMenu() {
         <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {menus.map((m) => (
             <StaggerItem key={m._id} className="h-full">
-              <div className="group h-full bg-white dark:bg-night-900 rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden">
+              <div className="group h-full bg-white dark:bg-surface rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between px-5 pt-5">
                   <div>
                     <p className="font-semibold text-slate-900 dark:text-white capitalize text-[15px]">{m.day}</p>
