@@ -1,20 +1,16 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BedDouble, IndianRupee, QrCode } from 'lucide-react';
+import { BedDouble, IndianRupee, QrCode, Check } from 'lucide-react';
 import { LogoMark, LogoMono } from '../../components/brand/Logo';
 
-// A designed 24-bed occupancy snapshot (o=filled, r=reserved, v=vacant) → 92% full.
-const BEDS = [
-  'o', 'o', 'o', 'o', 'o', 'r',
-  'o', 'o', 'o', 'o', 'o', 'o',
-  'o', 'o', 'v', 'o', 'o', 'o',
-  'o', 'o', 'o', 'o', 'o', 'o',
-];
 const PROOF = [
   { icon: BedDouble, label: 'Live occupancy' },
   { icon: IndianRupee, label: 'UPI rent & receipts' },
   { icon: QrCode, label: 'Visitor QR passes' },
 ];
+
+// Mini 6-month revenue bars for the product snapshot (height %, last = current).
+const BARS = [38, 50, 46, 64, 78, 95];
 
 /**
  * Two-pane auth shell: a clean white form on the left, and a branded product
@@ -55,42 +51,60 @@ export default function AuthShell({ title, subtitle, children, footer }) {
           <span className="text-lg font-extrabold tracking-tight text-white">Quarters</span>
         </div>
 
-        {/* signature — live occupancy snapshot (mirrors the product's bed map) */}
+        {/* signature — a polished product snapshot (occupancy ring + revenue) */}
         <div className="relative flex flex-1 items-center justify-center py-8">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="animate-float-soft w-full max-w-sm rounded-2xl bg-white/10 p-5 shadow-[0_24px_70px_-24px_rgba(0,0,0,0.7)] ring-1 ring-white/20 backdrop-blur-md"
+            className="animate-float-soft relative w-full max-w-sm"
           >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-                <BedDouble className="h-4 w-4" /> Live occupancy
+            {/* main product card — solid white so it reads as a real app screen */}
+            <div className="rounded-2xl bg-white p-5 shadow-[0_34px_90px_-26px_rgba(0,0,0,0.6)] ring-1 ring-black/5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-slate-900">This month</span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" /> Live
+                </span>
+              </div>
+
+              <div className="mt-4 flex items-center gap-5">
+                {/* occupancy ring */}
+                <div className="relative h-[88px] w-[88px] shrink-0">
+                  <svg viewBox="0 0 100 100" className="h-[88px] w-[88px] -rotate-90">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#eef1f5" strokeWidth="11" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#2563eb" strokeWidth="11" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="21" />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-xl font-extrabold tracking-tight text-slate-900">92%</span>
+                    <span className="text-[10px] font-medium text-slate-400">occupied</span>
+                  </div>
+                </div>
+                {/* revenue + mini bars */}
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Collected</p>
+                  <p className="text-2xl font-extrabold tracking-tight text-slate-900">₹1.24L</p>
+                  <div className="mt-2 flex h-9 items-end gap-1.5">
+                    {BARS.map((h, i) => (
+                      <span key={i} style={{ height: `${h}%` }} className={`w-2.5 rounded-sm ${i === BARS.length - 1 ? 'bg-brand-600' : 'bg-brand-200'}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+                <span className="text-slate-400">Sunrise PG · 22 beds</span>
+                <span className="font-semibold text-emerald-600">+8% vs last month</span>
+              </div>
+            </div>
+
+            {/* floating receipt toast — echoes the in-app payment flow */}
+            <div className="absolute -right-3 -top-4 flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-[0_16px_36px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+                <Check className="h-3.5 w-3.5" strokeWidth={3} />
               </span>
-              <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold tabular-nums text-white ring-1 ring-white/20">92% full</span>
+              <span className="text-xs font-semibold text-slate-700">Rent received · ₹6,200</span>
             </div>
-
-            <div className="mt-4 grid grid-cols-6 gap-2">
-              {BEDS.map((b, i) => (
-                <span
-                  key={i}
-                  className={`aspect-square rounded-md ${
-                    b === 'o'
-                      ? 'bg-white/90 shadow-sm'
-                      : b === 'r'
-                        ? 'bg-amber-300/85'
-                        : 'border border-dashed border-white/45'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <div className="mt-4 flex items-center gap-3 text-[11px] font-medium text-white/70">
-              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-[3px] bg-white/90" /> Filled</span>
-              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-[3px] bg-amber-300/85" /> Reserved</span>
-              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-[3px] border border-dashed border-white/50" /> Vacant</span>
-            </div>
-            <p className="mt-3 border-t border-white/10 pt-3 text-xs text-white/55">Sunrise PG · 24 beds · 1 vacant · ₹0 leaking</p>
           </motion.div>
         </div>
 
