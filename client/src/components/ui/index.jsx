@@ -2,9 +2,10 @@
  * Quarters UI kit — small, composable building blocks shared by every page.
  * Production-grade: layered shadows, focus rings, subtle motion, slate palette.
  */
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, Children } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight, Eye, EyeOff, ChevronDown, Check } from 'lucide-react';
 
 /* Motion primitives — re-exported so pages import everything from one place. */
 export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './motion';
@@ -76,11 +77,99 @@ export function PasswordInput({ error, className = '', ...rest }) {
   );
 }
 
-export function Select({ error, className = '', children, ...rest }) {
+/**
+ * Themed select — same API as a native <select> (value / onChange / <option>
+ * children, onChange receives { target: { value } }), but renders a fully
+ * styled dropdown (light + dark) in a portal so it never clips inside modals.
+ */
+export function Select({ value, onChange, children, error, className = '', disabled, placeholder = 'Select…' }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState(null);
+  const triggerRef = useRef(null);
+  const panelRef = useRef(null);
+
+  const items = Children.toArray(children)
+    .filter((c) => c?.type === 'option')
+    .map((c) => ({ value: c.props.value, label: c.props.children, disabled: c.props.disabled }));
+  const selected = items.find((i) => String(i.value) === String(value));
+
+  const place = () => {
+    const r = triggerRef.current?.getBoundingClientRect();
+    if (r) setPos({ left: r.left, top: r.bottom + 6, width: r.width, maxH: Math.max(180, window.innerHeight - r.bottom - 16) });
+  };
+  const toggle = () => { if (disabled) return; if (!open) place(); setOpen((o) => !o); };
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDoc = (e) => {
+      if (triggerRef.current?.contains(e.target) || panelRef.current?.contains(e.target)) return;
+      setOpen(false);
+    };
+    const onEsc = (e) => e.key === 'Escape' && setOpen(false);
+    const onMove = () => setOpen(false); // close on scroll/resize (panel is fixed)
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onEsc);
+    window.addEventListener('scroll', onMove, true);
+    window.addEventListener('resize', onMove);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onEsc);
+      window.removeEventListener('scroll', onMove, true);
+      window.removeEventListener('resize', onMove);
+    };
+  }, [open]);
+
+  const pick = (v) => { onChange?.({ target: { value: v } }); setOpen(false); };
+
   return (
-    <select className={`${inputCls(error)} ${className} cursor-pointer`} {...rest}>
-      {children}
-    </select>
+    <>
+      <button
+        type="button"
+        ref={triggerRef}
+        disabled={disabled}
+        onClick={toggle}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`${inputCls(error)} ${className} flex cursor-pointer items-center justify-between gap-2 text-left ${open ? 'border-brand-500 ring-4 ring-brand-500/10' : ''}`}
+      >
+        <span className={`truncate ${selected ? '' : 'text-slate-400'}`}>{selected ? selected.label : placeholder}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && pos && createPortal(
+        <motion.div
+          ref={panelRef}
+          role="listbox"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.14, ease: [0.16, 1, 0.3, 1] }}
+          style={{ position: 'fixed', left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxH }}
+          className="z-[70] overflow-y-auto scrollbar-thin rounded-xl border border-slate-200 bg-white p-1 shadow-pop dark:border-white/10 dark:bg-surface2"
+        >
+          {items.map((it) => {
+            const isSel = String(it.value) === String(value);
+            return (
+              <button
+                key={String(it.value)}
+                type="button"
+                role="option"
+                aria-selected={isSel}
+                disabled={it.disabled}
+                onClick={() => pick(it.value)}
+                className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  isSel
+                    ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-200'
+                    : 'text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-white/5'
+                } ${it.disabled ? 'cursor-not-allowed opacity-40' : ''}`}
+              >
+                <span className="truncate">{it.label}</span>
+                {isSel && <Check className="h-4 w-4 shrink-0" />}
+              </button>
+            );
+          })}
+        </motion.div>,
+        document.body,
+      )}
+    </>
   );
 }
 
