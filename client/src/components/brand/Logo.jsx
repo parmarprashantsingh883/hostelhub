@@ -24,8 +24,8 @@ export function LogoMark({ size = 40, className = '', ...rest }) {
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className} aria-label="Quarters" role="img" {...rest}>
       <defs>
         <linearGradient id="q-tile" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#3a4a66" />
-          <stop offset="1" stopColor="#161d2b" />
+          <stop offset="0" stopColor="#3b82f6" />
+          <stop offset="1" stopColor="#1e3a8a" />
         </linearGradient>
         <linearGradient id="q-shine" x1="32" y1="0" x2="32" y2="34" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#ffffff" stopOpacity="0.22" />
@@ -53,8 +53,8 @@ export function LogoWordmark({ height = 40, showTagline = true, className = '', 
     <svg width={height * (vw / 64)} height={height} viewBox={`0 0 ${vw} 64`} fill="none" className={className} aria-label="Quarters" role="img" {...rest}>
       <defs>
         <linearGradient id="qw-tile" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#3a4a66" />
-          <stop offset="1" stopColor="#161d2b" />
+          <stop offset="0" stopColor="#3b82f6" />
+          <stop offset="1" stopColor="#1e3a8a" />
         </linearGradient>
         <linearGradient id="qw-shine" x1="32" y1="0" x2="32" y2="34" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#ffffff" stopOpacity="0.22" />

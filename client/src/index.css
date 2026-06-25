@@ -9,17 +9,17 @@
   --color-sidebar: #090b10;
   --color-surface: #1b212c;   /* cards — clearly lifted off the canvas */
   --color-surface2: #272e3b;  /* inputs / raised tiles */
-  /* Brand — ink navy (minimal monochrome identity) */
-  --color-brand-50: #f4f6f9;
-  --color-brand-100: #e5eaf1;
-  --color-brand-200: #ccd5e2;
-  --color-brand-300: #a6b4c9;
-  --color-brand-400: #6e8099;
-  --color-brand-500: #41506a;
-  --color-brand-600: #243047;
-  --color-brand-700: #1a2336;
-  --color-brand-800: #131a28;
-  --color-brand-900: #0e1420;
+  /* Brand — professional blue (replaces the old ink-navy; light surfaces stay white) */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
 
   /* Secondary — cool light surfaces */
   --color-cream-50: #f8fafc;
@@ -62,22 +62,22 @@ html {
 /* Data-viz colours — reactive to dark mode via CSS variables (used by charts
    and the SVG progress donut). */
 :root {
-  --chart-line: #243047;
-  --chart-fill: #41506a;
-  --chart-faint: #ccd5e2;
+  --chart-line: #2563eb;
+  --chart-fill: #3b82f6;
+  --chart-faint: #bfdbfe;
   --chart-grid: #eef1f5;
   --chart-axis: #94a3b8;
   --ring-track: #eef1f5;
-  --ring-brand: #243047;
+  --ring-brand: #2563eb;
 }
 .dark {
-  --chart-line: #93a3c0;
-  --chart-fill: #4a5a78;
-  --chart-faint: #2a3548;
+  --chart-line: #60a5fa;
+  --chart-fill: #3b82f6;
+  --chart-faint: #1e3a8a;
   --chart-grid: rgba(255, 255, 255, 0.07);
   --chart-axis: #64748b;
   --ring-track: rgba(255, 255, 255, 0.08);
-  --ring-brand: #9db0d4;
+  --ring-brand: #60a5fa;
 }
 
 body {
@@ -130,10 +130,10 @@ h1, h2, h3 {
 /* Ink-navy hero surface for featured cards / bands — gradient + faint dot grid
    layered in a single declaration so neither overrides the other. */
 .surface-hero {
-  background-color: #202a3d;
+  background-color: #1e40af;
   background-image:
-    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.06) 1px, transparent 0),
-    radial-gradient(125% 140% at 0% 0%, #38486590 0%, #202a3d 46%, #121826 100%);
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.08) 1px, transparent 0),
+    radial-gradient(125% 140% at 0% 0%, #3b82f6 0%, #2563eb 46%, #1e3a8a 100%);
   background-size: 22px 22px, 100% 100%;
 }
 /* Subtle top-light sheen on light cards */

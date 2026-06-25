@@ -36,7 +36,7 @@ export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone
 }
 
 /** Tiny filled area chart — for "trend at a glance" cards. */
-export function Sparkline({ data, dataKey = 'revenue', color = '#243047', height = 56, id = 'spark' }) {
+export function Sparkline({ data, dataKey = 'revenue', color = 'var(--chart-line)', height = 56, id = 'spark' }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 6, right: 0, left: 0, bottom: 0 }}>

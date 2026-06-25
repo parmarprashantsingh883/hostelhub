@@ -15,7 +15,7 @@ export const CHART = {
   // Categorical series — navy-anchored, cohesive.
   series: ['var(--chart-line)', '#6e8099', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
   // Occupancy semantics
-  occupancy: { Occupied: '#243047', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
+  occupancy: { Occupied: '#2563eb', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
 };
 
 export const axisTick = { fontSize: 12, fill: 'var(--chart-axis)' };

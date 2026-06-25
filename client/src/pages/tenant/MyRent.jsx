@@ -77,7 +77,7 @@ export default function MyRent() {
         description: `Rent — ${MONTHS[rent.month - 1]} ${rent.year}`,
         order_id: order.id,
         prefill: { name: user?.name, email: user?.email, contact: user?.phone },
-        theme: { color: '#4f46e5' },
+        theme: { color: '#2563eb' },
         handler: async (resp) => {
           try {
             await api.post(`/rents/${rent._id}/verify`, {

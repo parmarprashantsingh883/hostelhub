@@ -65,7 +65,7 @@ export default function Book() {
     <div className="grid min-h-screen bg-white lg:grid-cols-[1.05fr_1fr]">
       {/* ─────────────  NAVY HERO  ───────────── */}
       <div className="relative hidden flex-col justify-between overflow-hidden p-12 text-white lg:flex xl:p-14">
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#41506a_0%,#243047_45%,#0e1420_100%)]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(140%_120%_at_0%_0%,#3b82f6_0%,#2563eb_45%,#1e3a8a_100%)]" />
         <div className="pointer-events-none absolute -left-28 -top-32 z-0 h-[30rem] w-[30rem] rounded-full bg-slate-300/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-24 top-1/3 z-0 h-80 w-80 rounded-full bg-amber-300/20 blur-3xl" />
         <div
