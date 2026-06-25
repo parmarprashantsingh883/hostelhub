@@ -18,6 +18,8 @@ const VerifyReceipt = lazy(() => import('./pages/public/VerifyReceipt.jsx'));
 // Admin
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard.jsx'));
 const Rooms = lazy(() => import('./pages/admin/Rooms.jsx'));
+const Occupancy = lazy(() => import('./pages/admin/Occupancy.jsx'));
+const Bookings = lazy(() => import('./pages/admin/Bookings.jsx'));
 const Tenants = lazy(() => import('./pages/admin/Tenants.jsx'));
 const Staff = lazy(() => import('./pages/admin/Staff.jsx'));
 const Rents = lazy(() => import('./pages/admin/Rents.jsx'));
@@ -78,6 +80,8 @@ export default function App() {
           <Route path="/admin" element={<DashboardLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="rooms" element={<Rooms />} />
+            <Route path="occupancy" element={<Occupancy />} />
+            <Route path="bookings" element={<Bookings />} />
             <Route path="tenants" element={<Tenants />} />
             <Route path="staff" element={<Staff />} />
             <Route path="rents" element={<Rents />} />

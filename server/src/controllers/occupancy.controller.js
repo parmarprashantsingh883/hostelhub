@@ -26,6 +26,8 @@ export const getOccupancy = asyncHandler(async (req, res) => {
   }
 
   let totalBeds = 0;
+  let sellableBeds = 0;
+  let maintenanceBeds = 0;
   let occupiedBeds = 0;
   let reservedBeds = 0;
   let potentialRevenue = 0;
@@ -40,17 +42,23 @@ export const getOccupancy = asyncHandler(async (req, res) => {
     const held = holdsByRoom.get(String(room._id)) || [];
     const occ = occupants.length;
     const isMaint = room.status === 'maintenance';
-    if (isMaint) maintenanceRooms += 1;
 
     // Held beds can't exceed remaining capacity after occupants.
     const reserved = Math.min(held.length, Math.max(0, room.capacity - occ));
     const vacant = Math.max(0, room.capacity - occ - reserved);
 
     totalBeds += room.capacity;
-    occupiedBeds += occ;
-    reservedBeds += reserved;
-    potentialRevenue += room.capacity * room.rentAmount;
-    realizedRevenue += occ * room.rentAmount;
+    // Maintenance beds are out of service — excluded from sellable / occupancy.
+    if (isMaint) {
+      maintenanceRooms += 1;
+      maintenanceBeds += room.capacity;
+    } else {
+      sellableBeds += room.capacity;
+      occupiedBeds += occ;
+      reservedBeds += reserved;
+      potentialRevenue += room.capacity * room.rentAmount;
+      realizedRevenue += occ * room.rentAmount;
+    }
 
     const card = {
       _id: room._id,
@@ -92,7 +100,8 @@ export const getOccupancy = asyncHandler(async (req, res) => {
     }))
     .sort((a, b) => new Date(a.moveOutDate) - new Date(b.moveOutDate));
 
-  const occupancyPct = totalBeds ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+  // Occupancy is measured against sellable (in-service) beds.
+  const occupancyPct = sellableBeds ? Math.min(100, Math.round((occupiedBeds / sellableBeds) * 100)) : 0;
 
   res.json({
     success: true,
@@ -100,9 +109,11 @@ export const getOccupancy = asyncHandler(async (req, res) => {
       kpis: {
         rooms: rooms.length,
         totalBeds,
+        sellableBeds,
+        maintenanceBeds,
         occupiedBeds,
         reservedBeds,
-        vacantBeds: Math.max(0, totalBeds - occupiedBeds - reservedBeds),
+        vacantBeds: Math.max(0, sellableBeds - occupiedBeds - reservedBeds),
         occupancyPct,
         maintenanceRooms,
         potentialRevenue,

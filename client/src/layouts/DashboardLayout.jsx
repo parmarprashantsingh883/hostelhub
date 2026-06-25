@@ -5,6 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
+  BedDouble, CalendarCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -15,8 +16,10 @@ const NAV = {
   admin: [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/rooms', label: 'Rooms', icon: DoorOpen },
+    { to: '/admin/occupancy', label: 'Occupancy', icon: BedDouble },
     { to: '/admin/tenants', label: 'Tenants', icon: Users },
     { to: '/admin/leads', label: 'Leads', icon: UserPlus },
+    { to: '/admin/bookings', label: 'Bookings', icon: CalendarCheck },
     { to: '/admin/staff', label: 'Staff', icon: UserCog },
     { to: '/admin/rents', label: 'Rent & Payments', icon: Banknote },
     { to: '/admin/expenses', label: 'Expenses & P&L', icon: Wallet },
