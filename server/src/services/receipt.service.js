@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getSettings } from './settings.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RECEIPT_DIR = path.join(__dirname, '..', 'uploads', 'receipts');
@@ -35,6 +36,20 @@ export async function generateReceipt({ rent, tenant, room }) {
   const fileName = `receipt-${rent._id}.pdf`;
   const filePath = path.join(RECEIPT_DIR, fileName);
   const monthLabel = `${MONTHS[rent.month - 1]} ${rent.year}`;
+
+  // Business identity comes from app Settings (env values are the fallback). The
+  // try/catch keeps standalone/no-DB calls working with env defaults.
+  let BIZ = BUSINESS;
+  try {
+    const s = await getSettings();
+    if (s?.business) {
+      BIZ = {
+        name: s.business.name || BIZ.name,
+        address: s.business.address || BIZ.address,
+        gstin: s.business.gstin || BIZ.gstin,
+      };
+    }
+  } catch { /* DB unavailable → env defaults */ }
 
   // Unicode font so ₹ renders; fall back to Helvetica + "Rs." if the bundle is absent.
   const reg = path.join(FONT_DIR, 'DejaVuSans.ttf');
@@ -79,7 +94,7 @@ export async function generateReceipt({ rent, tenant, room }) {
     // little logo square
     doc.roundedRect(L, 40, 30, 30, 7).fill('#33425e');
     doc.fillColor('#ffffff').font(FB).fontSize(15).text('Q', L, 47, { width: 30, align: 'center' });
-    doc.fillColor('#ffffff').font(FB).fontSize(22).text(BUSINESS.name, L + 42, 40);
+    doc.fillColor('#ffffff').font(FB).fontSize(22).text(BIZ.name, L + 42, 40);
     doc.font(FN).fontSize(10).fillColor('#c2cbd9').text('Smart PG & Hostel Management', L + 42, 69);
     doc.font(FB).fontSize(15).fillColor('#ffffff').text('RENT RECEIPT', L, 44, { width: CW, align: 'right' });
     doc.font(FN).fontSize(9.5).fillColor('#9fabbd').text(`No. HH-${String(rent._id).slice(-8).toUpperCase()}`, L, 66, { width: CW, align: 'right' });
@@ -154,13 +169,13 @@ export async function generateReceipt({ rent, tenant, room }) {
     y += 46;
 
     // ── Business block (optional) ──────────────────────────────────────
-    if (BUSINESS.address || BUSINESS.gstin) {
+    if (BIZ.address || BIZ.gstin) {
       y += 26;
       doc.font(FB).fontSize(8.5).fillColor(MUTE).text('FROM', L, y, { characterSpacing: 0.6 });
       y += 13;
       doc.font(FN).fontSize(9.5).fillColor(SLATE);
-      if (BUSINESS.address) { doc.text(BUSINESS.address, L, y, { width: CW * 0.6 }); y += 13; }
-      if (BUSINESS.gstin) doc.text(`GSTIN: ${BUSINESS.gstin}`, L, y);
+      if (BIZ.address) { doc.text(BIZ.address, L, y, { width: CW * 0.6 }); y += 13; }
+      if (BIZ.gstin) doc.text(`GSTIN: ${BIZ.gstin}`, L, y);
     }
 
     // ── Footer (verification QR + notes) ───────────────────────────────
@@ -183,7 +198,7 @@ export async function generateReceipt({ rent, tenant, room }) {
       textX, blockY + 19, { width: textW },
     );
     doc.font(FN).fontSize(7.5).fillColor('#b6bfcd').text(
-      `${BUSINESS.name} · generated ${new Date().toLocaleString('en-IN')}`,
+      `${BIZ.name} · generated ${new Date().toLocaleString('en-IN')}`,
       textX, blockY + 46, { width: textW },
     );
 

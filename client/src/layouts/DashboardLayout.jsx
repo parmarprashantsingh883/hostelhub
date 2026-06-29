@@ -5,7 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck,
+  BedDouble, CalendarCheck, Settings as SettingsIcon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -29,6 +29,7 @@ const NAV = {
     { to: '/admin/visitors', label: 'Visitors', icon: ClipboardList },
     { to: '/admin/food-menu', label: 'Food Menu', icon: UtensilsCrossed },
     { to: '/admin/reports', label: 'Reports', icon: FileBarChart },
+    { to: '/admin/settings', label: 'Settings', icon: SettingsIcon },
   ],
   tenant: [
     { to: '/tenant', label: 'Dashboard', icon: LayoutDashboard, end: true },

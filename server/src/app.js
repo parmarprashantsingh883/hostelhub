@@ -30,6 +30,7 @@ import leadRoutes from './routes/lead.routes.js';
 import settlementRoutes from './routes/settlement.routes.js';
 import occupancyRoutes from './routes/occupancy.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
+import settingsRoutes from './routes/settings.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -106,6 +107,7 @@ app.use('/api/leads', leadRoutes);
 app.use('/api/settlements', settlementRoutes);
 app.use('/api/occupancy', occupancyRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);

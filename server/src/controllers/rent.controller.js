@@ -8,6 +8,7 @@ import { generateReceipt } from '../services/receipt.service.js';
 import { sendEmail, emailTemplates } from '../services/email.service.js';
 import { sendWhatsApp, sendSms, messageTemplates } from '../services/messaging.service.js';
 import { notify } from '../services/notification.service.js';
+import { getSettings } from '../services/settings.service.js';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const monthLabel = (m, y) => `${MONTHS[m - 1]} ${y}`;
@@ -18,7 +19,7 @@ export const generateRents = asyncHandler(async (req, res) => {
   const now = new Date();
   const month = Number(req.body.month) || now.getMonth() + 1;
   const year = Number(req.body.year) || now.getFullYear();
-  const dueDay = Number(req.body.dueDay) || 5;
+  const dueDay = Number(req.body.dueDay) || (await getSettings()).rent?.dueDay || 5;
 
   const tenants = await User.find({
     role: 'tenant',
@@ -257,8 +258,9 @@ export const getUpiIntent = asyncHandler(async (req, res) => {
   if (rent.status === 'paid') throw new ApiError(409, 'This rent is already paid');
 
   const isProd = process.env.NODE_ENV === 'production';
-  const vpa = process.env.UPI_VPA || (isProd ? '' : 'quarters.demo@okhdfcbank');
-  const payeeName = process.env.UPI_PAYEE_NAME || process.env.BUSINESS_NAME || 'Quarters';
+  const s = await getSettings();
+  const vpa = s.payments?.upiVpa || process.env.UPI_VPA || (isProd ? '' : 'quarters.demo@okhdfcbank');
+  const payeeName = s.payments?.upiPayeeName || s.business?.name || process.env.UPI_PAYEE_NAME || process.env.BUSINESS_NAME || 'Quarters';
   if (!vpa) return res.json({ success: true, data: { configured: false } });
 
   const amount = Number(rent.totalAmount || 0).toFixed(2);

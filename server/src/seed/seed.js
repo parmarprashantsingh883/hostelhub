@@ -15,6 +15,7 @@ import FoodMenu from '../models/FoodMenu.js';
 import Expense from '../models/Expense.js';
 import Lead from '../models/Lead.js';
 import Booking from '../models/Booking.js';
+import Settings from '../models/Settings.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -41,6 +42,16 @@ export async function runSeed({ exitAfter = true } = {}) {
     phone: '+91 9000000001',
     password: 'Admin@123',
     role: 'admin',
+  });
+
+  // ── App settings (singleton) ──────────────────────────
+  await Settings.create({
+    key: 'app',
+    business: { name: 'Quarters', address: '2nd Floor, Green Residency, Koramangala, Bengaluru 560034', gstin: '29ABCDE1234F1Z5', email: 'hello@quarters.app', phone: '+91 90000 00000' },
+    rent: { dueDay: 5, graceDays: 3, lateFeeMode: 'flat', lateFeeValue: 200, electricityRatePerUnit: 8 },
+    deposit: { defaultMonths: 1, policyNote: 'Refundable within 15 days of move-out, after any deductions.' },
+    payments: { upiVpa: 'quarters.demo@okhdfcbank', upiPayeeName: 'Quarters' },
+    notifications: { email: true, whatsapp: true, sms: true },
   });
 
   // ── Rooms (10) ────────────────────────────────────────

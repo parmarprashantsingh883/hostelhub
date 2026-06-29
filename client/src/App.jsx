@@ -31,6 +31,7 @@ const Reports = lazy(() => import('./pages/admin/Reports.jsx'));
 const Expenses = lazy(() => import('./pages/admin/Expenses.jsx'));
 const Leads = lazy(() => import('./pages/admin/Leads.jsx'));
 const Settlements = lazy(() => import('./pages/admin/Settlements.jsx'));
+const AdminSettings = lazy(() => import('./pages/admin/Settings.jsx'));
 
 // Tenant
 const TenantDashboard = lazy(() => import('./pages/tenant/Dashboard.jsx'));
@@ -93,6 +94,7 @@ export default function App() {
             <Route path="leads" element={<Leads />} />
             <Route path="settlements" element={<Settlements />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<Profile />} />
           </Route>
         </Route>
