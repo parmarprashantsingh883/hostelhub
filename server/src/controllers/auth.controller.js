@@ -133,11 +133,33 @@ export const me = asyncHandler(async (req, res) => {
 
 /** PUT /api/auth/profile */
 export const updateProfile = asyncHandler(async (req, res) => {
-  const allowed = ['name', 'phone', 'profileImage'];
-  const updates = {};
-  for (const k of allowed) if (req.body[k] !== undefined) updates[k] = req.body[k];
+  const user = await User.findById(req.user._id);
+  if (!user) throw new ApiError(404, 'User not found');
 
-  const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true });
+  if (req.body.name !== undefined) user.name = req.body.name;
+  if (req.body.phone !== undefined) user.phone = req.body.phone;
+  if (req.body.profileImage !== undefined) user.profileImage = req.body.profileImage;
+
+  // Tenants may maintain their own emergency & guardian contacts.
+  if (user.role === 'tenant' && user.tenantProfile) {
+    const merge = (cur, patch) => ({ ...(cur?.toObject?.() ?? cur ?? {}), ...patch });
+    if (req.body.emergencyContact) user.tenantProfile.emergencyContact = merge(user.tenantProfile.emergencyContact, req.body.emergencyContact);
+    if (req.body.guardianDetails) user.tenantProfile.guardianDetails = merge(user.tenantProfile.guardianDetails, req.body.guardianDetails);
+  }
+
+  await user.save();
+  await user.populate('tenantProfile.roomId', 'roomNumber floor roomType rentAmount');
+  res.json({ success: true, data: { user } });
+});
+
+/** PUT /api/auth/avatar (multipart: avatar) — upload a profile photo. */
+export const uploadAvatar = asyncHandler(async (req, res) => {
+  if (!req.file) throw new ApiError(400, 'No image uploaded');
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { profileImage: `/uploads/${req.file.filename}` },
+    { new: true },
+  ).populate('tenantProfile.roomId', 'roomNumber floor roomType rentAmount');
   res.json({ success: true, data: { user } });
 });
 

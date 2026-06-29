@@ -580,8 +580,11 @@ export function Pagination({ page, totalPages, total, pageSize, onPage, classNam
 }
 
 /* ── Avatar ─────────────────────────────────────────────────────────── */
-export function Avatar({ name, size = 'md', className = '' }) {
+export function Avatar({ name, size = 'md', src, className = '' }) {
   const sizes = { xs: 'w-7 h-7 text-[10px]', sm: 'w-8 h-8 text-[11px]', md: 'w-9 h-9 text-xs', lg: 'w-12 h-12 text-sm' };
+  if (src) {
+    return <img src={src} alt={name || ''} className={`${sizes[size]} rounded-full object-cover shrink-0 ${className}`} />;
+  }
   const initials = (name || '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   return (
     <div className={`${sizes[size]} rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white font-bold flex items-center justify-center shrink-0 ${className}`}>

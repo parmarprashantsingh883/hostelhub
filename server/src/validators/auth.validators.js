@@ -37,4 +37,14 @@ export const updateProfileSchema = z.object({
   name: z.string().trim().min(2).max(100).optional(),
   phone: z.string().trim().max(20).optional(),
   profileImage: z.string().max(500).optional(),
+  emergencyContact: z.object({
+    name: z.string().trim().max(100).optional(),
+    phone: z.string().trim().max(20).optional(),
+    relation: z.string().trim().max(50).optional(),
+  }).optional(),
+  guardianDetails: z.object({
+    name: z.string().trim().max(100).optional(),
+    phone: z.string().trim().max(20).optional(),
+    address: z.string().trim().max(300).optional(),
+  }).optional(),
 });
