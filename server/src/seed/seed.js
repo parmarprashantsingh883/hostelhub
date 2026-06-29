@@ -18,6 +18,7 @@ import Booking from '../models/Booking.js';
 import Settings from '../models/Settings.js';
 import Vendor from '../models/Vendor.js';
 import WorkOrder from '../models/WorkOrder.js';
+import Inspection, { DEFAULT_CHECKLIST } from '../models/Inspection.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -442,6 +443,21 @@ export async function runSeed({ exitAfter = true } = {}) {
     ],
     settledAt: new Date(Date.now() - 38 * day),
   });
+
+  // ── Inspections (move-in / move-out condition reports) ──────────────
+  await Inspection.create([
+    {
+      type: 'move_in', tenantId: tenants[1]._id, roomId: tenants[1].tenantProfile.roomId,
+      status: 'completed', completedAt: new Date(Date.now() - 140 * day), inspectedBy: admin._id,
+      items: DEFAULT_CHECKLIST.map((label) => ({ label, condition: 'good', note: '', deduction: 0 })),
+      overallNote: 'Room handed over in good condition at move-in.',
+    },
+    {
+      type: 'move_out', tenantId: mohit._id, roomId: mohit.tenantProfile.roomId,
+      status: 'draft', inspectedBy: admin._id,
+      items: DEFAULT_CHECKLIST.map((label) => ({ label, condition: 'good', note: '', deduction: 0 })),
+    },
+  ]);
 
   console.log('🌱 Seed complete:');
   console.log('   admin@quarters.app / Admin@123');
