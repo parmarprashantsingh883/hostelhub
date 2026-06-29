@@ -16,6 +16,8 @@ import Expense from '../models/Expense.js';
 import Lead from '../models/Lead.js';
 import Booking from '../models/Booking.js';
 import Settings from '../models/Settings.js';
+import Vendor from '../models/Vendor.js';
+import WorkOrder from '../models/WorkOrder.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -367,6 +369,22 @@ export async function runSeed({ exitAfter = true } = {}) {
       rentAmount: r204.rentAmount, securityDeposit: 0, tokenAmount: 0,
       status: 'cancelled', note: 'Chose a closer PG.', createdBy: admin._id,
     },
+  ]);
+
+  // ── Vendors + work orders (maintenance) ──────────────────
+  const vendors = await Vendor.create([
+    { name: 'Spark Electricals', category: 'electrical', phone: '+91 90000 30001', email: 'spark@example.com', createdBy: admin._id },
+    { name: 'FlowFix Plumbing', category: 'plumbing', phone: '+91 90000 30002', createdBy: admin._id },
+    { name: 'BrightClean Services', category: 'cleaning', phone: '+91 90000 30003', createdBy: admin._id },
+    { name: 'CityNet Broadband', category: 'internet', phone: '+91 90000 30004', email: 'support@citynet.example.com', createdBy: admin._id },
+    { name: 'PestAway', category: 'pest_control', phone: '+91 90000 30005', isActive: false, createdBy: admin._id },
+  ]);
+  const vByCat = Object.fromEntries(vendors.map((v) => [v.category, v]));
+  await WorkOrder.create([
+    { title: 'Replace tube light in Room 204', category: 'electrical', priority: 'low', status: 'open', roomId: roomByNumber['204']._id, createdBy: admin._id },
+    { title: 'Leaking tap — 2nd floor bathroom', category: 'plumbing', priority: 'high', status: 'assigned', vendorId: vByCat.plumbing._id, roomId: roomByNumber['203']._id, scheduledFor: new Date(Date.now() + 1 * day), createdBy: admin._id },
+    { title: 'Monthly pest control — common areas', category: 'pest_control', priority: 'medium', status: 'in_progress', vendorId: vByCat.pest_control._id, scheduledFor: new Date(Date.now()), createdBy: admin._id },
+    { title: 'Fix Wi-Fi router in lobby', category: 'internet', priority: 'medium', status: 'completed', vendorId: vByCat.internet._id, cost: 1200, completedAt: new Date(Date.now() - 3 * day), createdBy: admin._id },
   ]);
 
   // ── Move-out queue — two former residents for the settlement demo ─────

@@ -31,6 +31,8 @@ import settlementRoutes from './routes/settlement.routes.js';
 import occupancyRoutes from './routes/occupancy.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
 import settingsRoutes from './routes/settings.routes.js';
+import vendorRoutes from './routes/vendor.routes.js';
+import workOrderRoutes from './routes/workorder.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -108,6 +110,8 @@ app.use('/api/settlements', settlementRoutes);
 app.use('/api/occupancy', occupancyRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/work-orders', workOrderRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);
