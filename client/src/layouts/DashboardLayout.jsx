@@ -5,7 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck,
+  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -21,6 +21,7 @@ const NAV = {
     { to: '/admin/leads', label: 'Leads', icon: UserPlus },
     { to: '/admin/bookings', label: 'Bookings', icon: CalendarCheck },
     { to: '/admin/staff', label: 'Staff', icon: UserCog },
+    { to: '/admin/attendance', label: 'Attendance', icon: CalendarClock },
     { to: '/admin/rents', label: 'Rent & Payments', icon: Banknote },
     { to: '/admin/expenses', label: 'Expenses & P&L', icon: Wallet },
     { to: '/admin/settlements', label: 'Settlements', icon: HandCoins },

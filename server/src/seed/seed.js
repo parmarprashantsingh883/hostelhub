@@ -19,6 +19,7 @@ import Settings from '../models/Settings.js';
 import Vendor from '../models/Vendor.js';
 import WorkOrder from '../models/WorkOrder.js';
 import Inspection, { DEFAULT_CHECKLIST } from '../models/Inspection.js';
+import Attendance from '../models/Attendance.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -443,6 +444,19 @@ export async function runSeed({ exitAfter = true } = {}) {
     ],
     settledAt: new Date(Date.now() - 38 * day),
   });
+
+  // ── Staff attendance (last 6 days, with shifts as the roster) ────────
+  const attDocs = [];
+  for (let d = 1; d <= 6; d++) {
+    const dy = new Date(); dy.setDate(dy.getDate() - d); dy.setHours(0, 0, 0, 0);
+    staff.forEach((s, i) => {
+      const t = s.staffProfile?.staffType;
+      const shift = t === 'security' ? 'night' : t === 'cook' ? 'morning' : 'general';
+      const status = i === 1 && d === 3 ? 'absent' : 'present';
+      attDocs.push({ staffId: s._id, date: dy, status, shift, markedBy: admin._id });
+    });
+  }
+  await Attendance.insertMany(attDocs);
 
   // ── Inspections (move-in / move-out condition reports) ──────────────
   await Inspection.create([

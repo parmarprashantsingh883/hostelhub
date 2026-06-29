@@ -22,6 +22,7 @@ const Occupancy = lazy(() => import('./pages/admin/Occupancy.jsx'));
 const Bookings = lazy(() => import('./pages/admin/Bookings.jsx'));
 const Tenants = lazy(() => import('./pages/admin/Tenants.jsx'));
 const Staff = lazy(() => import('./pages/admin/Staff.jsx'));
+const Attendance = lazy(() => import('./pages/admin/Attendance.jsx'));
 const Rents = lazy(() => import('./pages/admin/Rents.jsx'));
 const AdminComplaints = lazy(() => import('./pages/admin/Complaints.jsx'));
 const Maintenance = lazy(() => import('./pages/admin/Maintenance.jsx'));
@@ -87,6 +88,7 @@ export default function App() {
             <Route path="bookings" element={<Bookings />} />
             <Route path="tenants" element={<Tenants />} />
             <Route path="staff" element={<Staff />} />
+            <Route path="attendance" element={<Attendance />} />
             <Route path="rents" element={<Rents />} />
             <Route path="complaints" element={<AdminComplaints />} />
             <Route path="maintenance" element={<Maintenance />} />

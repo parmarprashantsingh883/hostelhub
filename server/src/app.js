@@ -34,6 +34,8 @@ import settingsRoutes from './routes/settings.routes.js';
 import vendorRoutes from './routes/vendor.routes.js';
 import workOrderRoutes from './routes/workorder.routes.js';
 import inspectionRoutes from './routes/inspection.routes.js';
+import attendanceRoutes from './routes/attendance.routes.js';
+import payrollRoutes from './routes/payroll.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -114,6 +116,8 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/work-orders', workOrderRoutes);
 app.use('/api/inspections', inspectionRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/payroll', payrollRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);
