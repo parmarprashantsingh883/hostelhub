@@ -4,13 +4,11 @@ import {
   KeyRound, Mail, ShieldCheck, UserRound, Lock, Phone, CalendarDays, Hash, Check,
   Camera, Home, Wallet, Briefcase, Sun, Moon, BadgeCheck, FileCheck, Users, Heart, Loader2, IndianRupee,
 } from 'lucide-react';
-import { api, errMsg } from '../../api/client';
+import { api, errMsg, assetUrl } from '../../api/client';
 import { Button, Card, Field, Input, PasswordInput, Badge, PageHeader, Avatar, fmtDate, inr } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
 import { currentTheme, setTheme as applyTheme } from '../../lib/theme';
 
-const ASSET_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
-const assetUrl = (p) => (!p ? '' : p.startsWith('http') ? p : `${ASSET_BASE}${p}`);
 const cap = (s) => String(s || '—').replace(/_/g, ' ');
 
 const KYC_TONE = { verified: 'green', submitted: 'yellow', pending: 'gray', signed: 'green', sent: 'yellow', not_sent: 'gray' };

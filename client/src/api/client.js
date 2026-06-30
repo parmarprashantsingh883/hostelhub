@@ -22,6 +22,10 @@ export const setSessionExpiredHandler = (fn) => {
  */
 export const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
+/** Resolve a server asset path (e.g. /uploads/x.png) to a loadable URL —
+ *  same-origin in dev, the API origin for split deploys. */
+export const assetUrl = (p) => (!p ? '' : p.startsWith('http') ? p : `${API_BASE.replace(/\/api\/?$/, '')}${p}`);
+
 export const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,

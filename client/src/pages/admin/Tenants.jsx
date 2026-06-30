@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Pencil, UserX, Users, FileUp, Check, ArrowLeft, ArrowRight, ShieldCheck, FileSignature, BedDouble, User as UserIcon, Eye } from 'lucide-react';
-import { api, errMsg } from '../../api/client';
+import { api, errMsg, assetUrl } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, ConfirmDialog, TableSkeleton, EmptyState,
   StatusBadge, Badge, Table, TableRow, Td, PageHeader, inr, fmtDate,
@@ -191,7 +191,9 @@ export default function Tenants() {
                 <TableRow key={t._id} onClick={() => setViewing(t)} className="cursor-pointer hover:bg-brand-50/40 transition-colors">
                   <Td>
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials(t.name)}</div>
+                      {t.profileImage
+                        ? <img src={assetUrl(t.profileImage)} alt={t.name || ''} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                        : <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials(t.name)}</div>}
                       <div className="min-w-0">
                         <p className="font-semibold text-slate-900 truncate">{t.name}</p>
                         <p className="text-xs text-slate-400 truncate">{t.email}</p>
@@ -256,7 +258,7 @@ export default function Tenants() {
           return (
             <div className="space-y-5">
               <div className="flex items-center gap-3">
-                <Avatar name={viewing.name} size="lg" />
+                <Avatar name={viewing.name} src={assetUrl(viewing.profileImage)} size="lg" />
                 <div className="min-w-0">
                   <p className="font-semibold text-slate-900 truncate">{viewing.name}</p>
                   <div className="mt-1"><StatusBadge status={p.status} /></div>

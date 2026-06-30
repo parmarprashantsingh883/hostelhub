@@ -8,7 +8,7 @@ import {
   BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/client';
+import { api, assetUrl } from '../api/client';
 import { LogoMark } from '../components/brand/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -195,7 +195,9 @@ export default function DashboardLayout() {
 
         <div className="p-3 border-t border-ink-100 dark:border-white/10">
           <div className="flex items-center gap-3 px-2 py-2 mb-1">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials}</div>
+            {user?.profileImage
+              ? <img src={assetUrl(user.profileImage)} alt={user?.name || ''} className="w-9 h-9 rounded-full object-cover shrink-0" />
+              : <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials}</div>}
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-900 truncate dark:text-slate-100">{user?.name}</p>
               <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
@@ -218,7 +220,9 @@ export default function DashboardLayout() {
             <div className="w-px h-6 bg-ink-200 mx-1 dark:bg-white/10" />
             <div className="relative" ref={menuRef}>
               <button onClick={() => setUserMenu((o) => !o)} className="flex items-center gap-2 pl-1.5 pr-2 h-10 rounded-full hover:bg-brand-50 transition-colors dark:hover:bg-white/10">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center">{initials}</div>
+                {user?.profileImage
+                  ? <img src={assetUrl(user.profileImage)} alt={user?.name || ''} className="w-8 h-8 rounded-full object-cover" />
+                  : <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center">{initials}</div>}
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-semibold text-slate-800 leading-tight dark:text-slate-100">{user?.name}</p>
                   <p className="text-[10px] text-slate-400 capitalize">{user?.role}</p>

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Pencil, UserX, UserCog, Users, UserCheck, Shield, Search } from 'lucide-react';
-import { api, errMsg } from '../../api/client';
+import { api, errMsg, assetUrl } from '../../api/client';
 import {
   Button, Card, Field, Input, Select, Modal, ConfirmDialog, TableSkeleton, EmptyState,
   StatusBadge, Badge, StatCard, Avatar, Table, TableRow, Td, PageHeader, inr, fmtDate,
@@ -134,7 +134,7 @@ export default function Staff() {
               <TableRow key={s._id} className="hover:bg-brand-50/40 dark:hover:bg-white/5 transition-colors">
                 <Td>
                   <div className="flex items-center gap-3">
-                    <Avatar name={s.name} size="sm" />
+                    <Avatar name={s.name} src={assetUrl(s.profileImage)} size="sm" />
                     <div className="min-w-0">
                       <p className="font-semibold text-slate-900 dark:text-white truncate">{s.name}</p>
                       <p className="text-xs text-slate-400 truncate">{s.email}</p>
