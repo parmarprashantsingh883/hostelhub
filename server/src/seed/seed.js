@@ -20,6 +20,7 @@ import Vendor from '../models/Vendor.js';
 import WorkOrder from '../models/WorkOrder.js';
 import Inspection, { DEFAULT_CHECKLIST } from '../models/Inspection.js';
 import Attendance from '../models/Attendance.js';
+import Asset from '../models/Asset.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -457,6 +458,24 @@ export async function runSeed({ exitAfter = true } = {}) {
     });
   }
   await Attendance.insertMany(attDocs);
+
+  // ── Asset register (furniture / appliances) ──────────────
+  await Asset.create([
+    { name: 'Single bed', category: 'furniture', roomId: roomByNumber['101']._id, condition: 'good', purchaseCost: 6000, purchaseDate: new Date(Date.now() - 200 * day), createdBy: admin._id },
+    { name: 'Mattress', category: 'bedding', roomId: roomByNumber['101']._id, condition: 'good', purchaseCost: 3500, createdBy: admin._id },
+    { name: 'Air conditioner', category: 'appliance', roomId: roomByNumber['101']._id, condition: 'fair', purchaseCost: 32000, createdBy: admin._id },
+    { name: 'Wardrobe', category: 'furniture', roomId: roomByNumber['102']._id, condition: 'good', purchaseCost: 8000, createdBy: admin._id },
+    { name: 'Study table & chair', category: 'furniture', roomId: roomByNumber['104']._id, quantity: 3, condition: 'good', purchaseCost: 9000, createdBy: admin._id },
+    { name: 'Geyser', category: 'appliance', roomId: roomByNumber['201']._id, condition: 'damaged', status: 'under_repair', purchaseCost: 7000, createdBy: admin._id },
+    { name: 'Bunk beds', category: 'furniture', roomId: roomByNumber['204']._id, quantity: 4, condition: 'good', purchaseCost: 40000, createdBy: admin._id },
+    { name: 'Water purifier (RO)', category: 'appliance', location: 'Common area', condition: 'good', purchaseCost: 12000, createdBy: admin._id },
+    { name: 'Refrigerator', category: 'appliance', location: 'Common kitchen', condition: 'good', purchaseCost: 18000, createdBy: admin._id },
+    { name: 'Washing machine', category: 'appliance', location: 'Laundry', condition: 'fair', purchaseCost: 22000, createdBy: admin._id },
+    { name: 'CCTV cameras', category: 'safety', location: 'Building', quantity: 6, condition: 'good', purchaseCost: 24000, createdBy: admin._id },
+    { name: 'Fire extinguishers', category: 'safety', location: 'Each floor', quantity: 3, condition: 'good', purchaseCost: 4500, createdBy: admin._id },
+    { name: 'Sofa set', category: 'furniture', location: 'Lobby', condition: 'good', purchaseCost: 25000, createdBy: admin._id },
+    { name: 'Old microwave', category: 'kitchen', location: 'Store', condition: 'damaged', status: 'retired', purchaseCost: 6000, createdBy: admin._id },
+  ]);
 
   // ── Inspections (move-in / move-out condition reports) ──────────────
   await Inspection.create([

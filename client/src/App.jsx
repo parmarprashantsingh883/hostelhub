@@ -26,6 +26,7 @@ const Attendance = lazy(() => import('./pages/admin/Attendance.jsx'));
 const Rents = lazy(() => import('./pages/admin/Rents.jsx'));
 const AdminComplaints = lazy(() => import('./pages/admin/Complaints.jsx'));
 const Maintenance = lazy(() => import('./pages/admin/Maintenance.jsx'));
+const Assets = lazy(() => import('./pages/admin/Assets.jsx'));
 const AdminNotices = lazy(() => import('./pages/admin/Notices.jsx'));
 const AdminVisitors = lazy(() => import('./pages/admin/Visitors.jsx'));
 const AdminFoodMenu = lazy(() => import('./pages/admin/FoodMenu.jsx'));
@@ -92,6 +93,7 @@ export default function App() {
             <Route path="rents" element={<Rents />} />
             <Route path="complaints" element={<AdminComplaints />} />
             <Route path="maintenance" element={<Maintenance />} />
+            <Route path="assets" element={<Assets />} />
             <Route path="notices" element={<AdminNotices />} />
             <Route path="visitors" element={<AdminVisitors />} />
             <Route path="food-menu" element={<AdminFoodMenu />} />
