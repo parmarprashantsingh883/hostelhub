@@ -36,6 +36,7 @@ const Leads = lazy(() => import('./pages/admin/Leads.jsx'));
 const Settlements = lazy(() => import('./pages/admin/Settlements.jsx'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings.jsx'));
 const Inspections = lazy(() => import('./pages/admin/Inspections.jsx'));
+const AdminAgreements = lazy(() => import('./pages/admin/Agreements.jsx'));
 
 // Tenant
 const TenantDashboard = lazy(() => import('./pages/tenant/Dashboard.jsx'));
@@ -45,6 +46,7 @@ const TenantComplaints = lazy(() => import('./pages/tenant/Complaints.jsx'));
 const TenantVisitors = lazy(() => import('./pages/tenant/Visitors.jsx'));
 const TenantFoodMenu = lazy(() => import('./pages/tenant/FoodMenu.jsx'));
 const TenantDocuments = lazy(() => import('./pages/tenant/Documents.jsx'));
+const TenantAgreement = lazy(() => import('./pages/tenant/Agreement.jsx'));
 
 // Staff
 const StaffDashboard = lazy(() => import('./pages/staff/Dashboard.jsx'));
@@ -103,6 +105,7 @@ export default function App() {
             <Route path="leads" element={<Leads />} />
             <Route path="settlements" element={<Settlements />} />
             <Route path="inspections" element={<Inspections />} />
+            <Route path="agreements" element={<AdminAgreements />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<Profile />} />
@@ -120,6 +123,7 @@ export default function App() {
             <Route path="food-menu" element={<TenantFoodMenu />} />
             <Route path="notices" element={<Notices />} />
             <Route path="documents" element={<TenantDocuments />} />
+            <Route path="agreement" element={<TenantAgreement />} />
             <Route path="profile" element={<Profile />} />
           </Route>
         </Route>

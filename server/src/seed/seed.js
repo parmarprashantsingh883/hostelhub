@@ -22,6 +22,7 @@ import Inspection, { DEFAULT_CHECKLIST } from '../models/Inspection.js';
 import Attendance from '../models/Attendance.js';
 import Asset from '../models/Asset.js';
 import Approval from '../models/Approval.js';
+import Agreement from '../models/Agreement.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -484,6 +485,16 @@ export async function runSeed({ exitAfter = true } = {}) {
     { type: 'expense', title: 'Plumber call-out — urgent leak', amount: 1500, expenseCategory: 'maintenance', reason: 'Bathroom leak on the 2nd floor', requestedBy: staff[1]._id, status: 'approved', decidedBy: admin._id, decidedAt: new Date(Date.now() - 2 * day), decisionNote: 'Approved — go ahead.' },
     { type: 'discount', title: '₹500 goodwill discount — Room 203', amount: 500, reason: 'Wi-Fi outage compensation', requestedBy: staff[0]._id, status: 'rejected', decidedBy: admin._id, decidedAt: new Date(Date.now() - 1 * day), decisionNote: 'Handle via complaint resolution instead.' },
   ]);
+
+  // ── Rental agreements (one to sign, one already signed) ──
+  const agT0 = tenants[0].tenantProfile;
+  const agT2 = tenants[2].tenantProfile;
+  await Agreement.create([
+    { tenantId: tenants[0]._id, roomId: agT0.roomId, rentAmount: agT0.rentAmount, depositAmount: agT0.securityDeposit, dueDay: 5, startDate: agT0.joiningDate, durationMonths: 11, status: 'sent', createdBy: admin._id },
+    { tenantId: tenants[2]._id, roomId: agT2.roomId, rentAmount: agT2.rentAmount, depositAmount: agT2.securityDeposit, dueDay: 5, startDate: agT2.joiningDate, durationMonths: 11, status: 'signed', signedAt: new Date(Date.now() - 100 * day), signerName: tenants[2].name, createdBy: admin._id },
+  ]);
+  await User.findByIdAndUpdate(tenants[0]._id, { 'tenantProfile.agreementStatus': 'sent' });
+  await User.findByIdAndUpdate(tenants[2]._id, { 'tenantProfile.agreementStatus': 'signed' });
 
   // ── Inspections (move-in / move-out condition reports) ──────────────
   await Inspection.create([

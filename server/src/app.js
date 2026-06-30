@@ -38,6 +38,7 @@ import attendanceRoutes from './routes/attendance.routes.js';
 import payrollRoutes from './routes/payroll.routes.js';
 import assetRoutes from './routes/asset.routes.js';
 import approvalRoutes from './routes/approval.routes.js';
+import agreementRoutes from './routes/agreement.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -122,6 +123,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/payroll', payrollRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/approvals', approvalRoutes);
+app.use('/api/agreements', agreementRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);

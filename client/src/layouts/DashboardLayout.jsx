@@ -5,7 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks,
+  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, assetUrl } from '../api/client';
@@ -27,6 +27,7 @@ const NAV = {
     { to: '/admin/approvals', label: 'Approvals', icon: ListChecks },
     { to: '/admin/settlements', label: 'Settlements', icon: HandCoins },
     { to: '/admin/inspections', label: 'Inspections', icon: ClipboardCheck },
+    { to: '/admin/agreements', label: 'Agreements', icon: FileSignature },
     { to: '/admin/complaints', label: 'Complaints', icon: Wrench },
     { to: '/admin/maintenance', label: 'Maintenance', icon: Hammer },
     { to: '/admin/assets', label: 'Assets', icon: Package },
@@ -45,6 +46,7 @@ const NAV = {
     { to: '/tenant/food-menu', label: 'Food Menu', icon: UtensilsCrossed },
     { to: '/tenant/notices', label: 'Notices', icon: Megaphone },
     { to: '/tenant/documents', label: 'Documents', icon: FileText },
+    { to: '/tenant/agreement', label: 'Agreement', icon: FileSignature },
     { to: '/tenant/profile', label: 'Profile', icon: User },
   ],
   staff: [
