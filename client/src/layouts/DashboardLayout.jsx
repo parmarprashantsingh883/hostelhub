@@ -5,7 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package,
+  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, assetUrl } from '../api/client';
@@ -24,6 +24,7 @@ const NAV = {
     { to: '/admin/attendance', label: 'Attendance', icon: CalendarClock },
     { to: '/admin/rents', label: 'Rent & Payments', icon: Banknote },
     { to: '/admin/expenses', label: 'Expenses & P&L', icon: Wallet },
+    { to: '/admin/approvals', label: 'Approvals', icon: ListChecks },
     { to: '/admin/settlements', label: 'Settlements', icon: HandCoins },
     { to: '/admin/inspections', label: 'Inspections', icon: ClipboardCheck },
     { to: '/admin/complaints', label: 'Complaints', icon: Wrench },
@@ -50,6 +51,7 @@ const NAV = {
     { to: '/staff', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/staff/complaints', label: 'My Tasks', icon: Wrench },
     { to: '/staff/visitors', label: 'Visitor Log', icon: ClipboardList },
+    { to: '/staff/approvals', label: 'Approvals', icon: ListChecks },
     { to: '/staff/notices', label: 'Notices', icon: Megaphone },
     { to: '/staff/profile', label: 'Profile', icon: User },
   ],

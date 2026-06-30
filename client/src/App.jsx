@@ -54,6 +54,7 @@ const StaffVisitors = lazy(() => import('./pages/staff/Visitors.jsx'));
 // Shared
 const Notices = lazy(() => import('./pages/shared/Notices.jsx'));
 const Profile = lazy(() => import('./pages/shared/Profile.jsx'));
+const Approvals = lazy(() => import('./pages/shared/Approvals.jsx'));
 
 function PageLoader() {
   return (
@@ -94,6 +95,7 @@ export default function App() {
             <Route path="complaints" element={<AdminComplaints />} />
             <Route path="maintenance" element={<Maintenance />} />
             <Route path="assets" element={<Assets />} />
+            <Route path="approvals" element={<Approvals />} />
             <Route path="notices" element={<AdminNotices />} />
             <Route path="visitors" element={<AdminVisitors />} />
             <Route path="food-menu" element={<AdminFoodMenu />} />
@@ -128,6 +130,7 @@ export default function App() {
             <Route index element={<StaffDashboard />} />
             <Route path="complaints" element={<StaffComplaints />} />
             <Route path="visitors" element={<StaffVisitors />} />
+            <Route path="approvals" element={<Approvals />} />
             <Route path="notices" element={<Notices />} />
             <Route path="profile" element={<Profile />} />
           </Route>

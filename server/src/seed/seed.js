@@ -21,6 +21,7 @@ import WorkOrder from '../models/WorkOrder.js';
 import Inspection, { DEFAULT_CHECKLIST } from '../models/Inspection.js';
 import Attendance from '../models/Attendance.js';
 import Asset from '../models/Asset.js';
+import Approval from '../models/Approval.js';
 import DepositLedger from '../models/DepositLedger.js';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -475,6 +476,13 @@ export async function runSeed({ exitAfter = true } = {}) {
     { name: 'Fire extinguishers', category: 'safety', location: 'Each floor', quantity: 3, condition: 'good', purchaseCost: 4500, createdBy: admin._id },
     { name: 'Sofa set', category: 'furniture', location: 'Lobby', condition: 'good', purchaseCost: 25000, createdBy: admin._id },
     { name: 'Old microwave', category: 'kitchen', location: 'Store', condition: 'damaged', status: 'retired', purchaseCost: 6000, createdBy: admin._id },
+  ]);
+
+  // ── Approval requests ────────────────────────────────────
+  await Approval.create([
+    { type: 'purchase', title: 'New mattresses for dorm 204', amount: 14000, expenseCategory: 'supplies', reason: 'Two mattresses worn out', requestedBy: staff[0]._id, status: 'pending' },
+    { type: 'expense', title: 'Plumber call-out — urgent leak', amount: 1500, expenseCategory: 'maintenance', reason: 'Bathroom leak on the 2nd floor', requestedBy: staff[1]._id, status: 'approved', decidedBy: admin._id, decidedAt: new Date(Date.now() - 2 * day), decisionNote: 'Approved — go ahead.' },
+    { type: 'discount', title: '₹500 goodwill discount — Room 203', amount: 500, reason: 'Wi-Fi outage compensation', requestedBy: staff[0]._id, status: 'rejected', decidedBy: admin._id, decidedAt: new Date(Date.now() - 1 * day), decisionNote: 'Handle via complaint resolution instead.' },
   ]);
 
   // ── Inspections (move-in / move-out condition reports) ──────────────
