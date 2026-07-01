@@ -1,5 +1,6 @@
 import Asset, { ASSET_CATEGORIES, ASSET_CONDITIONS, ASSET_STATUS } from '../models/Asset.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { moveToTrash } from '../services/recyclebin.service.js';
 
 /** GET /api/assets?roomId=&category=&status=&condition= (admin/staff) — list + KPIs. */
 export const listAssets = asyncHandler(async (req, res) => {
@@ -73,6 +74,7 @@ export const updateAsset = asyncHandler(async (req, res) => {
 export const deleteAsset = asyncHandler(async (req, res) => {
   const asset = await Asset.findById(req.params.id);
   if (!asset) throw new ApiError(404, 'Asset not found');
+  await moveToTrash({ type: 'Asset', doc: asset, label: asset.name, userId: req.user._id });
   await asset.deleteOne();
   res.json({ success: true, data: { deleted: true } });
 });

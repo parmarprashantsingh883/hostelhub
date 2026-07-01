@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import { sendEmail, emailTemplates } from '../services/email.service.js';
 import { notifyMany } from '../services/notification.service.js';
+import { moveToTrash } from '../services/recyclebin.service.js';
 
 // Whitelist of client-settable notice fields — guards against mass assignment
 // of internal fields (createdBy, timestamps, etc.).
@@ -80,7 +81,9 @@ export const updateNotice = asyncHandler(async (req, res) => {
 
 /** DELETE /api/notices/:id (admin) */
 export const deleteNotice = asyncHandler(async (req, res) => {
-  const notice = await Notice.findByIdAndDelete(req.params.id);
+  const notice = await Notice.findById(req.params.id);
   if (!notice) throw new ApiError(404, 'Notice not found');
+  await moveToTrash({ type: 'Notice', doc: notice, label: notice.title, userId: req.user._id });
+  await notice.deleteOne();
   res.json({ success: true, message: 'Notice deleted' });
 });

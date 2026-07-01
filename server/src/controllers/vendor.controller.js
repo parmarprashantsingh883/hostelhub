@@ -1,5 +1,6 @@
 import Vendor, { VENDOR_CATEGORIES } from '../models/Vendor.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { moveToTrash } from '../services/recyclebin.service.js';
 
 /** GET /api/vendors?category=&active= (admin/staff) */
 export const listVendors = asyncHandler(async (req, res) => {
@@ -37,6 +38,7 @@ export const updateVendor = asyncHandler(async (req, res) => {
 export const deleteVendor = asyncHandler(async (req, res) => {
   const vendor = await Vendor.findById(req.params.id);
   if (!vendor) throw new ApiError(404, 'Vendor not found');
+  await moveToTrash({ type: 'Vendor', doc: vendor, label: vendor.name, userId: req.user._id });
   await vendor.deleteOne();
   res.json({ success: true, data: { deleted: true } });
 });

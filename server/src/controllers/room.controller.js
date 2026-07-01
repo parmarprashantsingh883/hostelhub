@@ -1,6 +1,7 @@
 import Room from '../models/Room.js';
 import User from '../models/User.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { moveToTrash } from '../services/recyclebin.service.js';
 
 /** POST /api/rooms (admin) */
 export const createRoom = asyncHandler(async (req, res) => {
@@ -58,6 +59,7 @@ export const deleteRoom = asyncHandler(async (req, res) => {
   if (room.assignedTenants.length > 0) {
     throw new ApiError(422, 'Cannot delete a room with assigned tenants — move them out first');
   }
+  await moveToTrash({ type: 'Room', doc: room, label: `Room ${room.roomNumber}`, userId: req.user._id });
   await room.deleteOne();
   res.json({ success: true, message: 'Room deleted' });
 });

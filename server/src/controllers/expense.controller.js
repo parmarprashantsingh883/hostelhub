@@ -1,6 +1,7 @@
 import Expense, { EXPENSE_CATEGORIES } from '../models/Expense.js';
 import Rent from '../models/Rent.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { moveToTrash } from '../services/recyclebin.service.js';
 
 /** Resolve month/year from query, defaulting to the current month. */
 const resolvePeriod = (query) => {
@@ -61,6 +62,7 @@ export const listExpenses = asyncHandler(async (req, res) => {
 export const deleteExpense = asyncHandler(async (req, res) => {
   const expense = await Expense.findById(req.params.id);
   if (!expense) throw new ApiError(404, 'Expense not found');
+  await moveToTrash({ type: 'Expense', doc: expense, label: `${expense.category} · ₹${expense.amount}`, userId: req.user._id });
   await expense.deleteOne();
   res.json({ success: true, message: 'Expense deleted' });
 });

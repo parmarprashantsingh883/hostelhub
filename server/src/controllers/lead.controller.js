@@ -1,5 +1,6 @@
 import Lead, { LEAD_SOURCES, LEAD_STAGES } from '../models/Lead.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { moveToTrash } from '../services/recyclebin.service.js';
 
 /** Normalise + validate a lead payload coming from either the admin or public form. */
 function buildLeadData(body, { publicSource = false } = {}) {
@@ -92,6 +93,7 @@ export const updateStage = asyncHandler(async (req, res) => {
 export const deleteLead = asyncHandler(async (req, res) => {
   const lead = await Lead.findById(req.params.id);
   if (!lead) throw new ApiError(404, 'Lead not found');
+  await moveToTrash({ type: 'Lead', doc: lead, label: lead.name, userId: req.user._id });
   await lead.deleteOne();
   res.json({ success: true, message: 'Lead deleted' });
 });
