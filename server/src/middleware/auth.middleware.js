@@ -32,3 +32,13 @@ export const authorize =
     }
     next();
   };
+
+/** Fine-grained gate for staff actions. Admins always pass; staff pass only if
+ *  the capability is in their staffProfile.permissions. Use AFTER authorize(). */
+export const requirePermission =
+  (key) =>
+  (req, _res, next) => {
+    if (req.user?.role === 'admin') return next();
+    if (req.user?.role === 'staff' && (req.user.staffProfile?.permissions || []).includes(key)) return next();
+    return next(new ApiError(403, `You don't have permission for this — ask an admin to grant "${key}".`));
+  };

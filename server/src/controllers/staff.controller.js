@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Complaint from '../models/Complaint.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { STAFF_PERMISSIONS, PERMISSION_KEYS, DEFAULT_STAFF_PERMISSIONS } from '../lib/permissions.js';
 
 /** POST /api/staff (admin) */
 export const createStaff = asyncHandler(async (req, res) => {
@@ -14,7 +15,7 @@ export const createStaff = asyncHandler(async (req, res) => {
     phone,
     password: password || 'Staff@123',
     role: 'staff',
-    staffProfile: { status: 'active', ...staffProfile },
+    staffProfile: { status: 'active', permissions: DEFAULT_STAFF_PERMISSIONS, ...staffProfile },
   });
   res.status(201).json({ success: true, data: { staff } });
 });
@@ -84,6 +85,22 @@ export const deactivateStaff = asyncHandler(async (req, res) => {
   );
 
   res.json({ success: true, message: 'Staff member deactivated' });
+});
+
+/** GET /api/staff/permissions — the granular permission catalog (admin). */
+export const permissionCatalog = asyncHandler(async (_req, res) => {
+  res.json({ success: true, data: { permissions: STAFF_PERMISSIONS } });
+});
+
+/** PUT /api/staff/:id/permissions { permissions } (admin) — set a staff member's capabilities. */
+export const updatePermissions = asyncHandler(async (req, res) => {
+  const staff = await User.findOne({ _id: req.params.id, role: 'staff' });
+  if (!staff) throw new ApiError(404, 'Staff member not found');
+  const requested = Array.isArray(req.body.permissions) ? req.body.permissions : [];
+  const permissions = [...new Set(requested.filter((p) => PERMISSION_KEYS.includes(p)))];
+  staff.staffProfile = { ...(staff.staffProfile?.toObject?.() || staff.staffProfile || {}), permissions };
+  await staff.save({ validateBeforeSave: false });
+  res.json({ success: true, data: { staff } });
 });
 
 /** GET /api/staff/:id/tasks — complaints assigned to this staff member */

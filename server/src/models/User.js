@@ -56,6 +56,8 @@ const staffProfileSchema = new mongoose.Schema(
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     salary: { type: Number, default: 0, min: 0 },
     joinedAt: { type: Date, default: Date.now },
+    // Granular capabilities an admin has granted this staff member.
+    permissions: { type: [String], default: [] },
   },
   { _id: false },
 );

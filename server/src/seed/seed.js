@@ -126,9 +126,9 @@ export async function runSeed({ exitAfter = true } = {}) {
 
   // ── Staff (3) ─────────────────────────────────────────
   const staffSpecs = [
-    { name: 'Demo Staff', email: 'staff@quarters.app', phone: '+91 9000000007', staffType: 'maintenance' },
-    { name: 'Ganesh Kumar', email: 'ganesh@example.com', phone: '+91 9000000008', staffType: 'security' },
-    { name: 'Lakshmi Devi', email: 'lakshmi@example.com', phone: '+91 9000000009', staffType: 'cook' },
+    { name: 'Demo Staff', email: 'staff@quarters.app', phone: '+91 9000000007', staffType: 'maintenance', perms: ['visitors.manage', 'complaints.manage', 'maintenance.manage', 'approvals.raise'] },
+    { name: 'Ganesh Kumar', email: 'ganesh@example.com', phone: '+91 9000000008', staffType: 'security', perms: ['visitors.manage'] },
+    { name: 'Lakshmi Devi', email: 'lakshmi@example.com', phone: '+91 9000000009', staffType: 'cook', perms: ['complaints.manage'] },
   ];
   const staff = [];
   for (const s of staffSpecs) {
@@ -139,7 +139,7 @@ export async function runSeed({ exitAfter = true } = {}) {
         phone: s.phone,
         password: 'Staff@123',
         role: 'staff',
-        staffProfile: { staffType: s.staffType, status: 'active', salary: 18000 },
+        staffProfile: { staffType: s.staffType, status: 'active', salary: 18000, permissions: s.perms },
       }),
     );
   }
