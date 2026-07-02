@@ -2,7 +2,7 @@
  * Quarters UI kit — small, composable building blocks shared by every page.
  * Production-grade: layered shadows, focus rings, subtle motion, slate palette.
  */
-import { useEffect, useState, useMemo, useRef, Children } from 'react';
+import { useEffect, useState, useMemo, useRef, Children, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight, Eye, EyeOff, ChevronDown, Check } from 'lucide-react';
@@ -53,16 +53,16 @@ export const inputCls = (error) =>
     error ? 'border-red-400 focus:ring-red-500/10 focus:border-red-500' : 'border-slate-300 hover:border-slate-400 dark:border-white/10 dark:hover:border-white/20'
   }`;
 
-export function Input({ error, className = '', ...rest }) {
-  return <input className={`${inputCls(error)} ${className}`} {...rest} />;
-}
+export const Input = forwardRef(function Input({ error, className = '', ...rest }, ref) {
+  return <input ref={ref} className={`${inputCls(error)} ${className}`} {...rest} />;
+});
 
 /** Password field with a show/hide toggle. Forwards refs/props (RHF-friendly). */
-export function PasswordInput({ error, className = '', ...rest }) {
+export const PasswordInput = forwardRef(function PasswordInput({ error, className = '', ...rest }, ref) {
   const [show, setShow] = useState(false);
   return (
     <div className="relative">
-      <input type={show ? 'text' : 'password'} className={`${inputCls(error)} pr-10 ${className}`} {...rest} />
+      <input ref={ref} type={show ? 'text' : 'password'} className={`${inputCls(error)} pr-10 ${className}`} {...rest} />
       <button
         type="button"
         tabIndex={-1}
@@ -74,7 +74,7 @@ export function PasswordInput({ error, className = '', ...rest }) {
       </button>
     </div>
   );
-}
+});
 
 /**
  * Themed select — same API as a native <select> (value / onChange / <option>

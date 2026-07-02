@@ -1,13 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   BedDouble, Banknote, Wrench, Megaphone, ClipboardList, UtensilsCrossed,
   ShieldCheck, BarChart3, ArrowRight, ArrowUpRight, Check, Menu, X, Plus, Minus,
+  DoorOpen, UserPlus, Receipt,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { LogoMark } from '../../components/brand/Logo';
 import OccupancyBoard from '../../components/marketing/OccupancyBoard';
+
+// three.js is heavy — the tower chunk loads only when its section nears the viewport.
+const OccupancyTower = lazy(() => import('../../components/three/OccupancyTower.jsx'));
+
+/** True once the node has ever been near the viewport (600px early). */
+function useNearViewport() {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    if (!ref.current || seen) return undefined;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setSeen(true); },
+      { rootMargin: '600px 0px' },
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [seen]);
+  return [ref, seen];
+}
 
 const EASE = [0.16, 1, 0.3, 1];
 const reveal = {
@@ -120,6 +140,7 @@ export default function Landing() {
   const { user } = useAuth();
   const [mobileNav, setMobileNav] = useState(false);
   const [yearly, setYearly] = useState(false);
+  const [towerRef, towerSeen] = useNearViewport();
   const year = new Date().getFullYear();
   const navLinks = [['What it does', '#features'], ['Pricing', '#pricing'], ['Questions', '#faq']];
   const price = (m) => (yearly ? `₹${Math.round(m * 0.8).toLocaleString('en-IN')}` : `₹${m.toLocaleString('en-IN')}`);
@@ -210,6 +231,64 @@ export default function Landing() {
               <span><span className="font-semibold text-slate-800">{s.split(' ')[0]}</span> {s.split(' ').slice(1).join(' ')}</span>
             </span>
           ))}
+        </Section>
+      </div>
+
+      {/* The living building — every window is a bed */}
+      <div className="relative overflow-hidden bg-[#070b14] text-white">
+        <Section className="grid items-center gap-12 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:py-24">
+          <motion.div {...reveal}>
+            <Eyebrow dark>The occupancy engine</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+              Every window is a bed.<br />
+              <span className="text-brand-400">Watch them fill.</span>
+            </h2>
+            <p className="mt-5 max-w-md text-[15.5px] leading-relaxed text-slate-400">
+              This is how Quarters sees your property — floor by floor, bed by bed, live.
+              Vacant beds stay dark; every move-in lights one up. Your dashboard does the
+              same with real data, so an empty bed can never hide from you.
+            </p>
+            <ul className="mt-8 space-y-4">
+              {[
+                { icon: DoorOpen, t: 'A live bed map', d: 'Sellable-bed math per floor — maintenance beds don’t count as stock.' },
+                { icon: UserPlus, t: 'A move-in pipeline', d: 'Enquiry → visit → token → allocated, each stage one drag away.' },
+                { icon: Receipt, t: 'Rent that follows the bed', d: 'The moment a bed fills, its rent, deposit and receipts exist.' },
+              ].map(({ icon: Icon, t, d }) => (
+                <li key={t} className="flex items-start gap-3.5">
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10">
+                    <Icon className="h-4.5 w-4.5 text-brand-400" strokeWidth={2} />
+                  </span>
+                  <span>
+                    <span className="block text-[15px] font-semibold text-white">{t}</span>
+                    <span className="block text-sm leading-relaxed text-slate-400">{d}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link to="/register" className="mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-7 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-brand-500">
+              Light up your building <ArrowRight className="h-4 w-4" />
+            </Link>
+          </motion.div>
+
+          <motion.div
+            {...reveal}
+            ref={towerRef}
+            className="relative h-[340px] sm:h-[430px] lg:h-[520px]"
+          >
+            <div className="pointer-events-none absolute -inset-10 -z-10 rounded-[3rem] bg-brand-500/10 blur-3xl" />
+            {towerSeen ? (
+              <Suspense fallback={<div className="h-full w-full animate-pulse rounded-3xl bg-white/[0.04]" />}>
+                <OccupancyTower />
+              </Suspense>
+            ) : (
+              <div className="h-full w-full rounded-3xl bg-white/[0.04]" />
+            )}
+            {/* vignette + hairline frame so the scene reads as a composed shot */}
+            <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/10 bg-[radial-gradient(115%_115%_at_50%_28%,transparent_58%,rgba(7,11,20,0.6)_100%)]" />
+            <p className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+              Live simulation · lit window = occupied bed
+            </p>
+          </motion.div>
         </Section>
       </div>
 
