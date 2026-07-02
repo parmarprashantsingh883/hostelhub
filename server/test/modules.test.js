@@ -71,7 +71,7 @@ describe('expenses & P&L', () => {
 // ── Leads CRM + public booking ────────────────────────────────────────
 describe('leads CRM + public booking', () => {
   it('accepts an unauthenticated public booking (201, stage=new)', async () => {
-    const res = await request(app).post('/api/leads/public').send({
+    const res = await request(app).post('/api/leads/public?org=sunrise-pg').send({
       name: 'Walk In', phone: '+91 9000000123', note: 'from website',
     });
     expect(res.status).toBe(201);
@@ -79,7 +79,11 @@ describe('leads CRM + public booking', () => {
   });
 
   it('rejects a public booking missing name/phone (422)', async () => {
-    expect((await request(app).post('/api/leads/public').send({ note: 'x' })).status).toBe(422);
+    expect((await request(app).post('/api/leads/public?org=sunrise-pg').send({ note: 'x' })).status).toBe(422);
+  });
+
+  it('rejects a public booking without an org slug (400)', async () => {
+    expect((await request(app).post('/api/leads/public').send({ name: 'X', phone: '1' })).status).toBe(400);
   });
 
   it('lead list is admin-only (tenant 403)', async () => {

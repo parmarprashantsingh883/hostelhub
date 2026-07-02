@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const ATTENDANCE_STATUS = ['present', 'absent', 'half_day', 'leave'];
 export const SHIFTS = ['general', 'morning', 'evening', 'night', 'off'];
@@ -18,5 +19,7 @@ const attendanceSchema = new mongoose.Schema(
 );
 
 attendanceSchema.index({ staffId: 1, date: 1 }, { unique: true });
+
+attendanceSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Attendance', attendanceSchema);

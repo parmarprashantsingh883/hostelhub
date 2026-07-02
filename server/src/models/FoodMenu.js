@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 const feedbackSchema = new mongoose.Schema(
   {
@@ -29,7 +30,7 @@ const foodMenuSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-foodMenuSchema.index({ date: -1 }, { unique: true });
+foodMenuSchema.index({ orgId: 1, date: -1 }, { unique: true });
 
 // Average rating virtual for quick dashboards
 foodMenuSchema.virtual('avgRating').get(function () {
@@ -39,5 +40,7 @@ foodMenuSchema.virtual('avgRating').get(function () {
 });
 
 foodMenuSchema.set('toJSON', { virtuals: true });
+
+foodMenuSchema.plugin(tenantPlugin);
 
 export default mongoose.model('FoodMenu', foodMenuSchema);

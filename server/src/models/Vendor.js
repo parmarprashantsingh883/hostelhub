@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const VENDOR_CATEGORIES = [
   'electrical', 'plumbing', 'carpentry', 'cleaning', 'appliance',
@@ -18,5 +19,7 @@ const vendorSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+vendorSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Vendor', vendorSchema);

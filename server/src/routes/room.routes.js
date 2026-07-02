@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import * as ctrl from '../controllers/room.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
+import { enforceLimit } from '../middleware/subscription.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
 
 const roomBody = z.object({
@@ -22,7 +23,7 @@ router.use(protect);
 router.get('/', ctrl.listRooms);
 router.get('/:id', ctrl.getRoom);
 
-router.post('/', authorize('admin'), validate(roomBody), ctrl.createRoom);
+router.post('/', authorize('admin'), enforceLimit('rooms'), validate(roomBody), ctrl.createRoom);
 router.put('/:id', authorize('admin'), validate(roomBody.partial()), ctrl.updateRoom);
 router.delete('/:id', authorize('admin'), ctrl.deleteRoom);
 router.put('/:id/assign-tenant', authorize('admin'), validate(assignBody), ctrl.assignTenant);

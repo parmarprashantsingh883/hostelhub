@@ -5,7 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature, Trash2, ShieldCheck,
+  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature, Trash2, ShieldCheck, CreditCard,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, assetUrl } from '../api/client';
@@ -37,6 +37,7 @@ const NAV = {
     { to: '/admin/food-menu', label: 'Food Menu', icon: UtensilsCrossed },
     { to: '/admin/reports', label: 'Reports', icon: FileBarChart },
     { to: '/admin/settings', label: 'Settings', icon: SettingsIcon },
+    { to: '/admin/billing', label: 'Billing & Plan', icon: CreditCard },
     { to: '/admin/recyclebin', label: 'Recycle bin', icon: Trash2 },
   ],
   tenant: [
@@ -140,6 +141,40 @@ function NotificationBell() {
 }
 
 const ROLE_LABEL = { admin: 'Admin', tenant: 'Resident', staff: 'Staff' };
+
+/** Admin-only strip under the topbar: trial countdown / lapsed-subscription alert. */
+function SubscriptionBanner() {
+  const { user } = useAuth();
+  const location = useLocation();
+  const [billing, setBilling] = useState(null);
+
+  useEffect(() => {
+    if (user?.role !== 'admin') return;
+    api.get('/billing')
+      .then(({ data }) => setBilling(data.data))
+      .catch(() => {}); // legacy accounts without an org — no banner
+  }, [user?.role]);
+
+  if (!billing || location.pathname === '/admin/billing') return null;
+
+  if (billing.state === 'expired') {
+    return (
+      <div className="flex items-center justify-center gap-3 bg-red-600 px-4 py-2 text-sm font-medium text-white">
+        Your subscription has ended — your data is safe, but changes are locked.
+        <NavLink to="/admin/billing" className="rounded-lg bg-white/20 px-2.5 py-1 font-semibold hover:bg-white/30">Renew now</NavLink>
+      </div>
+    );
+  }
+  if (billing.state === 'trialing' && billing.daysLeft <= 7) {
+    return (
+      <div className="flex items-center justify-center gap-3 bg-brand-600 px-4 py-2 text-sm font-medium text-white">
+        {billing.daysLeft} day{billing.daysLeft === 1 ? '' : 's'} left in your free trial.
+        <NavLink to="/admin/billing" className="rounded-lg bg-white/20 px-2.5 py-1 font-semibold hover:bg-white/30">Choose a plan</NavLink>
+      </div>
+    );
+  }
+  return null;
+}
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -249,6 +284,8 @@ export default function DashboardLayout() {
             </div>
           </div>
         </header>
+
+        <SubscriptionBanner />
 
         <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto">
           {/* Suspense lives INSIDE the layout so a lazy route chunk only swaps

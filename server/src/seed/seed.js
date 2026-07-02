@@ -5,6 +5,9 @@
  */
 import 'dotenv/config';
 import mongoose from 'mongoose';
+import Organization from '../models/Organization.js';
+import { runWithTenant } from '../lib/tenantContext.js';
+import { TRIAL_DAYS, TRIAL_PLAN } from '../lib/plans.js';
 import User from '../models/User.js';
 import Room from '../models/Room.js';
 import Rent from '../models/Rent.js';
@@ -41,6 +44,24 @@ export async function runSeed({ exitAfter = true } = {}) {
   }
 
   console.log('🌱 Seeding demo data…');
+
+  // ── Organization (multi-tenancy root) ─────────────────
+  const org = await Organization.create({
+    name: 'Sunrise PG for Professionals',
+    slug: 'sunrise-pg',
+    email: 'hello@quarters.app',
+    phone: '+91 90000 00000',
+    subscription: {
+      planId: TRIAL_PLAN,
+      status: 'trialing',
+      trialEndsAt: new Date(Date.now() + TRIAL_DAYS * 86400000),
+      history: [{ event: 'trial_started', planId: TRIAL_PLAN }],
+    },
+  });
+
+  // Everything below runs inside the org's tenant context, so the tenant
+  // plugin stamps orgId on every document automatically.
+  await runWithTenant(org._id, async () => {
 
   // ── Admin ──────────────────────────────────────────────
   const admin = await User.create({
@@ -510,6 +531,8 @@ export async function runSeed({ exitAfter = true } = {}) {
       items: DEFAULT_CHECKLIST.map((label) => ({ label, condition: 'good', note: '', deduction: 0 })),
     },
   ]);
+
+  }); // end runWithTenant
 
   console.log('🌱 Seed complete:');
   console.log('   admin@quarters.app / Admin@123');

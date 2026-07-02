@@ -3,6 +3,7 @@ import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
 import * as ctrl from '../controllers/lead.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
+import { resolveOrgBySlug } from '../middleware/tenant.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
 import { isTest } from '../config/env.js';
 
@@ -38,7 +39,7 @@ const publicLeadGuard = isTest
       legacyHeaders: false,
       message: { success: false, message: 'Too many enquiries — please try again later.' },
     });
-router.post('/public', publicLeadGuard, validate(publicLeadBody), ctrl.createPublicLead);
+router.post('/public', publicLeadGuard, resolveOrgBySlug, validate(publicLeadBody), ctrl.createPublicLead);
 
 // Everything below requires an authenticated admin.
 router.use(protect);

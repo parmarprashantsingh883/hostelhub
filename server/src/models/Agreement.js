@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const AGREEMENT_STATUS = ['draft', 'sent', 'signed', 'cancelled'];
 
@@ -26,5 +27,7 @@ const agreementSchema = new mongoose.Schema(
 );
 
 agreementSchema.index({ createdAt: -1 });
+
+agreementSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Agreement', agreementSchema);

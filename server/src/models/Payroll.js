@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 /** A monthly salary payment for a staff member. One per (staff, month, year).
  *  Paying creates a 'salaries' Expense so it flows into P&L. */
@@ -16,5 +17,7 @@ const payrollSchema = new mongoose.Schema(
 );
 
 payrollSchema.index({ staffId: 1, month: 1, year: 1 }, { unique: true });
+
+payrollSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Payroll', payrollSchema);

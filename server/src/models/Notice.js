@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 const noticeSchema = new mongoose.Schema(
   {
@@ -23,5 +24,7 @@ const noticeSchema = new mongoose.Schema(
 );
 
 noticeSchema.index({ isPinned: -1, createdAt: -1 });
+
+noticeSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Notice', noticeSchema);

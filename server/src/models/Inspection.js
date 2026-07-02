@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const INSPECTION_TYPES = ['move_in', 'move_out'];
 export const ITEM_CONDITIONS = ['good', 'fair', 'damaged', 'missing'];
@@ -45,5 +46,7 @@ inspectionSchema.set('toJSON', { virtuals: true });
 inspectionSchema.set('toObject', { virtuals: true });
 
 inspectionSchema.index({ createdAt: -1 });
+
+inspectionSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Inspection', inspectionSchema);

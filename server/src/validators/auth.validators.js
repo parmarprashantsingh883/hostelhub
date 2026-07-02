@@ -8,6 +8,7 @@ const password = z
   .regex(/[0-9]/, 'Password needs a digit');
 
 export const registerSchema = z.object({
+  hostelName: z.string().trim().min(2, 'Hostel / PG name is required').max(120),
   name: z.string().trim().min(2, 'Name is required').max(100),
   email: z.string().trim().email('Invalid email'),
   phone: z.string().trim().max(20).optional().default(''),

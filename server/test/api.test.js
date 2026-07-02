@@ -88,13 +88,14 @@ describe('auth', () => {
     expect(noCookie.status).toBe(401);
   });
 
-  it('public registration creates a tenant account', async () => {
-    const email = `newuser_${Date.now()}@test.com`;
+  it('public registration creates an organization + owner admin on trial', async () => {
+    const email = `newowner_${Date.now()}@test.com`;
     const res = await request(app).post('/api/auth/register').send({
-      name: 'Test User', email, phone: '+91 9000012345', password: 'Test@12345',
+      hostelName: 'Test PG', name: 'Test Owner', email, phone: '+91 9000012345', password: 'Test@12345',
     });
     expect(res.status).toBe(201);
-    expect(res.body.data.user.role).toBe('tenant');
+    expect(res.body.data.user.role).toBe('admin');
+    expect(res.body.data.organization.subscription.status).toBe('trialing');
     // and can immediately log in
     const li = await login({ email, password: 'Test@12345' });
     expect(li.status).toBe(200);
@@ -102,14 +103,14 @@ describe('auth', () => {
 
   it('rejects duplicate registration email (409)', async () => {
     const res = await request(app).post('/api/auth/register').send({
-      name: 'Dupe', email: DEMO.admin.email, phone: '+91 9000099999', password: 'Test@12345',
+      hostelName: 'Dupe PG', name: 'Dupe', email: DEMO.admin.email, phone: '+91 9000099999', password: 'Test@12345',
     });
     expect(res.status).toBe(409);
   });
 
   it('validates registration input (422 on short password)', async () => {
     const res = await request(app).post('/api/auth/register').send({
-      name: 'X', email: `x_${Date.now()}@test.com`, phone: '+91 9', password: '123',
+      hostelName: 'X PG', name: 'X', email: `x_${Date.now()}@test.com`, phone: '+91 9', password: '123',
     });
     expect(res.status).toBe(422);
   });

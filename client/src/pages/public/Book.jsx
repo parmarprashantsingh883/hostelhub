@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, CheckCircle2, BedDouble, Receipt, ShieldCheck, Sparkles,
@@ -34,6 +34,9 @@ export default function Book() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  // Each PG shares its own enquiry link (?org=<slug>); the demo org is the fallback.
+  const [searchParams] = useSearchParams();
+  const orgSlug = searchParams.get('org') || 'sunrise-pg';
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -52,7 +55,7 @@ export default function Book() {
         email: form.email.trim() || undefined,
         budget: form.budget === '' ? undefined : Number(form.budget),
         note: form.note.trim() || undefined,
-      });
+      }, { params: { org: orgSlug } });
       setDone(true);
     } catch (err) {
       setError(errMsg(err, 'Could not send your enquiry. Please try again.'));

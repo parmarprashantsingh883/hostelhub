@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const ASSET_CATEGORIES = ['furniture', 'appliance', 'electronics', 'bedding', 'kitchen', 'safety', 'other'];
 export const ASSET_CONDITIONS = ['new', 'good', 'fair', 'damaged'];
@@ -25,5 +26,7 @@ const assetSchema = new mongoose.Schema(
 );
 
 assetSchema.index({ createdAt: -1 });
+
+assetSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Asset', assetSchema);

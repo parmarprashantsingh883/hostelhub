@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 /**
  * App settings — a single document for this (single-tenant) install. Pinned by
@@ -8,7 +9,7 @@ import mongoose from 'mongoose';
  */
 const settingsSchema = new mongoose.Schema(
   {
-    key: { type: String, default: 'app', unique: true, index: true },
+    key: { type: String, default: 'app' },
 
     business: {
       name: { type: String, default: 'Quarters', trim: true, maxlength: 120 },
@@ -46,5 +47,9 @@ const settingsSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+settingsSchema.plugin(tenantPlugin);
+// One settings doc per organization (the tenant plugin scopes getSettings()).
+settingsSchema.index({ orgId: 1, key: 1 }, { unique: true });
 
 export default mongoose.model('Settings', settingsSchema);

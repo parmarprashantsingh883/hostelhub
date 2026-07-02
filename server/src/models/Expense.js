@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const EXPENSE_CATEGORIES = [
   'maintenance',
@@ -29,5 +30,7 @@ const expenseSchema = new mongoose.Schema(
 );
 
 expenseSchema.index({ date: -1, category: 1 });
+
+expenseSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Expense', expenseSchema);

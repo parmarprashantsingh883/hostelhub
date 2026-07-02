@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 import { VENDOR_CATEGORIES } from './Vendor.js';
 
 export const WORKORDER_STATUSES = ['open', 'assigned', 'in_progress', 'completed', 'cancelled'];
@@ -33,5 +34,7 @@ const workOrderSchema = new mongoose.Schema(
 );
 
 workOrderSchema.index({ status: 1, createdAt: -1 });
+
+workOrderSchema.plugin(tenantPlugin);
 
 export default mongoose.model('WorkOrder', workOrderSchema);

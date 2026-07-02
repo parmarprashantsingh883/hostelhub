@@ -11,6 +11,7 @@ import { errMsg } from '../../api/client';
 
 const schema = z
   .object({
+    hostelName: z.string().min(2, 'Hostel / PG name is required'),
     name: z.string().min(2, 'Name is required'),
     email: z.string().email('Enter a valid email'),
     phone: z.string().optional(),
@@ -34,12 +35,12 @@ export default function Register() {
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
 
-  const onSubmit = async ({ name, email, phone, password }) => {
+  const onSubmit = async ({ hostelName, name, email, phone, password }) => {
     setBusy(true);
     try {
-      await signup({ name, email, phone, password });
-      toast.success('Account created — welcome to Quarters!');
-      navigate('/tenant');
+      await signup({ hostelName, name, email, phone, password });
+      toast.success('Your hostel is ready — welcome to Quarters!');
+      navigate('/admin');
     } catch (e) {
       toast.error(errMsg(e, 'Registration failed'));
     } finally {
@@ -49,8 +50,8 @@ export default function Register() {
 
   return (
     <AuthShell
-      title="Create your account"
-      subtitle="Sign up as a tenant — admins create staff accounts from the dashboard"
+      title="Start your free trial"
+      subtitle="Create your hostel on Quarters — full Pro access for 14 days, no card needed"
       footer={
         <>
           Already have an account?{' '}
@@ -59,8 +60,11 @@ export default function Register() {
       }
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        <Field label="Full name" error={errors.name?.message} required>
-          <Input placeholder="Your full name" autoComplete="name" error={errors.name} {...register('name')} />
+        <Field label="Hostel / PG name" error={errors.hostelName?.message} required>
+          <Input placeholder="e.g. Sunrise PG for Professionals" autoComplete="organization" error={errors.hostelName} {...register('hostelName')} />
+        </Field>
+        <Field label="Your full name" error={errors.name?.message} required>
+          <Input placeholder="Owner / manager name" autoComplete="name" error={errors.name} {...register('name')} />
         </Field>
         <Field label="Email address" error={errors.email?.message} required>
           <Input type="email" placeholder="you@example.com" autoComplete="email" error={errors.email} {...register('email')} />
@@ -76,7 +80,7 @@ export default function Register() {
             <PasswordInput placeholder="••••••••" autoComplete="new-password" error={errors.confirm} {...register('confirm')} />
           </Field>
         </div>
-        <Button type="submit" loading={busy} className="w-full" size="lg">Create account</Button>
+        <Button type="submit" loading={busy} className="w-full" size="lg">Start free trial</Button>
       </form>
     </AuthShell>
   );

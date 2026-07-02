@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 const rentSchema = new mongoose.Schema(
   {
@@ -47,5 +48,7 @@ rentSchema.pre('save', function (next) {
   );
   next();
 });
+
+rentSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Rent', rentSchema);

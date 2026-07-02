@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 const roomSchema = new mongoose.Schema(
   {
-    roomNumber: { type: String, required: [true, 'Room number is required'], trim: true, unique: true },
+    roomNumber: { type: String, required: [true, 'Room number is required'], trim: true },
     floor: { type: Number, required: true, min: 0 },
     roomType: {
       type: String,
@@ -36,5 +37,9 @@ roomSchema.pre('save', function (next) {
   }
   next();
 });
+
+roomSchema.plugin(tenantPlugin);
+// Room numbers repeat across organizations — unique only within one.
+roomSchema.index({ orgId: 1, roomNumber: 1 }, { unique: true });
 
 export default mongoose.model('Room', roomSchema);

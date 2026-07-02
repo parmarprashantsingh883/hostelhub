@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 /**
  * Deposit ledger — one document per tenant. The running deposit balance is
@@ -54,5 +55,7 @@ depositLedgerSchema.virtual('totalDeductions').get(function () {
 
 depositLedgerSchema.set('toJSON', { virtuals: true });
 depositLedgerSchema.set('toObject', { virtuals: true });
+
+depositLedgerSchema.plugin(tenantPlugin);
 
 export default mongoose.model('DepositLedger', depositLedgerSchema);

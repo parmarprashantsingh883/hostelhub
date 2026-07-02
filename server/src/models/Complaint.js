@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const COMPLAINT_CATEGORIES = [
   'electricity',
@@ -44,5 +45,7 @@ const complaintSchema = new mongoose.Schema(
 );
 
 complaintSchema.index({ createdAt: -1 });
+
+complaintSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Complaint', complaintSchema);

@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 import User from '../models/User.js';
+import Organization from '../models/Organization.js';
+import { TRIAL_DAYS, TRIAL_PLAN } from '../lib/plans.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import {
   signAccessToken,
@@ -20,24 +22,39 @@ async function issueTokens(res, user) {
   return accessToken;
 }
 
-/** POST /api/auth/register — public signup always creates a TENANT.
- *  Admin + staff accounts are created by the admin (staff/tenant modules). */
+/** POST /api/auth/register — SaaS signup: creates an Organization (the
+ *  hostel/PG business) plus its owner admin account, and starts a free trial.
+ *  Residents and staff are added by the admin from inside the app. */
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password } = req.body;
+  const { hostelName, name, email, phone, password } = req.body;
+  if (!hostelName?.trim()) throw new ApiError(400, 'Hostel / PG name is required');
   const exists = await User.findOne({ email });
   if (exists) throw new ApiError(409, 'An account with this email already exists');
+
+  const org = await Organization.create({
+    name: hostelName.trim(),
+    slug: await Organization.generateSlug(hostelName),
+    email,
+    phone,
+    subscription: {
+      planId: TRIAL_PLAN,
+      status: 'trialing',
+      trialEndsAt: new Date(Date.now() + TRIAL_DAYS * 86400000),
+      history: [{ event: 'trial_started', planId: TRIAL_PLAN }],
+    },
+  });
 
   const user = await User.create({
     name,
     email,
     phone,
     password,
-    role: 'tenant',
-    tenantProfile: { status: 'active', joiningDate: new Date() },
+    role: 'admin',
+    orgId: org._id,
   });
 
   const accessToken = await issueTokens(res, user);
-  res.status(201).json({ success: true, data: { user, accessToken } });
+  res.status(201).json({ success: true, data: { user, accessToken, organization: org } });
 });
 
 /** POST /api/auth/login */

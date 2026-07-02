@@ -36,6 +36,7 @@ const Expenses = lazy(() => import('./pages/admin/Expenses.jsx'));
 const Leads = lazy(() => import('./pages/admin/Leads.jsx'));
 const Settlements = lazy(() => import('./pages/admin/Settlements.jsx'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings.jsx'));
+const Billing = lazy(() => import('./pages/admin/Billing.jsx'));
 const RecycleBin = lazy(() => import('./pages/admin/RecycleBin.jsx'));
 const Inspections = lazy(() => import('./pages/admin/Inspections.jsx'));
 const AdminAgreements = lazy(() => import('./pages/admin/Agreements.jsx'));
@@ -111,6 +112,7 @@ export default function App() {
             <Route path="agreements" element={<AdminAgreements />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="billing" element={<Billing />} />
             <Route path="recyclebin" element={<RecycleBin />} />
             <Route path="profile" element={<Profile />} />
           </Route>

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const BOOKING_STATUSES = ['reserved', 'confirmed', 'moved_in', 'cancelled'];
 
@@ -32,5 +33,7 @@ bookingSchema.index({ status: 1, moveInDate: 1 });
 
 /** A reservation still holds a bed while it is reserved or confirmed. */
 export const HOLDING_STATUSES = ['reserved', 'confirmed'];
+
+bookingSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Booking', bookingSchema);

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 const documentSchema = new mongoose.Schema(
   {
@@ -14,5 +15,7 @@ const documentSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );
+
+documentSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Document', documentSchema);

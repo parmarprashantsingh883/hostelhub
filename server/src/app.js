@@ -41,6 +41,7 @@ import approvalRoutes from './routes/approval.routes.js';
 import agreementRoutes from './routes/agreement.routes.js';
 import recycleBinRoutes from './routes/recyclebin.routes.js';
 import publicRoutes from './routes/public.routes.js';
+import billingRoutes from './routes/billing.routes.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
@@ -126,6 +127,7 @@ app.use('/api/assets', assetRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/agreements', agreementRoutes);
 app.use('/api/recyclebin', recycleBinRoutes);
+app.use('/api/billing', billingRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);

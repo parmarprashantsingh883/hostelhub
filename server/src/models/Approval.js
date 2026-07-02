@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 import { EXPENSE_CATEGORIES } from './Expense.js';
 
 export const APPROVAL_TYPES = ['expense', 'purchase', 'discount', 'refund', 'leave', 'other'];
@@ -25,5 +26,7 @@ const approvalSchema = new mongoose.Schema(
 );
 
 approvalSchema.index({ status: 1, createdAt: -1 });
+
+approvalSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Approval', approvalSchema);

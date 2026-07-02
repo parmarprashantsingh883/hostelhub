@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 export const LEAD_SOURCES = ['website', 'walk_in', 'referral', 'social', 'other'];
 export const LEAD_STAGES = ['new', 'contacted', 'visit_scheduled', 'token_paid', 'converted', 'lost'];
@@ -19,5 +20,7 @@ const leadSchema = new mongoose.Schema(
 );
 
 leadSchema.index({ stage: 1, createdAt: -1 });
+
+leadSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Lead', leadSchema);

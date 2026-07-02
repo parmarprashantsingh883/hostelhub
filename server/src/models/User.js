@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 import bcrypt from 'bcryptjs';
 
 /**
@@ -118,5 +119,7 @@ userSchema.set('toJSON', {
     return ret;
   },
 });
+
+userSchema.plugin(tenantPlugin);
 
 export default mongoose.model('User', userSchema);

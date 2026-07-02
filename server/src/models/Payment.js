@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -24,5 +25,7 @@ const paymentSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+paymentSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Payment', paymentSchema);

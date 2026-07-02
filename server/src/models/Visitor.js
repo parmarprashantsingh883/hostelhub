@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tenantPlugin } from '../lib/tenantPlugin.js';
 import crypto from 'crypto';
 
 /** Short, unambiguous gate pass — e.g. "QV-9F3A21". Encoded into the visitor's
@@ -28,5 +29,7 @@ const visitorSchema = new mongoose.Schema(
 );
 
 visitorSchema.index({ expectedDateTime: -1 });
+
+visitorSchema.plugin(tenantPlugin);
 
 export default mongoose.model('Visitor', visitorSchema);
