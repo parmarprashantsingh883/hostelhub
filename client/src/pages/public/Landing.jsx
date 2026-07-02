@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -9,24 +9,29 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { LogoMark } from '../../components/brand/Logo';
 import OccupancyBoard from '../../components/marketing/OccupancyBoard';
+import OccupancyGlass from '../../components/marketing/OccupancyGlass';
 
-// three.js is heavy — the tower chunk loads only when its section nears the viewport.
-const OccupancyTower = lazy(() => import('../../components/three/OccupancyTower.jsx'));
-
-/** True once the node has ever been near the viewport (600px early). */
-function useNearViewport() {
+/** Dark band with a faint dot grid and a cursor-following brand spotlight. */
+function SpotlightBand({ children }) {
   const ref = useRef(null);
-  const [seen, setSeen] = useState(false);
-  useEffect(() => {
-    if (!ref.current || seen) return undefined;
-    const io = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setSeen(true); },
-      { rootMargin: '600px 0px' },
-    );
-    io.observe(ref.current);
-    return () => io.disconnect();
-  }, [seen]);
-  return [ref, seen];
+  const [spot, setSpot] = useState({ x: -9999, y: -9999 });
+  const onMove = (e) => {
+    const r = ref.current?.getBoundingClientRect();
+    if (r) setSpot({ x: e.clientX - r.left, y: e.clientY - r.top });
+  };
+  return (
+    <div ref={ref} onMouseMove={onMove} onMouseLeave={() => setSpot({ x: -9999, y: -9999 })} className="relative overflow-hidden bg-[#04060d] text-white">
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{ backgroundImage: 'radial-gradient(rgba(148,163,184,0.22) 1px, transparent 1px)', backgroundSize: '28px 28px' }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: `radial-gradient(480px circle at ${spot.x}px ${spot.y}px, rgba(37,99,235,0.14), transparent 65%)` }}
+      />
+      {children}
+    </div>
+  );
 }
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -140,7 +145,6 @@ export default function Landing() {
   const { user } = useAuth();
   const [mobileNav, setMobileNav] = useState(false);
   const [yearly, setYearly] = useState(false);
-  const [towerRef, towerSeen] = useNearViewport();
   const year = new Date().getFullYear();
   const navLinks = [['What it does', '#features'], ['Pricing', '#pricing'], ['Questions', '#faq']];
   const price = (m) => (yearly ? `₹${Math.round(m * 0.8).toLocaleString('en-IN')}` : `₹${m.toLocaleString('en-IN')}`);
@@ -234,19 +238,19 @@ export default function Landing() {
         </Section>
       </div>
 
-      {/* The living building — every window is a bed */}
-      <div className="relative overflow-hidden bg-[#070b14] text-white">
-        <Section className="grid items-center gap-12 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:py-24">
+      {/* The occupancy engine — choreographed product UI on a spotlight band */}
+      <SpotlightBand>
+        <Section className="relative grid items-center gap-16 py-24 lg:grid-cols-[0.95fr_1.05fr] lg:py-28">
           <motion.div {...reveal}>
             <Eyebrow dark>The occupancy engine</Eyebrow>
             <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-              Every window is a bed.<br />
+              Every bed, live.<br />
               <span className="text-brand-400">Watch them fill.</span>
             </h2>
             <p className="mt-5 max-w-md text-[15.5px] leading-relaxed text-slate-400">
-              This is how Quarters sees your property — floor by floor, bed by bed, live.
-              Vacant beds stay dark; every move-in lights one up. Your dashboard does the
-              same with real data, so an empty bed can never hide from you.
+              This is how Quarters sees your property — floor by floor, bed by bed, in real
+              time. Vacant beds stay dark; every move-in lights one up. An empty bed can
+              never hide from you again.
             </p>
             <ul className="mt-8 space-y-4">
               {[
@@ -255,7 +259,7 @@ export default function Landing() {
                 { icon: Receipt, t: 'Rent that follows the bed', d: 'The moment a bed fills, its rent, deposit and receipts exist.' },
               ].map(({ icon: Icon, t, d }) => (
                 <li key={t} className="flex items-start gap-3.5">
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10">
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10 backdrop-blur">
                     <Icon className="h-4.5 w-4.5 text-brand-400" strokeWidth={2} />
                   </span>
                   <span>
@@ -265,32 +269,16 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Link to="/register" className="mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-7 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-brand-500">
-              Light up your building <ArrowRight className="h-4 w-4" />
+            <Link to="/register" className="mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-7 font-semibold text-white shadow-[0_10px_30px_-8px_rgba(37,99,235,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brand-500">
+              See your beds live <ArrowRight className="h-4 w-4" />
             </Link>
           </motion.div>
 
-          <motion.div
-            {...reveal}
-            ref={towerRef}
-            className="relative h-[340px] sm:h-[430px] lg:h-[520px]"
-          >
-            <div className="pointer-events-none absolute -inset-10 -z-10 rounded-[3rem] bg-brand-500/10 blur-3xl" />
-            {towerSeen ? (
-              <Suspense fallback={<div className="h-full w-full animate-pulse rounded-3xl bg-white/[0.04]" />}>
-                <OccupancyTower />
-              </Suspense>
-            ) : (
-              <div className="h-full w-full rounded-3xl bg-white/[0.04]" />
-            )}
-            {/* vignette + hairline frame so the scene reads as a composed shot */}
-            <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/10 bg-[radial-gradient(115%_115%_at_50%_28%,transparent_58%,rgba(7,11,20,0.6)_100%)]" />
-            <p className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
-              Live simulation · lit window = occupied bed
-            </p>
-          </motion.div>
+          <div className="relative px-2 py-10 sm:px-6">
+            <OccupancyGlass />
+          </div>
         </Section>
-      </div>
+      </SpotlightBand>
 
       {/* Features */}
       <Section id="features" className="py-20">
