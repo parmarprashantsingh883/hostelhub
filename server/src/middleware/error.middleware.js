@@ -1,3 +1,5 @@
+import { captureError } from '../config/monitoring.js';
+
 export class ApiError extends Error {
   constructor(statusCode, message) {
     super(message);
@@ -10,7 +12,7 @@ export function notFound(req, _res, next) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export function errorHandler(err, _req, res, _next) {
+export function errorHandler(err, req, res, _next) {
   let status = err.statusCode || 500;
   let message = err.message || 'Internal server error';
 
@@ -33,7 +35,15 @@ export function errorHandler(err, _req, res, _next) {
     message = `Invalid ${err.path}: ${err.value}`;
   }
 
-  if (status >= 500) console.error('💥', err);
+  if (status >= 500) {
+    console.error('💥', err);
+    captureError(err, {
+      method: req.method,
+      url: req.originalUrl,
+      orgId: req.user?.orgId?.toString(),
+      userId: req.user?._id?.toString(),
+    });
+  }
 
   res.status(status).json({ success: false, message });
 }
