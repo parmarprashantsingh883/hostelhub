@@ -3,12 +3,14 @@ import mongoose from 'mongoose';
 import app from './app.js';
 import { connectDB } from './config/db.js';
 import { validateEnv } from './config/env.js';
+import { initMonitoring, captureError } from './config/monitoring.js';
 
 const PORT = process.env.PORT || 5000;
 
 (async () => {
   try {
     validateEnv();
+    initMonitoring();
     await connectDB();
 
     // Optional: auto-seed when running the in-memory DB so the demo
@@ -45,11 +47,13 @@ const PORT = process.env.PORT || 5000;
     ['SIGTERM', 'SIGINT'].forEach((sig) => process.on(sig, () => shutdown(sig)));
     process.on('unhandledRejection', (reason) => {
       console.error('Unhandled promise rejection:', reason);
+      captureError(reason instanceof Error ? reason : new Error(String(reason)));
     });
     // A synchronous error that escapes all handlers leaves the process in an
     // undefined state — log it and shut down cleanly rather than limp on.
     process.on('uncaughtException', (err) => {
       console.error('Uncaught exception:', err);
+      captureError(err);
       shutdown('uncaughtException');
     });
   } catch (err) {
