@@ -211,14 +211,16 @@ export default function EngineSection() {
         ScrollTrigger.refresh();
       };
 
-      // fonts.ready resolves after StrictMode's first-pass teardown — the
-      // cancelled flag stops that stale pass from building a second trigger.
-      // contextSafe registers everything build() creates (matchMedia,
-      // ScrollTrigger, SplitText) with this context so unmount reverts it.
+      // When fonts are already loaded, build SYNCHRONOUSLY — a fonts.ready
+      // .then() here lands in the microtask gap between StrictMode's first
+      // effect and its cleanup, producing a doomed duplicate build (double
+      // pin / stranded from-states). contextSafe registers everything
+      // build() creates with this context so unmount reverts it.
       let cancelled = false;
-      const safeBuild = contextSafe(() => { if (!cancelled) build(); });
-      if (document.fonts?.ready) document.fonts.ready.then(safeBuild);
-      else safeBuild();
+      let built = false;
+      const safeBuild = contextSafe(() => { if (!cancelled && !built) { built = true; build(); } });
+      if (!document.fonts || document.fonts.status === 'loaded') safeBuild();
+      else document.fonts.ready.then(safeBuild);
       return () => { cancelled = true; };
     },
     { scope: sectionRef },

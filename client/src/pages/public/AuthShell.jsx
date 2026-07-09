@@ -69,7 +69,9 @@ export default function AuthShell({ title, subtitle, children, footer }) {
               .from(q('.auth-logo'), { y: 14, autoAlpha: 0, duration: 0.5 }, 0.1)
               .from(titleSplit.lines, { yPercent: 112, duration: 0.7, stagger: 0.1, ease: 'power4.out' }, 0.2)
               .from(q('.auth-sub'), { y: 10, autoAlpha: 0, duration: 0.4 }, '-=0.35')
-              .from(bodyTargets, { y: 18, autoAlpha: 0, duration: 0.5, stagger: 0.07 }, '-=0.25')
+              // fromTo + clearProps: explicit end values — .from() capture on
+              // the submit button was recording an already-hidden end-state
+              .fromTo(bodyTargets, { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.07, clearProps: 'all' }, '-=0.25')
               .from(q('.auth-footer'), { autoAlpha: 0, duration: 0.4 }, '-=0.2')
               // right — the product panel
               .from(q('.auth-wordmark'), { y: -10, autoAlpha: 0, duration: 0.5 }, 0.15)
@@ -117,10 +119,15 @@ export default function AuthShell({ title, subtitle, children, footer }) {
         );
       };
 
+      // When fonts are already loaded, build SYNCHRONOUSLY — a fonts.ready
+      // .then() here lands in the microtask gap between StrictMode's first
+      // effect and its cleanup, producing a doomed duplicate build whose
+      // revert can strand the last stagger target invisible.
       let cancelled = false;
-      const safeBuild = contextSafe(() => { if (!cancelled) build(); });
-      if (document.fonts?.ready) document.fonts.ready.then(safeBuild);
-      else safeBuild();
+      let built = false;
+      const safeBuild = contextSafe(() => { if (!cancelled && !built) { built = true; build(); } });
+      if (!document.fonts || document.fonts.status === 'loaded') safeBuild();
+      else document.fonts.ready.then(safeBuild);
       return () => { cancelled = true; };
     },
     { scope: rootRef },
