@@ -4,31 +4,44 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
-import { ArrowRight, BedDouble, DoorOpen, UserPlus, Receipt, Banknote } from 'lucide-react';
+import { ArrowRight, DoorOpen, UserPlus, Receipt } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
 /**
- * The occupancy engine — a GSAP ScrollTrigger showcase. On desktop the band
- * pins and the whole story is scrubbed by the scroll wheel: the headline
- * rises out of line masks (SplitText), the glass card settles in from 3D
- * perspective, beds cascade alight while the % counter tracks them 1:1, the
- * toast and rent chip snap in and the sparkline draws itself. Mobile gets the
- * same timeline played once on entry (no pin); reduced-motion gets the final
- * frame. After the story, a slow swap loop keeps the board alive — one bed
- * checks out as another checks in, so the count stays honest.
+ * The Rent Blueprint — an architect's elevation of a PG where the dimensions
+ * are rupees. On desktop the band pins and scroll scrubs the story: the
+ * linework draws itself, a scanline sweeps the building floor by floor,
+ * occupied beds ink in blue, every floor gets a dimension-line annotation
+ * with its rent, vacancies are flagged in amber as leaks, and the ledger
+ * total counts up — all consistent with the drawing's own scale
+ * (1 bed : ₹7,000/mo). Mobile plays once on entry; reduced-motion gets the
+ * finished drawing.
  */
 
-const TOTAL = 36;
-const TARGET = 29; // ≈ 81%
-// 11 is coprime with 36 → a full deterministic scatter of the grid
-const ORDER = Array.from({ length: TOTAL }, (_, i) => (i * 11 + 5) % TOTAL);
+// ── Drawing data — internally consistent: 24/28 beds = 86%, ₹7,000/bed ──
+const RENT_PER_BED = 7000;
+const FLOORS = [
+  { id: 'F4', beds: 7, occupied: 6, y: 64 },
+  { id: 'F3', beds: 7, occupied: 6, y: 148 },
+  { id: 'F2', beds: 7, occupied: 5, y: 232 },
+  { id: 'F1', beds: 7, occupied: 7, y: 316 },
+];
+const TOTAL_BEDS = FLOORS.reduce((n, f) => n + f.beds, 0);
+const TOTAL_OCC = FLOORS.reduce((n, f) => n + f.occupied, 0);
+const TOTAL_RENT = TOTAL_OCC * RENT_PER_BED;
+const PCT = Math.round((TOTAL_OCC / TOTAL_BEDS) * 100);
+const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 
-const LIT = { backgroundColor: '#5b9bf6', boxShadow: '0 0 10px rgba(96,165,250,0.5)', scale: 1, opacity: 1 };
-const DIM = { backgroundColor: 'rgba(255,255,255,0.06)', boxShadow: '0 0 0px rgba(96,165,250,0)', scale: 0.82, opacity: 1 };
+// building box in SVG units
+const BX = 36, BW = 330, ROOF_Y = 40, GROUND_Y = 400, FLOOR_H = 84;
+// which bed slots sit vacant per floor (deterministic, scattered)
+const VACANT = { F4: [2], F3: [5], F2: [1, 4], F1: [] };
 
-const glass =
-  'rounded-2xl bg-white/[0.07] ring-1 ring-white/15 backdrop-blur-xl shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]';
+const INK = 'rgba(148,178,222,0.8)';   // blueprint linework
+const INK_DIM = 'rgba(148,178,222,0.35)';
+const BRAND = '#60a5fa';
+const AMBER = '#e8a35c';
 
 const BULLETS = [
   { icon: DoorOpen, t: 'A live bed map', d: 'Sellable-bed math per floor — maintenance beds don’t count as stock.' },
@@ -36,40 +49,40 @@ const BULLETS = [
   { icon: Receipt, t: 'Rent that follows the bed', d: 'The moment a bed fills, its rent, deposit and receipts exist.' },
 ];
 
+/** One side-view bed glyph: headboard + frame. ~30×16 units. */
+function BedGlyph({ x, y, vacant }) {
+  const stroke = vacant ? AMBER : INK;
+  return (
+    <g className={`bp-bed ${vacant ? 'bp-bed-vacant' : 'bp-bed-occ'}`} transform={`translate(${x} ${y})`}>
+      <line x1="1" y1="0" x2="1" y2="16" stroke={stroke} strokeWidth="1.4" pathLength="1" className="bp-draw" />
+      <rect
+        x="1.5" y="6" width="26" height="8" rx="2.5"
+        stroke={stroke} strokeWidth="1.1" fill={BRAND} fillOpacity="0"
+        strokeDasharray={vacant ? '3 2.6' : undefined} pathLength="1"
+        className={`bp-draw ${vacant ? '' : 'bp-mattress'}`}
+      />
+    </g>
+  );
+}
+
 export default function EngineSection() {
   const sectionRef = useRef(null);
   const headlineRef = useRef(null);
-  const cardRef = useRef(null);
-  const dotRefs = useRef([]);
+  const rentRef = useRef(null);
   const pctRef = useRef(null);
-  const bedsRef = useRef(null);
-  const sparkRef = useRef(null);
-  const spotRef = useRef(null);
+  const leakRef = useRef(null);
 
-  const { contextSafe } = useGSAP(
+  useGSAP(
     () => {
-      // cursor spotlight — buttery via quickTo, no React re-renders
-      const sx = gsap.quickTo(spotRef.current, '--sx', { duration: 0.4, ease: 'power2.out' });
-      const sy = gsap.quickTo(spotRef.current, '--sy', { duration: 0.4, ease: 'power2.out' });
-      const onMove = (e) => {
-        const r = sectionRef.current.getBoundingClientRect();
-        sx(e.clientX - r.left);
-        sy(e.clientY - r.top);
-      };
-      sectionRef.current.addEventListener('pointermove', onMove);
-
-      const litEls = ORDER.slice(0, TARGET).map((i) => dotRefs.current[i]);
-      const spark = sparkRef.current;
-      const sparkLen = spark.getTotalLength();
-      const setCount = (n) => {
-        if (pctRef.current) pctRef.current.textContent = `${Math.round((n / TOTAL) * 100)}%`;
-        if (bedsRef.current) bedsRef.current.textContent = n;
+      const q = gsap.utils.selector(sectionRef);
+      // the leak figure is a fixed fact of the drawing — only rent and % count up
+      const setTotals = (occ) => {
+        if (rentRef.current) rentRef.current.textContent = inr(occ * RENT_PER_BED);
+        if (pctRef.current) pctRef.current.textContent = `${Math.round((occ / TOTAL_BEDS) * 100)}%`;
       };
 
-      // fonts must be loaded before SplitText measures lines
-      const build = contextSafe(() => {
+      const build = () => {
         const mm = gsap.matchMedia();
-
         mm.add(
           {
             desktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
@@ -80,120 +93,108 @@ export default function EngineSection() {
             const { desktop, reduced } = ctx.conditions;
 
             if (reduced) {
-              gsap.set(litEls, LIT);
-              gsap.set(spark, { strokeDashoffset: 0 });
-              setCount(TARGET);
+              gsap.set(q('.bp-mattress'), { fillOpacity: 0.4 });
+              gsap.set(q('.bp-scan'), { autoAlpha: 0 });
+              setTotals(TOTAL_OCC);
               return;
             }
 
             const split = SplitText.create(headlineRef.current, { type: 'lines', mask: 'lines' });
-            gsap.set(dotRefs.current, DIM);
-            gsap.set(spark, { strokeDasharray: sparkLen, strokeDashoffset: sparkLen });
 
-            const counting = { beds: 0 };
+            // every stroke starts undrawn (pathLength normalises all shapes to 1)
+            gsap.set(q('.bp-draw'), { strokeDasharray: '1 1', strokeDashoffset: 1 });
+            gsap.set(q('.bp-floor'), { opacity: 0.22 });
+            gsap.set(q('.bp-note'), { autoAlpha: 0, x: 16 });
+            gsap.set(q('.bp-leak'), { autoAlpha: 0 });
+            gsap.set(q('.bp-title'), { autoAlpha: 0 });
+            gsap.set(q('.bp-totals'), { autoAlpha: 0, y: 14 });
+
+            const counting = { occ: 0 };
             const tl = gsap.timeline({
-              defaults: { ease: 'power3.out' },
+              defaults: { ease: 'power2.out' },
               scrollTrigger: desktop
-                ? { trigger: sectionRef.current, start: 'top top', end: '+=160%', pin: true, scrub: 1 }
-                : { trigger: sectionRef.current, start: 'top 62%', once: true },
-              onComplete: startSwapLoop,
-              // scrubbed timelines re-complete when scrolled back through
-              onStart: stopSwapLoop,
+                ? { trigger: sectionRef.current, start: 'top top', end: '+=170%', pin: true, scrub: 1 }
+                : { trigger: sectionRef.current, start: 'top 60%', once: true },
             });
 
+            // 1 — headline + copy
             tl.from(split.lines, { yPercent: 115, duration: 0.9, stagger: 0.14, ease: 'power4.out' })
-              .from('.eng-copy', { y: 26, autoAlpha: 0, duration: 0.6 }, '-=0.55')
-              .from('.eng-bullet', { y: 22, autoAlpha: 0, duration: 0.5, stagger: 0.12 }, '-=0.35')
-              .from('.eng-cta', { y: 16, autoAlpha: 0, duration: 0.45 }, '-=0.3')
-              .from(
-                cardRef.current,
-                { y: 110, autoAlpha: 0, rotateX: 10, transformPerspective: 900, transformOrigin: '50% 100%', duration: 1.1 },
-                0.35,
-              )
-              .to(litEls, { ...LIT, duration: 0.3, ease: 'power2.out', stagger: 0.05 }, '>-0.25')
-              .to(
-                counting,
-                { beds: TARGET, duration: 0.05 * TARGET + 0.3, ease: 'none', snap: { beds: 1 }, onUpdate: () => setCount(counting.beds) },
-                '<',
-              )
-              .from('.eng-toast', { y: -26, autoAlpha: 0, scale: 0.9, duration: 0.5, ease: 'back.out(1.8)' }, '>-0.3')
-              .from('.eng-chip', { y: 26, autoAlpha: 0, scale: 0.9, duration: 0.5, ease: 'back.out(1.8)' }, '>-0.3')
-              .to(spark, { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, '<');
+              .from(q('.eng-copy'), { y: 24, autoAlpha: 0, duration: 0.55 }, '-=0.5')
+              .from(q('.eng-bullet'), { y: 20, autoAlpha: 0, duration: 0.45, stagger: 0.1 }, '-=0.3')
+              .from(q('.eng-cta'), { y: 14, autoAlpha: 0, duration: 0.4 }, '-=0.25');
+
+            // 2 — the drawing draws itself: shell, slabs, title block
+            tl.to(q('.bp-shell .bp-draw'), { strokeDashoffset: 0, duration: 1.1, stagger: 0.08, ease: 'power1.inOut' }, 0.3)
+              .to(q('.bp-title'), { autoAlpha: 1, duration: 0.5 }, '>-0.3');
+
+            // 3 — the scan: sweep the scanline roof→ground; each floor inks as it passes
+            const scanDur = 4.2;
+            tl.addLabel('scan')
+              .fromTo(q('.bp-scan'), { attr: { transform: `translate(0 ${ROOF_Y})` } },
+                { attr: { transform: `translate(0 ${GROUND_Y})` }, duration: scanDur, ease: 'none' }, 'scan')
+              .to(counting, {
+                occ: TOTAL_OCC, duration: scanDur, ease: 'none', snap: { occ: 1 },
+                onUpdate: () => setTotals(counting.occ),
+              }, 'scan')
+              .to(q('.bp-totals'), { autoAlpha: 1, y: 0, duration: 0.5 }, 'scan');
+
+            FLOORS.forEach((f, i) => {
+              const at = `scan+=${(i / FLOORS.length) * scanDur + 0.15}`;
+              tl.to(q(`.bp-floor-${f.id}`), { opacity: 1, duration: 0.4 }, at)
+                .to(q(`.bp-floor-${f.id} .bp-draw`), { strokeDashoffset: 0, duration: 0.55, stagger: 0.045, ease: 'power1.inOut' }, at)
+                .to(q(`.bp-floor-${f.id} .bp-bed-occ .bp-mattress`), { fillOpacity: 0.4, duration: 0.35, stagger: 0.05 }, `${at}+=0.3`)
+                .to(q(`.bp-note-${f.id}`), { autoAlpha: 1, x: 0, duration: 0.45 }, `${at}+=0.35`)
+                .to(q(`.bp-floor-${f.id} .bp-leak`), { autoAlpha: 1, duration: 0.35 }, `${at}+=0.55`);
+            });
+
+            // 4 — scanline fades, leak summary lands
+            tl.to(q('.bp-scan'), { autoAlpha: 0, duration: 0.3 }, `scan+=${scanDur}`)
+              .from(q('.bp-leaktotal'), { autoAlpha: 0, y: 10, duration: 0.5 }, '>-0.1');
 
             return () => split.revert();
           },
         );
         ScrollTrigger.refresh();
-      });
-
-      // ── the live swap loop — one checks out, another checks in ─────
-      let swapTl = null;
-      function startSwapLoop() {
-        if (swapTl) return;
-        swapTl = gsap.timeline({ repeat: -1, repeatDelay: 2.6, delay: 1.2 });
-        const litSet = ORDER.slice(0, TARGET);
-        const dimSet = ORDER.slice(TARGET);
-        // rotate through a few fixed pairs — deterministic, no drift
-        [[0, 0], [7, 2], [14, 4], [21, 6]].forEach(([li, di]) => {
-          const out = dotRefs.current[litSet[li]];
-          const inn = dotRefs.current[dimSet[di % dimSet.length]];
-          swapTl
-            .to(out, { ...DIM, duration: 0.6, ease: 'power2.inOut' }, '+=2.4')
-            .to(inn, { ...LIT, duration: 0.6, ease: 'power2.inOut' }, '<0.25')
-            .to(inn, { ...DIM, duration: 0.6, ease: 'power2.inOut' }, '+=2.4')
-            .to(out, { ...LIT, duration: 0.6, ease: 'power2.inOut' }, '<0.25');
-        });
-      }
-      function stopSwapLoop() {
-        swapTl?.kill();
-        swapTl = null;
-      }
+      };
 
       // fonts.ready resolves after StrictMode's first-pass teardown — the
       // cancelled flag stops that stale pass from building a second trigger.
       let cancelled = false;
-      if (document.fonts?.ready) document.fonts.ready.then(() => { if (!cancelled) build(); });
-      else build();
-
-      const el = sectionRef.current;
-      return () => {
-        cancelled = true;
-        el?.removeEventListener('pointermove', onMove);
-      };
+      const safeBuild = () => { if (!cancelled) build(); };
+      if (document.fonts?.ready) document.fonts.ready.then(safeBuild);
+      else safeBuild();
+      return () => { cancelled = true; };
     },
     { scope: sectionRef },
   );
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden bg-[#04060d] text-white">
-      {/* dot grid + cursor spotlight */}
+      {/* blueprint grid paper */}
       <div
-        className="absolute inset-0 opacity-40"
-        style={{ backgroundImage: 'radial-gradient(rgba(148,163,184,0.22) 1px, transparent 1px)', backgroundSize: '28px 28px' }}
-      />
-      <div
-        ref={spotRef}
-        className="pointer-events-none absolute inset-0"
+        className="absolute inset-0 opacity-[0.55]"
         style={{
-          '--sx': '-9999px',
-          '--sy': '-9999px',
-          background: 'radial-gradient(500px circle at var(--sx) var(--sy), rgba(37,99,235,0.15), transparent 65%)',
+          backgroundImage:
+            'repeating-linear-gradient(0deg, rgba(96,140,200,0.055) 0 1px, transparent 1px 26px), repeating-linear-gradient(90deg, rgba(96,140,200,0.055) 0 1px, transparent 1px 26px), repeating-linear-gradient(0deg, rgba(96,140,200,0.10) 0 1px, transparent 1px 130px), repeating-linear-gradient(90deg, rgba(96,140,200,0.10) 0 1px, transparent 1px 130px)',
         }}
       />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_60%_45%,transparent_40%,#04060d_100%)]" />
 
-      <div className="relative mx-auto grid min-h-screen max-w-6xl items-center gap-16 px-5 py-24 lg:grid-cols-[0.95fr_1.05fr] lg:py-0">
+      <div className="relative mx-auto grid min-h-screen max-w-6xl items-center gap-14 px-5 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:py-0">
         {/* ── Copy ── */}
         <div>
-          <p className="eng-copy font-mono text-[11px] uppercase tracking-[0.22em] text-brand-400">The occupancy engine</p>
+          <p className="eng-copy font-mono text-[11px] uppercase tracking-[0.22em] text-brand-400">
+            The occupancy engine · drg. no. QTR-01
+          </p>
           <h2 ref={headlineRef} className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-            Every bed, live.
+            Your building,
             <br />
-            <span className="text-brand-400">Watch them fill.</span>
+            <span className="text-brand-400">measured in rent.</span>
           </h2>
           <p className="eng-copy mt-5 max-w-md text-[15.5px] leading-relaxed text-slate-400">
-            This is how Quarters sees your property — floor by floor, bed by bed, in real
-            time. Vacant beds stay dark; every move-in lights one up. An empty bed can
-            never hide from you again.
+            Quarters reads your property like an architect reads a drawing — floor by floor,
+            bed by bed. Occupied beds ink in blue. Vacant ones get flagged for exactly what
+            they cost you, down to the rupee.
           </p>
           <ul className="mt-8 space-y-4">
             {BULLETS.map(({ icon: Icon, t, d }) => (
@@ -213,69 +214,102 @@ export default function EngineSection() {
               to="/register"
               className="mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-7 font-semibold text-white shadow-[0_10px_30px_-8px_rgba(37,99,235,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brand-500"
             >
-              See your beds live <ArrowRight className="h-4 w-4" />
+              Survey your building <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
-        {/* ── Product cluster ── */}
-        <div className="relative mx-auto w-full max-w-[460px] px-2 py-10 sm:px-6">
-          <div ref={cardRef} className={`relative z-10 p-6 ${glass}`}>
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-400">Live occupancy</p>
-                <p className="mt-1 text-sm font-semibold text-white">Floor 2 · West wing</p>
-              </div>
-              <div className="text-right">
-                <p ref={pctRef} className="font-display text-3xl font-semibold leading-none text-white tabular-nums">0%</p>
-                <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-brand-300">beds filled</p>
-              </div>
-            </div>
-            <div className="mt-5 grid grid-cols-12 gap-[7px]">
-              {Array.from({ length: TOTAL }, (_, i) => (
-                <span
-                  key={i}
-                  ref={(el) => { dotRefs.current[i] = el; }}
-                  className="aspect-square rounded-[5px] bg-white/[0.06] ring-1 ring-inset ring-white/10"
-                />
+        {/* ── The blueprint ── */}
+        <div className="relative mx-auto w-full max-w-[560px]">
+          <svg viewBox="0 0 560 470" className="w-full" aria-hidden="true">
+            {/* shell: parapet, walls, ground, slabs */}
+            <g className="bp-shell" fill="none">
+              <rect x={BX} y={ROOF_Y} width={BW} height={GROUND_Y - ROOF_Y} stroke={INK} strokeWidth="1.6" pathLength="1" className="bp-draw" />
+              {/* parapet + water tank silhouette */}
+              <path d={`M${BX + 24} ${ROOF_Y} v-14 h34 v14`} stroke={INK} strokeWidth="1.3" pathLength="1" className="bp-draw" />
+              <path d={`M${BX + 240} ${ROOF_Y} v-22 h44 v22`} stroke={INK} strokeWidth="1.3" pathLength="1" className="bp-draw" />
+              {/* ground line, extended like a site line */}
+              <line x1="8" y1={GROUND_Y} x2="552" y2={GROUND_Y} stroke={INK} strokeWidth="1.6" pathLength="1" className="bp-draw" />
+              <line x1="8" y1={GROUND_Y + 6} x2="552" y2={GROUND_Y + 6} stroke={INK_DIM} strokeWidth="1" strokeDasharray="7 5" pathLength="1" className="bp-draw" />
+              {/* floor slabs */}
+              {FLOORS.slice(0, -1).map((f) => (
+                <line key={f.id} x1={BX} y1={f.y + FLOOR_H} x2={BX + BW} y2={f.y + FLOOR_H} stroke={INK_DIM} strokeWidth="1.2" pathLength="1" className="bp-draw" />
               ))}
-            </div>
-            <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
-              <span className="flex items-center gap-2 text-xs text-slate-300">
-                <BedDouble className="h-3.5 w-3.5 text-brand-300" /> <span ref={bedsRef} className="tabular-nums">0</span>&nbsp;of {TOTAL} beds
-              </span>
-              <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                </span>
-                live
-              </span>
-            </div>
-          </div>
+              {/* entrance — kept below the F1 bed row */}
+              <path d={`M${BX + 146} ${GROUND_Y} v-17 h38 v17`} stroke={INK} strokeWidth="1.3" pathLength="1" className="bp-draw" />
+            </g>
 
-          <div className={`eng-toast absolute -right-2 -top-6 z-20 flex items-center gap-2.5 px-4 py-3 sm:-right-8 ${glass}`}>
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-400/20 text-emerald-300">
-              <UserPlus className="h-4 w-4" />
-            </span>
-            <span>
-              <span className="block text-xs font-semibold text-white">Move-in confirmed</span>
-              <span className="block text-[11px] text-slate-400">Bed 204·B — deposit received</span>
-            </span>
-          </div>
+            {/* floors: beds + dimension annotations */}
+            {FLOORS.map((f) => {
+              const slotW = (BW - 40) / f.beds;
+              const vacant = VACANT[f.id];
+              const floorRent = f.occupied * RENT_PER_BED;
+              const leak = (f.beds - f.occupied) * RENT_PER_BED;
+              return (
+                <g key={f.id} className={`bp-floor bp-floor-${f.id}`}>
+                  {Array.from({ length: f.beds }, (_, b) => (
+                    <BedGlyph key={b} x={BX + 22 + b * slotW + (slotW - 28) / 2} y={f.y + FLOOR_H - 38} vacant={vacant.includes(b)} />
+                  ))}
+                  {/* floor id, drawn like a level marker */}
+                  <text x={BX - 24} y={f.y + FLOOR_H - 8} className="font-mono" fontSize="10" fill={INK_DIM}>{f.id}</text>
+                  {/* dimension line to the right: tick + extension */}
+                  <g className={`bp-note bp-note-${f.id}`}>
+                    <line x1={BX + BW + 6} y1={f.y + 10} x2={BX + BW + 26} y2={f.y + 10} stroke={INK_DIM} strokeWidth="1" />
+                    <line x1={BX + BW + 26} y1={f.y + 10} x2={BX + BW + 26} y2={f.y + FLOOR_H - 10} stroke={INK_DIM} strokeWidth="1" />
+                    <line x1={BX + BW + 6} y1={f.y + FLOOR_H - 10} x2={BX + BW + 26} y2={f.y + FLOOR_H - 10} stroke={INK_DIM} strokeWidth="1" />
+                    <text x={BX + BW + 36} y={f.y + FLOOR_H / 2 - 6} className="font-mono" fontSize="11" fill="#cbd7ea">
+                      {f.occupied}/{f.beds} beds
+                    </text>
+                    <text x={BX + BW + 36} y={f.y + FLOOR_H / 2 + 10} className="font-mono" fontSize="11" fill={BRAND}>
+                      {inr(floorRent)}
+                    </text>
+                    {leak > 0 && (
+                      <text x={BX + BW + 36} y={f.y + FLOOR_H / 2 + 26} className="bp-leak font-mono" fontSize="10" fill={AMBER}>
+                        −{inr(leak)} vacant
+                      </text>
+                    )}
+                  </g>
+                </g>
+              );
+            })}
 
-          <div className={`eng-chip absolute -bottom-7 -left-2 z-20 flex items-center gap-3 px-4 py-3 sm:-left-8 ${glass}`}>
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500/25 text-brand-300">
-              <Banknote className="h-4 w-4" />
-            </span>
-            <span>
-              <span className="block text-xs font-semibold text-white">₹86,400 collected</span>
-              <span className="block text-[11px] text-slate-400">this month · on autopilot</span>
-            </span>
-            <svg viewBox="0 0 64 20" className="ml-1 h-5 w-16 text-brand-400" fill="none" aria-hidden="true">
-              <path ref={sparkRef} d="M1 16 L9 13 L17 14 L25 9 L33 11 L41 6 L49 8 L57 3 L63 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              <circle cx="63" cy="4" r="2" fill="currentColor" />
-            </svg>
+            {/* scanline */}
+            <g className="bp-scan" transform={`translate(0 ${ROOF_Y})`}>
+              <line x1="14" y1="0" x2="546" y2="0" stroke={BRAND} strokeWidth="1.2" opacity="0.9" />
+              <rect x="14" y="-26" width="532" height="26" fill="url(#scanGlow)" />
+              <text x="14" y="-8" className="font-mono" fontSize="9" fill={BRAND} opacity="0.9">SCANNING…</text>
+            </g>
+            <defs>
+              <linearGradient id="scanGlow" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stopColor={BRAND} stopOpacity="0.22" />
+                <stop offset="1" stopColor={BRAND} stopOpacity="0" />
+              </linearGradient>
+            </defs>
+
+            {/* title block — like a real drawing */}
+            <g className="bp-title font-mono">
+              <rect x="330" y="424" width="222" height="40" fill="none" stroke={INK_DIM} strokeWidth="1" />
+              <line x1="330" y1="444" x2="552" y2="444" stroke={INK_DIM} strokeWidth="1" />
+              <line x1="478" y1="424" x2="478" y2="464" stroke={INK_DIM} strokeWidth="1" />
+              <text x="338" y="437" fontSize="9" fill={INK_DIM}>QUARTERS · ELEVATION A</text>
+              <text x="486" y="437" fontSize="9" fill={INK_DIM}>QTR-01</text>
+              <text x="338" y="457" fontSize="9" fill="#cbd7ea">SCALE · 1 BED : {inr(RENT_PER_BED)}/MO</text>
+              <text x="486" y="457" fontSize="9" fill="#34d399">● LIVE</text>
+            </g>
+          </svg>
+
+          {/* totals ledger — counts up with the scan */}
+          <div className="bp-totals mt-3 flex items-end justify-between select-none">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">Collected / month</p>
+              <p className="mt-1 font-display text-3xl font-semibold leading-none text-white tabular-nums sm:text-4xl">
+                <span ref={rentRef}>₹0</span>
+              </p>
+            </div>
+            <p className="pb-0.5 font-mono text-[11px] text-slate-400">
+              <span ref={pctRef} className="text-brand-300">0%</span> occupied
+              <span ref={leakRef} className="bp-leaktotal text-[#e8a35c]"> · −{inr((TOTAL_BEDS - TOTAL_OCC) * RENT_PER_BED)}/mo leaking</span>
+            </p>
           </div>
         </div>
       </div>
