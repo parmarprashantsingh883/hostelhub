@@ -1,38 +1,14 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   BedDouble, Banknote, Wrench, Megaphone, ClipboardList, UtensilsCrossed,
   ShieldCheck, BarChart3, ArrowRight, ArrowUpRight, Check, Menu, X, Plus, Minus,
-  DoorOpen, UserPlus, Receipt,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { LogoMark } from '../../components/brand/Logo';
 import OccupancyBoard from '../../components/marketing/OccupancyBoard';
-import OccupancyGlass from '../../components/marketing/OccupancyGlass';
-
-/** Dark band with a faint dot grid and a cursor-following brand spotlight. */
-function SpotlightBand({ children }) {
-  const ref = useRef(null);
-  const [spot, setSpot] = useState({ x: -9999, y: -9999 });
-  const onMove = (e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (r) setSpot({ x: e.clientX - r.left, y: e.clientY - r.top });
-  };
-  return (
-    <div ref={ref} onMouseMove={onMove} onMouseLeave={() => setSpot({ x: -9999, y: -9999 })} className="relative overflow-hidden bg-[#04060d] text-white">
-      <div
-        className="absolute inset-0 opacity-40"
-        style={{ backgroundImage: 'radial-gradient(rgba(148,163,184,0.22) 1px, transparent 1px)', backgroundSize: '28px 28px' }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: `radial-gradient(480px circle at ${spot.x}px ${spot.y}px, rgba(37,99,235,0.14), transparent 65%)` }}
-      />
-      {children}
-    </div>
-  );
-}
+import EngineSection from '../../components/marketing/EngineSection';
 
 const EASE = [0.16, 1, 0.3, 1];
 const reveal = {
@@ -238,47 +214,8 @@ export default function Landing() {
         </Section>
       </div>
 
-      {/* The occupancy engine — choreographed product UI on a spotlight band */}
-      <SpotlightBand>
-        <Section className="relative grid items-center gap-16 py-24 lg:grid-cols-[0.95fr_1.05fr] lg:py-28">
-          <motion.div {...reveal}>
-            <Eyebrow dark>The occupancy engine</Eyebrow>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-              Every bed, live.<br />
-              <span className="text-brand-400">Watch them fill.</span>
-            </h2>
-            <p className="mt-5 max-w-md text-[15.5px] leading-relaxed text-slate-400">
-              This is how Quarters sees your property — floor by floor, bed by bed, in real
-              time. Vacant beds stay dark; every move-in lights one up. An empty bed can
-              never hide from you again.
-            </p>
-            <ul className="mt-8 space-y-4">
-              {[
-                { icon: DoorOpen, t: 'A live bed map', d: 'Sellable-bed math per floor — maintenance beds don’t count as stock.' },
-                { icon: UserPlus, t: 'A move-in pipeline', d: 'Enquiry → visit → token → allocated, each stage one drag away.' },
-                { icon: Receipt, t: 'Rent that follows the bed', d: 'The moment a bed fills, its rent, deposit and receipts exist.' },
-              ].map(({ icon: Icon, t, d }) => (
-                <li key={t} className="flex items-start gap-3.5">
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10 backdrop-blur">
-                    <Icon className="h-4.5 w-4.5 text-brand-400" strokeWidth={2} />
-                  </span>
-                  <span>
-                    <span className="block text-[15px] font-semibold text-white">{t}</span>
-                    <span className="block text-sm leading-relaxed text-slate-400">{d}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <Link to="/register" className="mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-7 font-semibold text-white shadow-[0_10px_30px_-8px_rgba(37,99,235,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brand-500">
-              See your beds live <ArrowRight className="h-4 w-4" />
-            </Link>
-          </motion.div>
-
-          <div className="relative px-2 py-10 sm:px-6">
-            <OccupancyGlass />
-          </div>
-        </Section>
-      </SpotlightBand>
+      {/* The occupancy engine — GSAP ScrollTrigger showcase (pinned + scrubbed) */}
+      <EngineSection />
 
       {/* Features */}
       <Section id="features" className="py-20">
