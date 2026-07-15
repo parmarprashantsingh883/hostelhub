@@ -128,9 +128,17 @@ The web image (nginx) serves the SPA and proxies `/api` + `/uploads` to the API 
 
 ## 🗺️ Roadmap
 
-- Multi-property / multi-tenant SaaS mode (currently one instance per client)
-- Razorpay webhooks &amp; refunds, OTP/WhatsApp notifications
-- Cloud file storage (S3/Cloudinary), Sentry error tracking
+**Shipped**
+
+- ✅ True multi-tenant SaaS — org signup, per-org data isolation, plans, trials & billing
+- ✅ WhatsApp + SMS notifications (WhatsApp Cloud API / Twilio, link fallback)
+- ✅ Cloud file storage (Cloudinary) with local-disk dev fallback
+- ✅ Sentry error tracking (env-gated)
+
+**Next**
+
+- Razorpay webhooks &amp; refunds (billing currently uses client-side callback verification)
+- OTP login, server-generated PDFs (receipts/settlements) to cloud storage
 
 ## 📄 License
 

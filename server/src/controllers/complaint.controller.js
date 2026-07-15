@@ -2,10 +2,13 @@ import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import { notify } from '../services/notification.service.js';
+import { putFile } from '../services/storage.service.js';
 
 /** POST /api/complaints (tenant) */
 export const createComplaint = asyncHandler(async (req, res) => {
-  const images = (req.files || []).map((f) => `/uploads/${f.filename}`);
+  const images = await Promise.all(
+    (req.files || []).map((f) => putFile({ buffer: f.buffer, originalname: f.originalname, mimetype: f.mimetype, folder: 'complaints' })),
+  );
   const complaint = await Complaint.create({
     title: req.body.title,
     description: req.body.description,
