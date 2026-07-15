@@ -15,6 +15,7 @@ them live.
 | `CLIENT_URL` | ✅ | FE origin — CORS allowlist + links in email |
 | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | for live billing + rent | unset = mock gateway (demo checkout) |
 | `SMTP_HOST/PORT/USER/PASS` | for real email | unset = emails logged, not sent |
+| `CLOUDINARY_URL` | ✅ on ephemeral hosts | unset = uploads on local disk (WIPED on restart); set = avatars/documents/complaint photos persist. Discrete `CLOUDINARY_CLOUD_NAME`/`_API_KEY`/`_API_SECRET` also accepted |
 | `SENTRY_DSN` | recommended | unset = error tracking off; set = 5xx + crashes reported with org/user context |
 | `SENTRY_TRACES_RATE` | optional | APM sample rate, default `0.1` |
 | `SEED_ON_BOOT` | ❌ never in prod | demo-only convenience |
@@ -44,6 +45,12 @@ Client build-time: `VITE_API_URL` (the API origin for split deploys).
 - **Legacy data**: documents created before multi-tenancy have no `orgId` and
   are only visible to legacy accounts without one. For a clean demo DB, drop
   and re-seed (`npm run seed`).
+- **File uploads**: avatars, ID documents and complaint photos go through
+  `services/storage.service.js` — Cloudinary when `CLOUDINARY_URL` is set,
+  local disk otherwise. On Render/Vercel the local disk is ephemeral, so
+  **set `CLOUDINARY_URL` in production** or uploaded files vanish on redeploy.
+  (Server-generated PDFs — receipts/settlements — still write to local disk
+  and are regenerated on demand; move them to storage.service if you pin URLs.)
 
 ## 4. Email deliverability
 

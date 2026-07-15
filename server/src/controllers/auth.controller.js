@@ -12,6 +12,7 @@ import {
   refreshCookieOptions,
 } from '../utils/jwt.js';
 import { sendEmail, emailTemplates } from '../services/email.service.js';
+import { putFile } from '../services/storage.service.js';
 
 async function issueTokens(res, user) {
   const accessToken = signAccessToken(user);
@@ -172,9 +173,10 @@ export const updateProfile = asyncHandler(async (req, res) => {
 /** PUT /api/auth/avatar (multipart: avatar) — upload a profile photo. */
 export const uploadAvatar = asyncHandler(async (req, res) => {
   if (!req.file) throw new ApiError(400, 'No image uploaded');
+  const url = await putFile({ buffer: req.file.buffer, originalname: req.file.originalname, mimetype: req.file.mimetype, folder: 'avatars' });
   const user = await User.findByIdAndUpdate(
     req.user._id,
-    { profileImage: `/uploads/${req.file.filename}` },
+    { profileImage: url },
     { new: true },
   ).populate('tenantProfile.roomId', 'roomNumber floor roomType rentAmount');
   res.json({ success: true, data: { user } });

@@ -22,6 +22,11 @@ export function validateEnv() {
     }
     if (!process.env.MONGO_URI) fatal.push('MONGO_URI is required in production');
     if (!process.env.CLIENT_URL) fatal.push('CLIENT_URL is required in production (CORS origin + password-reset links)');
+    const hasCloudinary = process.env.CLOUDINARY_URL ||
+      (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+    if (!hasCloudinary) {
+      warn.push('CLOUDINARY_URL not set — uploads (avatars, ID documents, complaint photos) use local disk and are WIPED on restart/redeploy. Set it for persistent storage.');
+    }
   }
 
   warn.forEach((m) => console.warn('⚠️  env:', m));
