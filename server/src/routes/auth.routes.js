@@ -26,4 +26,8 @@ router.put('/profile', protect, validate(updateProfileSchema), ctrl.updateProfil
 router.put('/avatar', protect, upload.single('avatar'), ctrl.uploadAvatar);
 router.put('/change-password', protect, validate(changePasswordSchema), ctrl.changePassword);
 
+// DPDP data rights
+router.get('/export-data', protect, ctrl.exportData);
+router.delete('/account', protect, ctrl.deleteAccount);
+
 export default router;

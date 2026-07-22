@@ -372,6 +372,8 @@ export default function Landing() {
             <a href="#features" className="hover:text-brand-700">Features</a>
             <a href="#pricing" className="hover:text-brand-700">Pricing</a>
             <Link to="/login" className="hover:text-brand-700">Live demo</Link>
+            <Link to="/terms" className="hover:text-brand-700">Terms</Link>
+            <Link to="/privacy" className="hover:text-brand-700">Privacy</Link>
             <a href="mailto:hello@quarters.app" className="hover:text-brand-700">Contact</a>
           </div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-slate-400">© {year} Quarters</p>

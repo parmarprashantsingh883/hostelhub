@@ -14,6 +14,7 @@ them live.
 | `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | ✅ | long random strings; rotating them logs everyone out |
 | `CLIENT_URL` | ✅ | FE origin — CORS allowlist + links in email |
 | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | for live billing + rent | unset = mock gateway (demo checkout) |
+| `RAZORPAY_WEBHOOK_SECRET` | recommended with live billing | unset = webhook returns 501 (disabled); set = signed `order.paid`/`payment.captured` activate the plan server-side even if the payer closes the tab |
 | `SMTP_HOST/PORT/USER/PASS` | for real email | unset = emails logged, not sent |
 | `CLOUDINARY_URL` | ✅ on ephemeral hosts | unset = uploads on local disk (WIPED on restart); set = avatars/documents/complaint photos persist. Discrete `CLOUDINARY_CLOUD_NAME`/`_API_KEY`/`_API_SECRET` also accepted |
 | `SENTRY_DSN` | recommended | unset = error tracking off; set = 5xx + crashes reported with org/user context |
@@ -32,8 +33,25 @@ Client build-time: `VITE_API_URL` (the API origin for split deploys).
 3. Trials: every signup gets `TRIAL_DAYS` (14) of Pro. Lapsed orgs are
    write-frozen with a 3-day grace (`GRACE_DAYS`); reads and the Billing page
    stay open so owners can renew themselves.
+4. Webhook: in the Razorpay dashboard add a webhook to
+   `https://<api-host>/api/billing/webhook` for `order.paid` + `payment.captured`,
+   and set its secret as `RAZORPAY_WEBHOOK_SECRET`. Checkout stamps the order
+   `notes` with `{orgId, planId, cycle}`; the signed webhook activates the plan
+   idempotently even if the payer closes the tab before the client callback runs.
 
-## 3. Database
+## 3. Legal & data rights (India DPDP)
+
+- Public **Terms** (`/terms`) and **Privacy** (`/privacy`) pages ship in the
+  client; the register form links both and records consent copy. Review the
+  copy with counsel and set your real support/grievance email (currently
+  `hello@quarters.app`).
+- Self-serve data rights are live under **Profile → Privacy & data**:
+  `GET /api/auth/export-data` (JSON export) and `DELETE /api/auth/account`
+  (owner deletes the whole org + all its data; residents/staff are routed to
+  their admin). Both require the caller to be authenticated; deletion requires
+  the current password.
+
+## 4. Database
 
 - **Backups**: enable Atlas **Continuous Cloud Backup** (M10+) or scheduled
   snapshots (M2/M5) — this is an Atlas console setting, not code. Test a
@@ -52,7 +70,7 @@ Client build-time: `VITE_API_URL` (the API origin for split deploys).
   (Server-generated PDFs — receipts/settlements — still write to local disk
   and are regenerated on demand; move them to storage.service if you pin URLs.)
 
-## 4. Email deliverability
+## 5. Email deliverability
 
 SMTP alone lands in spam. Before real customers:
 1. Send from a domain you own (not gmail), via a transactional provider
@@ -60,7 +78,7 @@ SMTP alone lands in spam. Before real customers:
    SMTP config).
 2. Add **SPF + DKIM + DMARC** DNS records for that domain.
 
-## 5. Observability
+## 6. Observability
 
 - Set `SENTRY_DSN` → 5xx responses, unhandled rejections and crashes are
   captured with method/url/orgId/userId context (`config/monitoring.js`).
@@ -68,7 +86,7 @@ SMTP alone lands in spam. Before real customers:
   `GET /api/ready` is the DB-aware probe for load balancers.
 - Logs: `morgan combined` on stdout — Render/Railway capture these natively.
 
-## 6. CI / deploys
+## 7. CI / deploys
 
 - GitHub Actions (`.github/workflows/ci.yml`) runs the server suite and the
   client lint+test+build on every push/PR to `main`.
@@ -76,7 +94,7 @@ SMTP alone lands in spam. Before real customers:
   environment, create a second Render service + Vercel preview pointed at a
   `staging` branch with its own Atlas database.
 
-## 7. Pre-launch smoke test (5 minutes)
+## 8. Pre-launch smoke test (5 minutes)
 
 1. Sign up a fresh org → lands on an empty dashboard, Billing shows a 14-day
    Pro trial.

@@ -4,10 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getSettings } from './settings.service.js';
+import { putFile } from './storage.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const RECEIPT_DIR = path.join(__dirname, '..', 'uploads', 'receipts');
-if (!fs.existsSync(RECEIPT_DIR)) fs.mkdirSync(RECEIPT_DIR, { recursive: true });
 const FONT_DIR = path.join(__dirname, '..', 'assets', 'fonts');
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -34,7 +33,6 @@ const GREEN_BG = '#e7f6f0';
  */
 export async function generateReceipt({ rent, tenant, room }) {
   const fileName = `receipt-${rent._id}.pdf`;
-  const filePath = path.join(RECEIPT_DIR, fileName);
   const monthLabel = `${MONTHS[rent.month - 1]} ${rent.year}`;
 
   // Business identity comes from app Settings (env values are the fallback). The
@@ -74,14 +72,16 @@ export async function generateReceipt({ rent, tenant, room }) {
     qrBuffer = null;
   }
 
-  await new Promise((resolve, reject) => {
+  const buffer = await new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 0 });
     if (uni) {
       doc.registerFont('Body', reg);
       doc.registerFont('BodyB', bold);
     }
-    const stream = fs.createWriteStream(filePath);
-    doc.pipe(stream);
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
 
     const W = doc.page.width;
     const H = doc.page.height;
@@ -203,9 +203,7 @@ export async function generateReceipt({ rent, tenant, room }) {
     );
 
     doc.end();
-    stream.on('finish', resolve);
-    stream.on('error', reject);
   });
 
-  return `/uploads/receipts/${fileName}`;
+  return putFile({ buffer, originalname: fileName, mimetype: 'application/pdf', folder: 'receipts' });
 }
