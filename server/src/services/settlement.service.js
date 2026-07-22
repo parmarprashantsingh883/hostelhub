@@ -1,11 +1,5 @@
 import PDFDocument from 'pdfkit';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SETTLEMENT_DIR = path.join(__dirname, '..', 'uploads', 'settlements');
-if (!fs.existsSync(SETTLEMENT_DIR)) fs.mkdirSync(SETTLEMENT_DIR, { recursive: true });
+import { putFile } from './storage.service.js';
 
 // Business identity printed on the document (configurable per deployment).
 const BUSINESS = {
@@ -39,12 +33,13 @@ export async function generateSettlement({
   refund,
 }) {
   const fileName = `settlement-${tenant._id}-${Date.now()}.pdf`;
-  const filePath = path.join(SETTLEMENT_DIR, fileName);
 
-  await new Promise((resolve, reject) => {
+  const buffer = await new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
-    const stream = fs.createWriteStream(filePath);
-    doc.pipe(stream);
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
 
     // Header band (navy brand)
     doc.rect(0, 0, doc.page.width, 110).fill('#243047');
@@ -128,9 +123,7 @@ export async function generateSettlement({
     );
 
     doc.end();
-    stream.on('finish', resolve);
-    stream.on('error', reject);
   });
 
-  return `/uploads/settlements/${fileName}`;
+  return putFile({ buffer, originalname: fileName, mimetype: 'application/pdf', folder: 'settlements' });
 }

@@ -3,10 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getSettings } from './settings.service.js';
+import { putFile } from './storage.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DIR = path.join(__dirname, '..', 'uploads', 'agreements');
-if (!fs.existsSync(DIR)) fs.mkdirSync(DIR, { recursive: true });
 const FONT_DIR = path.join(__dirname, '..', 'assets', 'fonts');
 
 const NAVY = '#243047';
@@ -20,7 +19,6 @@ const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric',
 /** Generate a rental-agreement PDF; returns its /uploads URL path. */
 export async function generateAgreement({ agreement, tenant, room }) {
   const fileName = `agreement-${agreement._id}.pdf`;
-  const filePath = path.join(DIR, fileName);
 
   let biz = { name: 'Quarters', address: '', email: '', phone: '' };
   try {
@@ -47,11 +45,13 @@ export async function generateAgreement({ agreement, tenant, room }) {
     'House rules, visitor policy and common-area guidelines published by the management form part of this agreement.',
   ];
 
-  await new Promise((resolve, reject) => {
+  const buffer = await new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 0 });
     if (uni) { doc.registerFont('Body', reg); doc.registerFont('BodyB', bold); }
-    const stream = fs.createWriteStream(filePath);
-    doc.pipe(stream);
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
 
     const W = doc.page.width; const H = doc.page.height; const L = 50; const R = W - 50; const CW = R - L;
 
@@ -127,9 +127,7 @@ export async function generateAgreement({ agreement, tenant, room }) {
     doc.font(FN).fontSize(7.5).fillColor('#b6bfcd').text(`${biz.name} · computer-generated agreement`, L, H - 40, { width: CW, align: 'center' });
 
     doc.end();
-    stream.on('finish', resolve);
-    stream.on('error', reject);
   });
 
-  return `/uploads/agreements/${fileName}`;
+  return putFile({ buffer, originalname: fileName, mimetype: 'application/pdf', folder: 'agreements' });
 }

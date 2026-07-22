@@ -20,13 +20,14 @@ async function getRazorpay() {
   return razorpay;
 }
 
-export async function createOrder({ amountInRupees, receiptId }) {
+export async function createOrder({ amountInRupees, receiptId, notes = {} }) {
   if (isLive()) {
     const rp = await getRazorpay();
     const order = await rp.orders.create({
       amount: Math.round(amountInRupees * 100), // paise
       currency: 'INR',
       receipt: receiptId,
+      notes, // carried back on the webhook so we can map payment → org/plan
     });
     return { mode: 'live', keyId: process.env.RAZORPAY_KEY_ID, order };
   }
@@ -39,6 +40,7 @@ export async function createOrder({ amountInRupees, receiptId }) {
       amount: Math.round(amountInRupees * 100),
       currency: 'INR',
       receipt: receiptId,
+      notes,
       status: 'created',
     },
   };
@@ -57,3 +59,18 @@ export function verifySignature({ orderId, paymentId, signature }) {
 }
 
 export const paymentMode = () => (isLive() ? 'live' : 'mock');
+
+/** Webhooks are a live-only feature — enabled when the webhook secret is set. */
+export const webhookMode = () => (process.env.RAZORPAY_WEBHOOK_SECRET ? 'live' : 'off');
+
+/** Verify a Razorpay webhook: HMAC-SHA256 of the RAW request body with the
+ *  webhook secret must equal the X-Razorpay-Signature header. */
+export function verifyWebhookSignature(rawBody, signature) {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  if (!secret || !signature) return false;
+  const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+  // timing-safe compare (lengths must match first)
+  const a = Buffer.from(expected);
+  const b = Buffer.from(String(signature));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import Organization from '../models/Organization.js';
 import { TRIAL_DAYS, TRIAL_PLAN } from '../lib/plans.js';
@@ -193,4 +194,67 @@ export const changePassword = asyncHandler(async (req, res) => {
   user.refreshTokenHash = undefined; // revoke other sessions
   await user.save();
   res.json({ success: true, message: 'Password changed' });
+});
+
+/** GET /api/auth/export-data — DPDP right-to-access: the caller's own data as
+ *  a downloadable JSON. Queries run inside the org tenant context (protect), so
+ *  they are org-scoped as well as subject-scoped. */
+export const exportData = asyncHandler(async (req, res) => {
+  const uid = req.user._id;
+  const account = await User.findById(uid).populate('tenantProfile.roomId', 'roomNumber floor roomType rentAmount');
+  const grab = (name, query) => (mongoose.models[name] ? mongoose.models[name].find(query).lean() : Promise.resolve([]));
+
+  const data = { exportedAt: new Date().toISOString(), account };
+  if (req.user.role === 'tenant') {
+    Object.assign(data, {
+      rents: await grab('Rent', { tenantId: uid }),
+      payments: await grab('Payment', { tenantId: uid }),
+      complaints: await grab('Complaint', { tenantId: uid }),
+      visitors: await grab('Visitor', { tenantId: uid }),
+      agreements: await grab('Agreement', { tenantId: uid }),
+      depositLedger: await grab('DepositLedger', { tenantId: uid }),
+      documents: await grab('Document', { userId: uid }),
+    });
+  } else if (req.user.role === 'staff') {
+    Object.assign(data, {
+      attendance: await grab('Attendance', { staffId: uid }),
+      payroll: await grab('Payroll', { staffId: uid }),
+    });
+  } else if (req.user.role === 'admin') {
+    data.organization = await Organization.findById(req.user.orgId).lean();
+    data.settings = (await grab('Settings', {}))[0] || null;
+  }
+  res.json({ success: true, data });
+});
+
+/** DELETE /api/auth/account — DPDP right-to-erasure. The org OWNER (admin)
+ *  permanently deletes the entire organization and every record scoped to it.
+ *  Residents/staff data is controlled by their PG operator, so they are routed
+ *  to their admin. Requires the current password. */
+export const deleteAccount = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('+password');
+  if (!user) throw new ApiError(404, 'User not found');
+  if (!(await user.comparePassword(req.body.password || ''))) {
+    throw new ApiError(401, 'Password is incorrect');
+  }
+  if (user.role !== 'admin') {
+    throw new ApiError(403, 'Only the account owner can delete the organization. Ask your admin to remove your account.');
+  }
+  const orgId = user.orgId;
+  if (!orgId) throw new ApiError(400, 'No organization is associated with this account');
+
+  // Delete every org-scoped document. deleteMany runs inside the tenant context
+  // (protect → runWithTenant), so the plugin scopes each to THIS org only.
+  const deleted = {};
+  for (const [name, model] of Object.entries(mongoose.models)) {
+    if (name === 'Organization') continue;
+    if (model.schema.path('orgId')) {
+      const r = await model.deleteMany({});
+      if (r.deletedCount) deleted[name] = r.deletedCount;
+    }
+  }
+  await Organization.findByIdAndDelete(orgId);
+
+  res.clearCookie(REFRESH_COOKIE, { path: '/api/auth' });
+  res.json({ success: true, message: 'Your organization and all its data have been permanently deleted.', data: { deleted } });
 });

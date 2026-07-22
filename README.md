@@ -132,13 +132,14 @@ The web image (nginx) serves the SPA and proxies `/api` + `/uploads` to the API 
 
 - ✅ True multi-tenant SaaS — org signup, per-org data isolation, plans, trials & billing
 - ✅ WhatsApp + SMS notifications (WhatsApp Cloud API / Twilio, link fallback)
-- ✅ Cloud file storage (Cloudinary) with local-disk dev fallback
+- ✅ Cloud file storage (Cloudinary) — uploads **and** server-generated PDFs (receipts/settlements/agreements)
 - ✅ Sentry error tracking (env-gated)
+- ✅ Razorpay webhooks — signed server-to-server activation, backstops the client callback
+- ✅ Legal + India DPDP compliance — Terms, Privacy, self-serve data export & account/org deletion
 
 **Next**
 
-- Razorpay webhooks &amp; refunds (billing currently uses client-side callback verification)
-- OTP login, server-generated PDFs (receipts/settlements) to cloud storage
+- Refunds, OTP login, VS Code extension, multi-property under one owner
 
 ## 📄 License
 

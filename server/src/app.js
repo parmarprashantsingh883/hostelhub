@@ -42,6 +42,7 @@ import agreementRoutes from './routes/agreement.routes.js';
 import recycleBinRoutes from './routes/recyclebin.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import billingRoutes from './routes/billing.routes.js';
+import { handleWebhook } from './controllers/billing.controller.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
@@ -63,6 +64,10 @@ app.use(
     credentials: true,
   }),
 );
+// Razorpay webhook needs the RAW body for HMAC verification, so it is mounted
+// BEFORE the JSON parser (which would otherwise consume and re-stringify it).
+app.post('/api/billing/webhook', express.raw({ type: '*/*' }), handleWebhook);
+
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb', parameterLimit: 100 }));
 app.use(cookieParser());

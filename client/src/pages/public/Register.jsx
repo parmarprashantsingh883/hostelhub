@@ -81,6 +81,11 @@ export default function Register() {
           </Field>
         </div>
         <Button type="submit" loading={busy} className="w-full" size="lg">Start free trial</Button>
+        <p className="text-center text-xs leading-relaxed text-slate-400">
+          By creating an account you agree to our{' '}
+          <Link to="/terms" className="text-brand-600 hover:underline">Terms</Link> and{' '}
+          <Link to="/privacy" className="text-brand-600 hover:underline">Privacy Policy</Link>.
+        </p>
       </form>
     </AuthShell>
   );

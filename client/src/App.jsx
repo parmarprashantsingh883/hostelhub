@@ -14,6 +14,8 @@ const ForgotPassword = lazy(() => import('./pages/public/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/public/ResetPassword.jsx'));
 const Book = lazy(() => import('./pages/public/Book.jsx'));
 const VerifyReceipt = lazy(() => import('./pages/public/VerifyReceipt.jsx'));
+const Terms = lazy(() => import('./pages/public/Terms.jsx'));
+const Privacy = lazy(() => import('./pages/public/Privacy.jsx'));
 
 // Admin
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard.jsx'));
@@ -79,6 +81,8 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/book" element={<Book />} />
         <Route path="/verify/:id" element={<VerifyReceipt />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

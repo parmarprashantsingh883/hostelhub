@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   KeyRound, Mail, ShieldCheck, UserRound, Lock, Phone, CalendarDays, Hash, Check,
   Camera, Home, Wallet, Briefcase, Sun, Moon, BadgeCheck, FileCheck, Users, Heart, Loader2, IndianRupee,
+  Download, Trash2, AlertTriangle, DatabaseZap,
 } from 'lucide-react';
 import { api, errMsg, assetUrl } from '../../api/client';
-import { Button, Card, Field, Input, PasswordInput, Badge, PageHeader, Avatar, fmtDate, inr } from '../../components/ui';
+import { Button, Card, Field, Input, PasswordInput, Badge, PageHeader, Avatar, Modal, fmtDate, inr } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
 import { currentTheme, setTheme as applyTheme } from '../../lib/theme';
 
@@ -14,10 +16,15 @@ const cap = (s) => String(s || '—').replace(/_/g, ' ');
 const KYC_TONE = { verified: 'green', submitted: 'yellow', pending: 'gray', signed: 'green', sent: 'yellow', not_sent: 'gray' };
 
 export default function Profile() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [me, setMe] = useState(user);
   const [section, setSection] = useState('account');
   const fileRef = useRef(null);
+  const [exporting, setExporting] = useState(false);
+  const [delOpen, setDelOpen] = useState(false);
+  const [delPwd, setDelPwd] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const [profile, setProfile] = useState({ name: user?.name || '', phone: user?.phone || '' });
   const [savingProfile, setSavingProfile] = useState(false);
@@ -106,6 +113,35 @@ export default function Profile() {
 
   const pickTheme = (t) => { applyTheme(t); setThemeState(t); };
 
+  const exportMyData = async () => {
+    setExporting(true);
+    try {
+      const { data } = await api.get('/auth/export-data');
+      const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `quarters-data-${String(me?._id || 'me').slice(-8)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success('Your data has been downloaded');
+    } catch (e) { toast.error(errMsg(e)); } finally { setExporting(false); }
+  };
+
+  const deleteAccount = async () => {
+    if (!delPwd) return toast.error('Enter your password to confirm');
+    setDeleting(true);
+    try {
+      await api.delete('/auth/account', { data: { password: delPwd } });
+      toast.success('Your organization and all its data have been deleted');
+      setDelOpen(false);
+      await logout?.();
+      navigate('/');
+    } catch (e) { toast.error(errMsg(e)); } finally { setDeleting(false); }
+  };
+
   const roleLabel = cap(role);
   const meta = [
     { icon: ShieldCheck, label: 'Role', value: roleLabel, cap: true },
@@ -119,6 +155,7 @@ export default function Profile() {
     ...(role === 'staff' ? [{ id: 'employment', label: 'Employment', icon: Briefcase, hint: 'Your role & pay' }] : []),
     { id: 'security', label: 'Security', icon: ShieldCheck, hint: 'Password & sign-in' },
     { id: 'preferences', label: 'Preferences', icon: Sun, hint: 'Appearance' },
+    { id: 'privacy', label: 'Privacy & data', icon: DatabaseZap, hint: 'Export or delete your data' },
   ];
 
   return (
@@ -310,8 +347,66 @@ export default function Profile() {
               </div>
             </Card>
           )}
+
+          {section === 'privacy' && (
+            <div className="space-y-6">
+              <Card title="Your data">
+                <p className="-mt-1 mb-4 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                  Download a copy of everything Quarters holds about you — your account and all
+                  records linked to it — as a single JSON file. This is your right to access your data.
+                </p>
+                <Button variant="secondary" onClick={exportMyData} loading={exporting}>
+                  <Download className="h-4 w-4" /> Download my data
+                </Button>
+                <p className="mt-4 text-xs text-slate-400">
+                  See how we handle your data in our{' '}
+                  <a href="/privacy" target="_blank" rel="noreferrer" className="font-medium text-brand-600 hover:underline">Privacy Policy</a>.
+                </p>
+              </Card>
+
+              <Card title={role === 'admin' ? 'Delete organization' : 'Delete account'}>
+                {role === 'admin' ? (
+                  <>
+                    <div className="mb-5 flex items-start gap-3 rounded-xl bg-rose-50 px-3.5 py-3 ring-1 ring-rose-500/15 dark:bg-rose-500/10">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-rose-600 ring-1 ring-rose-500/20 dark:bg-surface"><AlertTriangle className="h-[18px] w-[18px]" /></div>
+                      <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                        This permanently deletes your organization and <span className="font-semibold">all</span> its data —
+                        rooms, residents, staff, rent, receipts and documents — for every user in it. This cannot be undone.
+                      </p>
+                    </div>
+                    <Button variant="danger" onClick={() => { setDelPwd(''); setDelOpen(true); }}>
+                      <Trash2 className="h-4 w-4" /> Delete my organization
+                    </Button>
+                  </>
+                ) : (
+                  <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                    Your account is managed by your property’s admin. To have your account and personal
+                    data removed, please ask your admin — or email{' '}
+                    <a href="mailto:hello@quarters.app" className="font-medium text-brand-600 hover:underline">hello@quarters.app</a>.
+                  </p>
+                )}
+              </Card>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Delete-organization confirmation (admin) */}
+      <Modal open={delOpen} onClose={deleting ? undefined : () => setDelOpen(false)} title="Delete organization?">
+        <div className="space-y-4">
+          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            This will <span className="font-semibold text-rose-600">permanently erase</span> your organization and
+            everything in it. Enter your password to confirm.
+          </p>
+          <Field label="Your password" required>
+            <PasswordInput value={delPwd} onChange={(e) => setDelPwd(e.target.value)} autoComplete="current-password" placeholder="••••••••" />
+          </Field>
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="secondary" onClick={() => setDelOpen(false)} disabled={deleting}>Cancel</Button>
+            <Button variant="danger" onClick={deleteAccount} loading={deleting}><Trash2 className="h-4 w-4" /> Delete forever</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
