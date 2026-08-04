@@ -5,6 +5,9 @@ import Complaint from '../models/Complaint.js';
 import Visitor from '../models/Visitor.js';
 import Notice from '../models/Notice.js';
 import FoodMenu from '../models/FoodMenu.js';
+import Booking from '../models/Booking.js';
+import Organization from '../models/Organization.js';
+import { getSettings } from '../services/settings.service.js';
 import { asyncHandler } from '../middleware/error.middleware.js';
 
 /** GET /api/dashboard/admin — every stat the admin dashboard needs in one call */
@@ -208,4 +211,76 @@ export const staffDashboard = asyncHandler(async (req, res) => {
       tasks,
     },
   });
+});
+
+/** GET /api/dashboard/onboarding (admin) — real setup progress for a new org,
+ *  computed from live counts so steps tick off as the admin does the work. */
+export const onboarding = asyncHandler(async (req, res) => {
+  const [rooms, residents, staff, anyRent, org, settings] = await Promise.all([
+    Room.countDocuments({}),
+    User.countDocuments({ role: 'tenant' }),
+    User.countDocuments({ role: 'staff' }),
+    Rent.countDocuments({}),
+    Organization.findById(req.user.orgId).select('onboardingDismissed').lean(),
+    getSettings(),
+  ]);
+
+  const businessSet = !!(settings?.business?.name && settings.business.name !== 'Quarters')
+    || !!settings?.business?.address || !!settings?.payments?.upiVpa;
+
+  const steps = [
+    { key: 'rooms', title: 'Add your first room', done: rooms > 0, to: '/admin/rooms', cta: 'Add a room' },
+    { key: 'residents', title: 'Add a resident', done: residents > 0, to: '/admin/tenants', cta: 'Add a resident' },
+    { key: 'business', title: 'Set your business details & UPI', done: businessSet, to: '/admin/settings', cta: 'Open settings' },
+    { key: 'rent', title: 'Generate the first rent invoice', done: anyRent > 0, to: '/admin/rents', cta: 'Go to rent' },
+    { key: 'staff', title: 'Invite a staff member', done: staff > 0, to: '/admin/staff', cta: 'Add staff' },
+  ];
+  const completed = steps.filter((s) => s.done).length;
+  res.json({
+    success: true,
+    data: {
+      steps,
+      completed,
+      total: steps.length,
+      percent: Math.round((completed / steps.length) * 100),
+      dismissed: !!org?.onboardingDismissed,
+    },
+  });
+});
+
+/** POST /api/dashboard/onboarding/dismiss (admin) — hide the checklist. */
+export const dismissOnboarding = asyncHandler(async (req, res) => {
+  await Organization.findByIdAndUpdate(req.user.orgId, { onboardingDismissed: true });
+  res.json({ success: true });
+});
+
+/** GET /api/dashboard/activity (admin) — a merged, org-scoped feed of recent
+ *  events derived from existing timestamps (no separate audit collection). */
+export const activity = asyncHandler(async (req, res) => {
+  const [tenants, rooms, rentsPaid, complaints, bookings, notices] = await Promise.all([
+    User.find({ role: 'tenant' }).sort({ createdAt: -1 }).limit(6).select('name createdAt').lean(),
+    Room.find({}).sort({ createdAt: -1 }).limit(6).select('roomNumber createdAt').lean(),
+    Rent.find({ status: 'paid' }).sort({ paidAt: -1 }).limit(6).populate('tenantId', 'name').lean(),
+    Complaint.find({}).sort({ createdAt: -1 }).limit(6).populate('tenantId', 'name').select('title status tenantId createdAt resolvedAt').lean(),
+    Booking.find({}).sort({ createdAt: -1 }).limit(6).select('name status createdAt').lean(),
+    Notice.find({}).sort({ createdAt: -1 }).limit(4).select('title createdAt').lean(),
+  ]);
+
+  const items = [
+    ...tenants.map((t) => ({ type: 'resident', icon: 'user', text: `${t.name} was added as a resident`, at: t.createdAt })),
+    ...rooms.map((r) => ({ type: 'room', icon: 'door', text: `Room ${r.roomNumber} was added`, at: r.createdAt })),
+    ...rentsPaid.map((r) => ({ type: 'payment', icon: 'rupee', text: `${r.tenantId?.name || 'A resident'} paid rent`, at: r.paidAt })),
+    ...complaints.map((c) => ({
+      type: 'complaint', icon: c.status === 'resolved' ? 'check' : 'wrench',
+      text: c.status === 'resolved' ? `Complaint “${c.title}” resolved` : `${c.tenantId?.name || 'A resident'} raised “${c.title}”`,
+      at: c.status === 'resolved' ? (c.resolvedAt || c.createdAt) : c.createdAt,
+    })),
+    ...bookings.map((b) => ({ type: 'booking', icon: 'calendar', text: `Booking for ${b.name || 'a guest'} (${b.status})`, at: b.createdAt })),
+    ...notices.map((n) => ({ type: 'notice', icon: 'megaphone', text: `Notice posted: “${n.title}”`, at: n.createdAt })),
+  ]
+    .filter((i) => i.at)
+    .sort((a, b) => new Date(b.at) - new Date(a.at))
+    .slice(0, 15);
+
+  res.json({ success: true, data: { items } });
 });

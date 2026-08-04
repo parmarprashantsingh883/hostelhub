@@ -44,6 +44,7 @@ const organizationSchema = new mongoose.Schema(
     email: { type: String, trim: true, lowercase: true, maxlength: 160 },
     phone: { type: String, trim: true, maxlength: 20 },
     isActive: { type: Boolean, default: true },
+    onboardingDismissed: { type: Boolean, default: false },
     subscription: { type: subscriptionSchema, default: () => ({}) },
   },
   { timestamps: true },
