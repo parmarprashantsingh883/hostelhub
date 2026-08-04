@@ -298,7 +298,7 @@ export default function DashboardLayout() {
 
         <SubscriptionBanner />
 
-        <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 w-full p-4 lg:px-10 lg:py-8 2xl:px-14">
           {/* Suspense lives INSIDE the layout so a lazy route chunk only swaps
               the content area — the sidebar/topbar never flash. AnimatePresence
               sequences the outgoing → incoming page for a smooth, flicker-free feel. */}
