@@ -15,6 +15,8 @@ import {
 } from '../../components/ui';
 import { CHART, BrandTooltip, axisTick, gridProps } from '../../components/ui/charts';
 import { StatDonut } from '../../components/dashboard/widgets';
+import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
+import ActivityFeed from '../../components/dashboard/ActivityFeed';
 import { useAuth } from '../../context/AuthContext';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -121,6 +123,9 @@ export default function AdminDashboard() {
           ))}
         </div>
       </div>
+
+      {/* ── First-run setup guide (hides itself once complete) ── */}
+      <OnboardingChecklist />
 
       {/* ── Summary cards ────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -272,7 +277,10 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* ── Notice board ─────────────────────────────────── */}
+      {/* ── Recent activity + Notice board ───────────────── */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <ActivityFeed />
+
       <Card title="Notice board" action={<Link to="/admin/notices" className="font-mono text-[10px] uppercase tracking-wider text-brand-600 hover:text-brand-700">Manage notices</Link>}>
         {recentNotices.length === 0 ? (
           <EmptyState icon={Megaphone} title="No notices yet" message="Post your first notice for residents." action={<Link to="/admin/notices"><Button size="sm"><Plus className="h-4 w-4" /> Post notice</Button></Link>} />
@@ -295,6 +303,7 @@ export default function AdminDashboard() {
           </div>
         )}
       </Card>
+      </div>
     </div>
   );
 }

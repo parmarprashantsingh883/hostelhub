@@ -5,12 +5,13 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature, Trash2, ShieldCheck, CreditCard,
+  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature, Trash2, ShieldCheck, CreditCard, Search,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, assetUrl } from '../api/client';
 import { LogoMark } from '../components/brand/Logo';
 import ThemeToggle from '../components/ThemeToggle';
+import CommandPalette, { openCommandPalette } from '../components/CommandPalette';
 
 const NAV = {
   admin: [
@@ -196,6 +197,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen flex">
+      <CommandPalette nav={nav} role={user?.role} />
       {sidebarOpen && <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Sidebar — light & warm */}
@@ -255,7 +257,16 @@ export default function DashboardLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 bg-white/80 backdrop-blur border-b border-ink-200 flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20 dark:bg-sidebar/80 dark:border-white/10">
           <button className="lg:hidden text-slate-500 hover:text-slate-800 dark:text-slate-300" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu className="w-6 h-6" /></button>
-          <p className="hidden lg:block text-sm font-medium text-slate-400">Welcome back 👋</p>
+          {/* Command palette trigger */}
+          <button
+            onClick={openCommandPalette}
+            className="group flex items-center gap-2 rounded-xl border border-ink-200 bg-white px-2.5 h-9 text-sm text-slate-400 transition-colors hover:border-brand-300 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
+            aria-label="Search (Command K)"
+          >
+            <Search className="w-4 h-4" />
+            <span className="hidden sm:inline">Search…</span>
+            <kbd className="hidden sm:inline rounded-md bg-ink-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 dark:bg-white/10">⌘K</kbd>
+          </button>
           <div className="ml-auto flex items-center gap-1.5">
             <ThemeToggle />
             <NotificationBell />

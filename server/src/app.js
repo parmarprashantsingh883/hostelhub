@@ -42,6 +42,7 @@ import agreementRoutes from './routes/agreement.routes.js';
 import recycleBinRoutes from './routes/recyclebin.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import billingRoutes from './routes/billing.routes.js';
+import searchRoutes from './routes/search.routes.js';
 import { handleWebhook } from './controllers/billing.controller.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -133,6 +134,7 @@ app.use('/api/approvals', approvalRoutes);
 app.use('/api/agreements', agreementRoutes);
 app.use('/api/recyclebin', recycleBinRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/search', searchRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);
