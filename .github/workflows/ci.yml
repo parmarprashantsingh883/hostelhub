@@ -40,3 +40,18 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npm run build
+
+  audit:
+    name: Security · dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      # Fail the build only on high/critical advisories (moderate ones are noisy).
+      - name: Audit server deps
+        working-directory: server
+        run: npm audit --omit=dev --audit-level=high
+      - name: Audit client deps
+        working-directory: client
+        run: npm audit --omit=dev --audit-level=high

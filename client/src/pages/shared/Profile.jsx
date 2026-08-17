@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { api, errMsg, assetUrl } from '../../api/client';
 import { Button, Card, Field, Input, PasswordInput, Badge, PageHeader, Avatar, Modal, fmtDate, inr } from '../../components/ui';
+import MfaCard from '../../components/MfaCard';
 import { useAuth } from '../../context/AuthContext';
 import { currentTheme, setTheme as applyTheme } from '../../lib/theme';
 
@@ -316,6 +317,7 @@ export default function Profile() {
           )}
 
           {section === 'security' && (
+            <div className="space-y-6">
             <Card title="Password">
               <div className="mb-5 flex items-start gap-3 rounded-xl bg-brand-50 dark:bg-brand-500/15 px-3.5 py-3 ring-1 ring-brand-600/10">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-surface text-brand-600 ring-1 ring-brand-600/15"><ShieldCheck className="h-[18px] w-[18px]" /></div>
@@ -328,6 +330,8 @@ export default function Profile() {
               </div>
               <div className="mt-6 flex justify-end border-t border-slate-100 dark:border-white/10 pt-4"><Button onClick={changePassword} loading={savingPwd}><KeyRound className="h-4 w-4" /> Update password</Button></div>
             </Card>
+            <MfaCard enabled={!!me?.mfaEnabled} onChange={() => api.get('/auth/me').then(({ data }) => sync(data.data.user)).catch(() => {})} />
+            </div>
           )}
 
           {section === 'preferences' && (

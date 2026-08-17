@@ -22,12 +22,14 @@ const DEMO = [
 ];
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginMfa } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const autoRan = useRef(false);
   const [busy, setBusy] = useState(false);
   const [activeDemo, setActiveDemo] = useState(null);
+  const [mfa, setMfa] = useState(null); // { mfaToken } once the password step passes
+  const [code, setCode] = useState('');
   const {
     register,
     handleSubmit,
@@ -38,14 +40,30 @@ export default function Login() {
     setBusy(true);
     if (demoLabel) setActiveDemo(demoLabel);
     try {
-      const user = await login(email, password);
-      toast.success(`Welcome back, ${user.name.split(' ')[0]}!`);
-      navigate(`/${user.role}`);
+      const res = await login(email, password);
+      if (res?.mfaRequired) { setMfa({ mfaToken: res.mfaToken }); return; }
+      toast.success(`Welcome back, ${res.name.split(' ')[0]}!`);
+      navigate(`/${res.role}`);
     } catch (e) {
       toast.error(errMsg(e, 'Login failed'));
     } finally {
       setBusy(false);
       setActiveDemo(null);
+    }
+  };
+
+  const submitMfa = async (e) => {
+    e.preventDefault();
+    if (!code.trim()) return toast.error('Enter your authentication code');
+    setBusy(true);
+    try {
+      const user = await loginMfa(mfa.mfaToken, code.trim());
+      toast.success(`Welcome back, ${user.name.split(' ')[0]}!`);
+      navigate(`/${user.role}`);
+    } catch (err) {
+      toast.error(errMsg(err, 'Verification failed'));
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -60,6 +78,33 @@ export default function Login() {
     if (d) { autoRan.current = true; doLogin(d.email, d.password, d.label); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 2FA step — shown after a correct password on an MFA-enabled account.
+  if (mfa) {
+    return (
+      <AuthShell title="Two-step verification" subtitle="Enter the 6-digit code from your authenticator app">
+        <form onSubmit={submitMfa} className="space-y-4" noValidate>
+          <Field label="Authentication code" required>
+            <div className="relative">
+              <ShieldCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <Input
+                inputMode="numeric" autoComplete="one-time-code" autoFocus
+                placeholder="123 456" value={code}
+                onChange={(e) => setCode(e.target.value)} className="pl-10 tracking-[0.3em]"
+              />
+            </div>
+          </Field>
+          <Button type="submit" loading={busy} className="w-full" size="lg">Verify &amp; sign in</Button>
+          <p className="text-center text-xs text-slate-400">
+            Lost your device? Enter one of your <span className="font-medium text-slate-500">backup codes</span>.
+          </p>
+          <button type="button" onClick={() => { setMfa(null); setCode(''); }} className="mx-auto block text-sm text-brand-600 hover:underline">
+            ← Back to sign in
+          </button>
+        </form>
+      </AuthShell>
+    );
+  }
 
   return (
     <AuthShell

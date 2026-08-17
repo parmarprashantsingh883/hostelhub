@@ -8,12 +8,25 @@ import {
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
+  signMfaToken,
+  verifyMfaToken,
   sha256,
   REFRESH_COOKIE,
   refreshCookieOptions,
 } from '../utils/jwt.js';
 import { sendEmail, emailTemplates } from '../services/email.service.js';
 import { putFile } from '../services/storage.service.js';
+import QRCode from 'qrcode';
+import { recordAudit } from '../services/audit.service.js';
+import { generateSecret, keyuri, verify as verifyTotp } from '../lib/totp.js';
+
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCK_MINUTES = 15;
+const audit = (user, action, req, meta) => recordAudit({
+  orgId: user?.orgId, actorId: user?._id, actorName: user?.name, actorRole: user?.role, ip: req.ip, action, meta,
+});
+// Normalize a typed code (TOTP or backup) — strip separators/whitespace, lowercase.
+const normCode = (c) => String(c || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
 
 async function issueTokens(res, user) {
   const accessToken = signAccessToken(user);
@@ -59,15 +72,77 @@ export const register = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, data: { user, accessToken, organization: org } });
 });
 
-/** POST /api/auth/login */
+/** POST /api/auth/login — password step. Enforces brute-force lockout and, if
+ *  the account has 2FA on, returns a short-lived mfaToken instead of a session. */
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).select('+password');
-  if (!user || !(await user.comparePassword(password))) {
-    throw new ApiError(401, 'Invalid email or password');
+  const user = await User.findOne({ email }).select('+password +failedLoginAttempts +lockedUntil');
+  // Uniform error for unknown email vs bad password (no account enumeration).
+  if (!user) throw new ApiError(401, 'Invalid email or password');
+
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    const mins = Math.ceil((user.lockedUntil - Date.now()) / 60000);
+    await audit(user, 'login_blocked_locked', req);
+    throw new ApiError(423, `Account locked after too many attempts. Try again in ${mins} minute${mins === 1 ? '' : 's'}.`);
   }
+
+  if (!(await user.comparePassword(password))) {
+    user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+    let locked = false;
+    if (user.failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
+      user.lockedUntil = new Date(Date.now() + LOCK_MINUTES * 60000);
+      user.failedLoginAttempts = 0;
+      locked = true;
+    }
+    await user.save({ validateBeforeSave: false });
+    await audit(user, 'login_failed', req, { locked });
+    throw new ApiError(locked ? 423 : 401, locked
+      ? `Too many failed attempts — account locked for ${LOCK_MINUTES} minutes.`
+      : 'Invalid email or password');
+  }
+
   if (!user.isActive) throw new ApiError(403, 'Account is deactivated — contact the admin');
 
+  if (user.failedLoginAttempts || user.lockedUntil) {
+    user.failedLoginAttempts = 0;
+    user.lockedUntil = null;
+    await user.save({ validateBeforeSave: false });
+  }
+
+  // 2FA gate — password verified, but require the TOTP step before a session.
+  if (user.mfaEnabled) {
+    return res.json({ success: true, data: { mfaRequired: true, mfaToken: signMfaToken(user) } });
+  }
+
+  await audit(user, 'login', req);
+  const accessToken = await issueTokens(res, user);
+  res.json({ success: true, data: { user, accessToken } });
+});
+
+/** POST /api/auth/login/mfa — second step: redeem mfaToken + TOTP/backup code. */
+export const loginMfa = asyncHandler(async (req, res) => {
+  const { mfaToken, code } = req.body;
+  let decoded;
+  try { decoded = verifyMfaToken(mfaToken); }
+  catch { throw new ApiError(401, 'Your verification session expired — please sign in again'); }
+
+  const user = await User.findById(decoded.id).select('+mfaSecret +mfaBackupCodes');
+  if (!user || !user.mfaEnabled) throw new ApiError(401, 'Two-factor is not enabled on this account');
+  if (!user.isActive) throw new ApiError(403, 'Account is deactivated — contact the admin');
+
+  const okTotp = verifyTotp(code, user.mfaSecret);
+  const backupIdx = (user.mfaBackupCodes || []).indexOf(sha256(normCode(code)));
+
+  if (!okTotp && backupIdx === -1) {
+    await audit(user, 'login_mfa_failed', req);
+    throw new ApiError(401, 'Invalid authentication code');
+  }
+  if (!okTotp && backupIdx !== -1) {
+    user.mfaBackupCodes.splice(backupIdx, 1); // one-time use
+    await user.save({ validateBeforeSave: false });
+  }
+
+  await audit(user, 'login', req, { mfa: true, viaBackupCode: !okTotp });
   const accessToken = await issueTokens(res, user);
   res.json({ success: true, data: { user, accessToken } });
 });
@@ -193,7 +268,54 @@ export const changePassword = asyncHandler(async (req, res) => {
   user.password = newPassword;
   user.refreshTokenHash = undefined; // revoke other sessions
   await user.save();
+  await audit(user, 'password_changed', req);
   res.json({ success: true, message: 'Password changed' });
+});
+
+/** POST /api/auth/mfa/setup — generate a secret + QR; not enabled until verified. */
+export const mfaSetup = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('+mfaSecret');
+  if (user.mfaEnabled) throw new ApiError(400, 'Two-factor is already enabled');
+  const secret = generateSecret();
+  user.mfaSecret = secret;
+  await user.save({ validateBeforeSave: false });
+  const otpauth = keyuri(user.email, 'Quarters', secret);
+  const qr = await QRCode.toDataURL(otpauth);
+  res.json({ success: true, data: { secret, otpauth, qr } });
+});
+
+/** POST /api/auth/mfa/enable { code } — verify a code, turn 2FA on, return the
+ *  one-time backup codes (shown to the user exactly once). */
+export const mfaEnable = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('+mfaSecret');
+  if (user.mfaEnabled) throw new ApiError(400, 'Two-factor is already enabled');
+  if (!user.mfaSecret) throw new ApiError(400, 'Start the setup step first');
+  if (!verifyTotp(req.body.code, user.mfaSecret)) {
+    throw new ApiError(400, 'That code isn’t valid — check your authenticator app and try again');
+  }
+  const plain = Array.from({ length: 10 }, () => crypto.randomBytes(4).toString('hex'));
+  user.mfaBackupCodes = plain.map((c) => sha256(c));
+  user.mfaEnabled = true;
+  await user.save({ validateBeforeSave: false });
+  await audit(user, 'mfa_enabled', req);
+  // grouped for readability (xxxx-xxxx); input is separator-insensitive
+  res.json({ success: true, data: { backupCodes: plain.map((c) => `${c.slice(0, 4)}-${c.slice(4)}`) } });
+});
+
+/** POST /api/auth/mfa/disable { password, code } — requires password + a valid code. */
+export const mfaDisable = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('+password +mfaSecret +mfaBackupCodes');
+  if (!user.mfaEnabled) throw new ApiError(400, 'Two-factor is not enabled');
+  if (!(await user.comparePassword(req.body.password || ''))) throw new ApiError(401, 'Password is incorrect');
+  const okTotp = verifyTotp(req.body.code, user.mfaSecret);
+  const okBackup = (user.mfaBackupCodes || []).includes(sha256(normCode(req.body.code)));
+  if (!okTotp && !okBackup) throw new ApiError(400, 'Invalid authentication code');
+  user.mfaEnabled = false;
+  user.mfaSecret = undefined;
+  user.mfaBackupCodes = undefined;
+  await user.save({ validateBeforeSave: false });
+  await audit(user, 'mfa_disabled', req);
+  res.json({ success: true, message: 'Two-factor authentication disabled' });
 });
 
 /** GET /api/auth/export-data — DPDP right-to-access: the caller's own data as
@@ -224,6 +346,7 @@ export const exportData = asyncHandler(async (req, res) => {
     data.organization = await Organization.findById(req.user.orgId).lean();
     data.settings = (await grab('Settings', {}))[0] || null;
   }
+  await audit(req.user, 'data_exported', req);
   res.json({ success: true, data });
 });
 

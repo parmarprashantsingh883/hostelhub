@@ -5,7 +5,7 @@ import {
   LayoutDashboard, DoorOpen, Users, UserCog, Banknote, Wrench, Megaphone,
   ClipboardList, UtensilsCrossed, FileBarChart, Bell, LogOut, Menu, X,
   Home, User, FileText, ChevronDown, Wallet, UserPlus, HandCoins, Loader2,
-  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature, Trash2, ShieldCheck, CreditCard, Search,
+  BedDouble, CalendarCheck, Settings as SettingsIcon, Hammer, ClipboardCheck, CalendarClock, Package, ListChecks, FileSignature, Trash2, ShieldCheck, CreditCard, Search, ScrollText,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, assetUrl } from '../api/client';
@@ -39,6 +39,7 @@ const NAV = {
     { to: '/admin/reports', label: 'Reports', icon: FileBarChart },
     { to: '/admin/settings', label: 'Settings', icon: SettingsIcon },
     { to: '/admin/billing', label: 'Billing & Plan', icon: CreditCard },
+    { to: '/admin/audit', label: 'Audit log', icon: ScrollText },
     { to: '/admin/recyclebin', label: 'Recycle bin', icon: Trash2 },
   ],
   tenant: [
