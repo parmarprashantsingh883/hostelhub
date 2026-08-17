@@ -43,6 +43,7 @@ import recycleBinRoutes from './routes/recyclebin.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import billingRoutes from './routes/billing.routes.js';
 import searchRoutes from './routes/search.routes.js';
+import auditRoutes from './routes/audit.routes.js';
 import { handleWebhook } from './controllers/billing.controller.js';
 
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -56,7 +57,28 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ── Security & parsing ────────────────────────────────────────────────
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+// CSP tuned for the app's real dependencies: Razorpay checkout, Cloudinary
+// images, inline styles (Tailwind/framer-motion). script-src stays tight (no
+// unsafe-inline) — the main XSS lever. connect-src allows https so a split
+// deploy (SPA on Vercel, API on Render) still reaches its API.
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'https://checkout.razorpay.com'],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
+      fontSrc: ["'self'", 'data:'],
+      connectSrc: ["'self'", 'https:'],
+      frameSrc: ["'self'", 'https://checkout.razorpay.com', 'https://api.razorpay.com'],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+}));
 app.use(compression());
 if (!isTest) app.use(morgan(isProduction ? 'combined' : 'dev'));
 app.use(
@@ -135,6 +157,7 @@ app.use('/api/agreements', agreementRoutes);
 app.use('/api/recyclebin', recycleBinRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/audit-logs', auditRoutes);
 
 // ── Errors ────────────────────────────────────────────────────────────
 app.use(notFound);

@@ -17,6 +17,16 @@ export function verifyRefreshToken(token) {
   return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 }
 
+/** Short-lived token issued after password step, redeemed at the MFA step. */
+export function signMfaToken(user) {
+  return jwt.sign({ id: user._id, purpose: 'mfa' }, process.env.JWT_ACCESS_SECRET, { expiresIn: '5m' });
+}
+export function verifyMfaToken(token) {
+  const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+  if (decoded.purpose !== 'mfa') throw new Error('wrong token purpose');
+  return decoded;
+}
+
 export const sha256 = (v) => crypto.createHash('sha256').update(v).digest('hex');
 
 export const REFRESH_COOKIE = 'hh_refresh';

@@ -136,10 +136,12 @@ The web image (nginx) serves the SPA and proxies `/api` + `/uploads` to the API 
 - ✅ Sentry error tracking (env-gated)
 - ✅ Razorpay webhooks — signed server-to-server activation, backstops the client callback
 - ✅ Legal + India DPDP compliance — Terms, Privacy, self-serve data export & account/org deletion
+- ✅ Security hardening — TOTP 2FA + backup codes, brute-force lockout, audit log, CSP + security headers, CI dependency scanning (npm audit + Dependabot)
 
-**Next**
+**Next (needs your accounts)**
 
-- Refunds, OTP login, VS Code extension, multi-property under one owner
+- Go live: deploy (Render + Vercel + Atlas), email domain SPF/DKIM, tighten CSP `connect-src`
+- Later: refunds, multi-property under one owner
 
 ## 📄 License
 

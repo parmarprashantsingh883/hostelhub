@@ -5,6 +5,7 @@ import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import { PLANS, getPlan, planPrice, TRIAL_DAYS } from '../lib/plans.js';
 import { createOrder, verifySignature, paymentMode, webhookMode, verifyWebhookSignature } from '../services/payment.service.js';
 import { subscriptionState, invalidateOrgCache } from '../middleware/subscription.middleware.js';
+import { auditReq } from '../services/audit.service.js';
 
 /** Apply a paid plan to an org's subscription. Idempotent: a payment already
  *  applied is a no-op (returns false), so the client callback and the webhook
@@ -99,6 +100,7 @@ export const activate = asyncHandler(async (req, res) => {
   applyActivation(org, plan, cycle, paymentId);
   await org.save();
   invalidateOrgCache(org._id);
+  await auditReq(req, 'plan_activated', { targetType: 'Organization', targetId: org._id, meta: { planId: plan.id, cycle } });
   res.json({ success: true, data: { subscription: org.subscription, state: subscriptionState(org) } });
 });
 
@@ -111,6 +113,7 @@ export const cancel = asyncHandler(async (req, res) => {
   org.subscription.history.push({ event: 'plan_canceled', planId: org.subscription.planId });
   await org.save();
   invalidateOrgCache(org._id);
+  await auditReq(req, 'plan_canceled', { targetType: 'Organization', targetId: org._id });
   res.json({
     success: true,
     message: 'Plan canceled — access continues until the end of your current period.',

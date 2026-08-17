@@ -91,6 +91,15 @@ const userSchema = new mongoose.Schema(
     resetPasswordToken: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
     refreshTokenHash: { type: String, select: false },
+
+    // ── Two-factor auth (TOTP) ──────────────────────────────
+    mfaEnabled: { type: Boolean, default: false },
+    mfaSecret: { type: String, select: false },              // base32; only while enabled
+    mfaBackupCodes: { type: [String], select: false, default: undefined }, // sha256-hashed one-time codes
+
+    // ── Brute-force lockout ─────────────────────────────────
+    failedLoginAttempts: { type: Number, default: 0, select: false },
+    lockedUntil: { type: Date, default: null, select: false },
   },
   { timestamps: true },
 );
@@ -116,6 +125,10 @@ userSchema.set('toJSON', {
     delete ret.resetPasswordToken;
     delete ret.resetPasswordExpires;
     delete ret.refreshTokenHash;
+    delete ret.mfaSecret;
+    delete ret.mfaBackupCodes;
+    delete ret.failedLoginAttempts;
+    delete ret.lockedUntil;
     return ret;
   },
 });

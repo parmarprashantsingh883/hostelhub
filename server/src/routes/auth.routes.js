@@ -16,6 +16,7 @@ const router = Router();
 
 router.post('/register', validate(registerSchema), ctrl.register);
 router.post('/login', validate(loginSchema), ctrl.login);
+router.post('/login/mfa', ctrl.loginMfa);
 router.post('/refresh', ctrl.refresh);
 router.post('/logout', ctrl.logout);
 router.post('/forgot-password', validate(forgotPasswordSchema), ctrl.forgotPassword);
@@ -25,6 +26,11 @@ router.get('/me', protect, ctrl.me);
 router.put('/profile', protect, validate(updateProfileSchema), ctrl.updateProfile);
 router.put('/avatar', protect, upload.single('avatar'), ctrl.uploadAvatar);
 router.put('/change-password', protect, validate(changePasswordSchema), ctrl.changePassword);
+
+// Two-factor auth
+router.post('/mfa/setup', protect, ctrl.mfaSetup);
+router.post('/mfa/enable', protect, ctrl.mfaEnable);
+router.post('/mfa/disable', protect, ctrl.mfaDisable);
 
 // DPDP data rights
 router.get('/export-data', protect, ctrl.exportData);

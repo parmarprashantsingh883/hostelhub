@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import Complaint from '../models/Complaint.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
 import { STAFF_PERMISSIONS, PERMISSION_KEYS, DEFAULT_STAFF_PERMISSIONS } from '../lib/permissions.js';
+import { auditReq } from '../services/audit.service.js';
 
 /** POST /api/staff (admin) */
 export const createStaff = asyncHandler(async (req, res) => {
@@ -84,6 +85,7 @@ export const deactivateStaff = asyncHandler(async (req, res) => {
     { $set: { assignedStaffId: null, status: 'pending' } },
   );
 
+  await auditReq(req, 'staff_removed', { targetType: 'User', targetId: staff._id, meta: { name: staff.name } });
   res.json({ success: true, message: 'Staff member deactivated' });
 });
 
@@ -100,6 +102,7 @@ export const updatePermissions = asyncHandler(async (req, res) => {
   const permissions = [...new Set(requested.filter((p) => PERMISSION_KEYS.includes(p)))];
   staff.staffProfile = { ...(staff.staffProfile?.toObject?.() || staff.staffProfile || {}), permissions };
   await staff.save({ validateBeforeSave: false });
+  await auditReq(req, 'permissions_changed', { targetType: 'User', targetId: staff._id, meta: { name: staff.name, permissions } });
   res.json({ success: true, data: { staff } });
 });
 

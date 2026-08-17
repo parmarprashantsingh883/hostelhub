@@ -3,6 +3,7 @@ import Room from '../models/Room.js';
 import Rent from '../models/Rent.js';
 import Complaint from '../models/Complaint.js';
 import { ApiError, asyncHandler } from '../middleware/error.middleware.js';
+import { auditReq } from '../services/audit.service.js';
 
 /** POST /api/tenants (admin) — create tenant account */
 export const createTenant = asyncHandler(async (req, res) => {
@@ -122,6 +123,7 @@ export const deactivateTenant = asyncHandler(async (req, res) => {
   };
   await tenant.save({ validateBeforeSave: false });
 
+  await auditReq(req, 'resident_removed', { targetType: 'User', targetId: tenant._id, meta: { name: tenant.name } });
   res.json({ success: true, message: 'Tenant deactivated and moved out' });
 });
 

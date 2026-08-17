@@ -35,6 +35,14 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
+    // 2FA accounts: no session yet — the caller must complete loginMfa().
+    if (data.data.mfaRequired) return { mfaRequired: true, mfaToken: data.data.mfaToken };
+    applyAuth(data.data.user, data.data.accessToken);
+    return data.data.user;
+  };
+
+  const loginMfa = async (mfaToken, code) => {
+    const { data } = await api.post('/auth/login/mfa', { mfaToken, code });
     applyAuth(data.data.user, data.data.accessToken);
     return data.data.user;
   };
@@ -60,7 +68,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, booting, login, register, logout, refreshMe, setUser }}>
+    <AuthContext.Provider value={{ user, booting, login, loginMfa, register, logout, refreshMe, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -94,7 +94,39 @@ SMTP alone lands in spam. Before real customers:
   environment, create a second Render service + Vercel preview pointed at a
   `staging` branch with its own Atlas database.
 
-## 8. Pre-launch smoke test (5 minutes)
+## 8. Security hardening (shipped)
+
+- **Two-factor auth (TOTP)** — opt-in per user under Profile → Security. Standard
+  authenticator apps; 10 one-time backup codes issued on enable. Login is a
+  two-step flow (`/auth/login` → `/auth/login/mfa`). No env needed.
+- **Brute-force lockout** — 5 failed passwords locks an account for 15 minutes
+  (`MAX_LOGIN_ATTEMPTS` / `LOCK_MINUTES` in `auth.controller.js`), on top of the
+  IP rate limiter.
+- **Audit log** — security/money-sensitive actions (sign-ins & failures, 2FA
+  changes, staff-access changes, resident/staff removal, plan changes, data
+  export) are recorded per-org and shown at **/admin/audit**.
+- **CSP + security headers** — Helmet CSP on the API; `client/vercel.json` sets
+  CSP + HSTS + X-Frame-Options + nosniff + Referrer/Permissions-Policy on the
+  SPA. `connect-src` is `'self' https:` so the split deploy works; tighten it to
+  your exact API origin once known.
+- **Dependency scanning** — CI fails on high/critical `npm audit` advisories;
+  Dependabot (`.github/dependabot.yml`) opens weekly update PRs.
+
+## 9. Backups, DR & secrets
+
+- **Backups**: enable Atlas **Continuous Cloud Backup** (M10+) or scheduled
+  snapshots (M2/M5) — Atlas console, not code. **Do a test restore** into a
+  throwaway cluster once before onboarding a paying customer.
+- **DR runbook**: (1) restore the latest snapshot to a new cluster, (2) point
+  `MONGO_URI` at it, (3) redeploy the API, (4) re-run the §10 smoke test.
+  Uploaded files live in Cloudinary (independently durable); server-generated
+  PDFs regenerate on demand.
+- **Secrets**: never commit `.env`. Store prod secrets in the host's secret
+  store (Render/Vercel env vars). Rotate `JWT_ACCESS_SECRET`/`JWT_REFRESH_SECRET`
+  on suspected compromise (logs everyone out). Keep Razorpay/Cloudinary/SMTP
+  keys least-privilege.
+
+## 10. Pre-launch smoke test (5 minutes)
 
 1. Sign up a fresh org → lands on an empty dashboard, Billing shows a 14-day
    Pro trial.
