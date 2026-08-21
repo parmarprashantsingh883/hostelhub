@@ -90,7 +90,7 @@ export default function Attendance() {
 
       <div className="flex gap-2">
         {[{ id: 'attendance', label: 'Attendance', icon: UserCheck }, { id: 'payroll', label: 'Payroll', icon: Banknote }].map((t) => (
-          <button key={t.id} onClick={() => setTab(t.id)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 h-9 text-sm font-medium transition-colors ${tab === t.id ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'}`}>
+          <button key={t.id} onClick={() => setTab(t.id)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 h-9 text-sm font-medium transition-colors ${tab === t.id ? 'bg-night-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'}`}>
             <t.icon className="w-4 h-4" /> {t.label}
           </button>
         ))}

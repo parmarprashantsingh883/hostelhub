@@ -12,7 +12,8 @@ export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './
 
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-[0_2px_8px_-2px_rgba(36,48,71,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(36,48,71,0.55)] focus-visible:ring-brand-500/40 dark:bg-brand-500 dark:hover:bg-brand-400',
+  // Ink-navy primary (the marketing site's button) — blue stays for links/active states.
+  primary: 'bg-night-900 text-white hover:bg-night-800 shadow-[0_2px_8px_-2px_rgba(13,19,34,0.5)] hover:shadow-[0_6px_16px_-4px_rgba(13,19,34,0.55)] focus-visible:ring-brand-500/40 dark:bg-brand-500 dark:hover:bg-brand-400',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40 dark:bg-surface2 dark:text-slate-200 dark:border-white/15 dark:hover:bg-white/5 dark:hover:border-white/25 dark:shadow-none',
   danger: 'bg-rose-50 text-rose-600 border border-rose-500/25 hover:bg-rose-100 focus-visible:ring-rose-400/40 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-400/20 dark:hover:bg-rose-500/25',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40 dark:text-slate-300 dark:hover:bg-white/10',
@@ -190,7 +191,7 @@ export function Card({ title, action, className = '', children }) {
     <div className={`bg-white rounded-2xl border border-slate-200/70 shadow-card dark:bg-surface dark:border-white/10 dark:shadow-none ${className}`}>
       {(title || action) && (
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-white/10">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h3>
+          <h3 className="font-display text-[15px] font-semibold text-slate-900 dark:text-white">{title}</h3>
           {action}
         </div>
       )}
@@ -459,14 +460,14 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
         transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="flex items-start justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">{label}</p>
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-white/50">{label}</p>
           {Icon && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/15 shrink-0">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-brand-300 ring-1 ring-white/15 shrink-0">
               <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
             </span>
           )}
         </div>
-        <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums truncate">{value}</p>
+        <p className="mt-2.5 font-display text-[30px] leading-none font-semibold tracking-tight tabular-nums truncate">{value}</p>
         {sub && <p className="mt-2 text-xs text-white/55">{sub}</p>}
       </motion.div>
     );
@@ -480,12 +481,12 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
       transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.13em] text-slate-400">{label}</p>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100/70 shrink-0 transition-transform duration-200 group-hover:scale-105 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-white/10">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-slate-400">{label}</p>
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f4f3ee] text-slate-400 ring-1 ring-[#e7e5de] shrink-0 transition-transform duration-200 group-hover:scale-105 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10">
           <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
         </span>
       </div>
-      <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums text-slate-900 truncate dark:text-white">{value}</p>
+      <p className="mt-2.5 font-display text-[30px] leading-none font-semibold tracking-tight tabular-nums text-slate-900 truncate dark:text-white">{value}</p>
       {sub && <p className="mt-2 text-xs text-slate-400">{sub}</p>}
     </motion.div>
   );
@@ -501,7 +502,7 @@ export function Table({ headers, children }) {
     <div className="overflow-x-auto scrollbar-thin">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-[11px] uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:text-slate-400 dark:border-white/10">
+          <tr className="text-left font-mono text-[10.5px] uppercase tracking-[0.08em] text-slate-500 border-b border-slate-200 dark:text-slate-400 dark:border-white/10">
             {headers.map((h) => (
               <th key={h} className="py-3 px-3 font-semibold whitespace-nowrap">{h}</th>
             ))}
@@ -609,7 +610,7 @@ export function PageHeader({ title, subtitle, action }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight dark:text-white">{title}</h1>
+        <h1 className="font-display text-[27px] font-semibold text-slate-900 tracking-tight dark:text-white">{title}</h1>
         {subtitle && <p className="text-sm text-slate-500 mt-1 dark:text-slate-400">{subtitle}</p>}
       </div>
       {action}
