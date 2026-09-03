@@ -10,16 +10,16 @@
   --color-surface: #1b212c;   /* cards — clearly lifted off the canvas */
   --color-surface2: #272e3b;  /* inputs / raised tiles */
   /* Brand — professional blue (replaces the old ink-navy; light surfaces stay white) */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
 
   /* Secondary — cool light surfaces */
   --color-cream-50: #f8fafc;
@@ -66,13 +66,13 @@ html {
 /* Data-viz colours — reactive to dark mode via CSS variables (used by charts
    and the SVG progress donut). */
 :root {
-  --chart-line: #2563eb;
-  --chart-fill: #3b82f6;
-  --chart-faint: #bfdbfe;
-  --chart-grid: #ecebe4;
+  --chart-line: #4f46e5;
+  --chart-fill: #6366f1;
+  --chart-faint: #c7d2fe;
+  --chart-grid: #eef0f4;
   --chart-axis: #94a3b8;
-  --ring-track: #ecebe4;
-  --ring-brand: #2563eb;
+  --ring-track: #eef0f4;
+  --ring-brand: #4f46e5;
 
   /* Toasts — soft elevated card; flips with .dark so the toaster re-themes. */
   --toast-bg: #ffffff;
@@ -81,13 +81,13 @@ html {
   --toast-shadow: 0 18px 40px -16px rgb(16 24 40 / 0.24), 0 6px 16px -8px rgb(16 24 40 / 0.14);
 }
 .dark {
-  --chart-line: #60a5fa;
+  --chart-line: #818cf8;
   --chart-fill: #3b82f6;
-  --chart-faint: #1e3a8a;
+  --chart-faint: #312e81;
   --chart-grid: rgba(255, 255, 255, 0.07);
   --chart-axis: #64748b;
   --ring-track: rgba(255, 255, 255, 0.08);
-  --ring-brand: #60a5fa;
+  --ring-brand: #818cf8;
 
   --toast-bg: #272e3b;
   --toast-fg: #e2e8f0;
@@ -97,7 +97,7 @@ html {
 
 body {
   @apply text-slate-900;
-  background-color: #f7f6f2; /* warm paper canvas — the marketing site's ledger feel */
+  background-color: #f7f8fa; /* cool near-white canvas — crisp SaaS */
   /* Inter: tabular-ish lining, subtle optical tracking for a crisp SaaS feel */
   font-feature-settings: 'cv11', 'ss01';
   letter-spacing: -0.006em;
@@ -132,8 +132,8 @@ h1, h2, h3 {
 
 /* Light scrollbars */
 .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-.scrollbar-thin::-webkit-scrollbar-thumb { background: #d6d3cc; border-radius: 9999px; }
-.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #b8b3a8; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #d3d7de; border-radius: 9999px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #b3b9c4; }
 
 /* Subtle motion */
 @keyframes fade-in-up {
@@ -152,11 +152,11 @@ h1, h2, h3 {
 /* Ink-navy hero surface for featured cards / bands — gradient + faint dot grid
    layered in a single declaration so neither overrides the other. */
 .surface-hero {
-  /* Ink-navy ledger band (was bright blue) — the one dark accent card in the app */
-  background-color: #141b2c;
+  /* Deep indigo band — the app's one saturated accent card */
+  background-color: #3730a3;
   background-image:
-    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.07) 1px, transparent 0),
-    radial-gradient(125% 140% at 0% 0%, #27334d 0%, #182136 52%, #0d1322 100%);
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.08) 1px, transparent 0),
+    radial-gradient(125% 140% at 0% 0%, #6366f1 0%, #4f46e5 48%, #312e81 100%);
   background-size: 22px 22px, 100% 100%;
 }
 /* Subtle top-light sheen on light cards */

@@ -201,16 +201,16 @@ export default function DashboardLayout() {
       <CommandPalette nav={nav} role={user?.role} />
       {sidebarOpen && <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Sidebar — always ink-navy (the app's ledger spine), in light and dark alike */}
-      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-night-900 border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-200 dark:bg-sidebar ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      {/* Sidebar — clean light SaaS rail; deep surface in dark mode */}
+      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-slate-200/70 z-40 flex flex-col transition-transform duration-200 dark:bg-sidebar dark:border-white/[0.06] ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Brand */}
         <div className="h-16 flex items-center gap-3 px-5">
-          <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(0,0,0,0.45)]" />
+          <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(49,46,129,0.35)]" />
           <div className="min-w-0">
-            <p className="font-display font-semibold text-white leading-tight tracking-tight text-[18px]">Quarters</p>
-            <p className="font-mono text-[9.5px] text-brand-300/90 uppercase tracking-[0.22em]">{ROLE_LABEL[user?.role] || 'Portal'}</p>
+            <p className="font-extrabold text-slate-900 leading-tight tracking-tight text-[17px] dark:text-white">Quarters</p>
+            <p className="text-[10px] text-brand-600 font-semibold uppercase tracking-[0.18em] dark:text-brand-300">{ROLE_LABEL[user?.role] || 'Portal'}</p>
           </div>
-          <button className="ml-auto lg:hidden text-slate-500 hover:text-white" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X className="w-5 h-5" /></button>
+          <button className="ml-auto lg:hidden text-slate-400 hover:text-slate-700 dark:hover:text-white" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X className="w-5 h-5" /></button>
         </div>
 
         <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 pt-2 pb-4 space-y-0.5">
@@ -223,15 +223,15 @@ export default function DashboardLayout() {
               className={({ isActive }) =>
                 `group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-white/[0.08] text-white'
-                    : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-100'
+                    ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.05] dark:hover:text-slate-100'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-brand-400" />}
-                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-brand-300' : 'text-slate-500 group-hover:text-slate-300'}`} strokeWidth={2.1} />
+                  {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-brand-600 dark:bg-brand-400" />}
+                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-brand-600 dark:text-brand-300' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} strokeWidth={2.1} />
                   {label}
                 </>
               )}
@@ -239,17 +239,17 @@ export default function DashboardLayout() {
           ))}
         </nav>
 
-        <div className="p-3 border-t border-white/[0.06]">
+        <div className="p-3 border-t border-slate-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-3 px-2 py-2 mb-1">
             {user?.profileImage
               ? <img src={assetUrl(user.profileImage)} alt={user?.name || ''} className="w-9 h-9 rounded-full object-cover shrink-0" />
               : <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{initials}</div>}
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-100 truncate">{user?.name}</p>
-              <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
+              <p className="text-sm font-semibold text-slate-900 truncate dark:text-slate-100">{user?.name}</p>
+              <p className="text-[11px] text-slate-400 truncate dark:text-slate-500">{user?.email}</p>
             </div>
           </div>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-medium text-slate-400 hover:bg-rose-500/15 hover:text-rose-300 transition-colors">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-medium text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors dark:text-slate-400 dark:hover:bg-rose-500/15 dark:hover:text-rose-300">
             <LogOut className="w-[18px] h-[18px]" /> Log out
           </button>
         </div>
@@ -257,12 +257,12 @@ export default function DashboardLayout() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-[#f7f6f2]/85 backdrop-blur border-b border-[#e7e5de] flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20 dark:bg-sidebar/80 dark:border-white/10">
+        <header className="h-16 bg-white/80 backdrop-blur border-b border-slate-200/70 flex items-center gap-3 px-4 lg:px-6 sticky top-0 z-20 dark:bg-sidebar/80 dark:border-white/10">
           <button className="lg:hidden text-slate-500 hover:text-slate-800 dark:text-slate-300" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu className="w-6 h-6" /></button>
           {/* Command palette trigger */}
           <button
             onClick={openCommandPalette}
-            className="group flex items-center gap-2 rounded-xl border border-[#e2e0d8] bg-white px-2.5 h-9 text-sm text-slate-400 transition-colors hover:border-brand-300 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
+            className="group flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-2.5 h-9 text-sm text-slate-400 transition-colors hover:border-brand-300 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
             aria-label="Search (Command K)"
           >
             <Search className="w-4 h-4" />

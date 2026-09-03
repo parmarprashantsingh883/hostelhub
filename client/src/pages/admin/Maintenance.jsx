@@ -149,7 +149,7 @@ export default function Maintenance() {
   };
 
   const TabBtn = ({ id, icon: Icon, label }) => (
-    <button onClick={() => setTab(id)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 h-9 text-sm font-medium transition-colors ${tab === id ? 'bg-night-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'}`}>
+    <button onClick={() => setTab(id)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 h-9 text-sm font-medium transition-colors ${tab === id ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'}`}>
       <Icon className="w-4 h-4" /> {label}
     </button>
   );
@@ -180,7 +180,7 @@ export default function Maintenance() {
 
           <div className="flex flex-wrap gap-1.5">
             {FILTERS.map((f) => (
-              <button key={f} onClick={() => setFilter(f)} className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${filter === f ? 'bg-night-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'}`}>
+              <button key={f} onClick={() => setFilter(f)} className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${filter === f ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'}`}>
                 {f === 'all' ? 'All' : WO_STATUS[f].label}
               </button>
             ))}
