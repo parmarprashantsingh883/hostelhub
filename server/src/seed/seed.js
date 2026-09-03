@@ -534,6 +534,32 @@ export async function runSeed({ exitAfter = true } = {}) {
 
   }); // end runWithTenant
 
+  // ── Give the demo a realistic creation history ─────────────────────────────
+  // Everything above is created "now", which makes activity sparklines a single
+  // spike. Spread each collection's createdAt across the last 8 weeks with a
+  // gentle upward drift so trends read as real. Raw updates bypass Mongoose's
+  // timestamp protection. Deterministic (index-based) — no randomness.
+  const DAY = 86400000;
+  const historyNow = new Date();
+  const spreadHistory = async (Model, weightFn = (f) => 0.35 + 0.65 * f) => {
+    // Raw collection reads/writes bypass both tenant (ALS) scoping — we're
+    // outside runWithTenant here — and Mongoose's createdAt immutability.
+    const docs = await Model.collection.find({}, { projection: { _id: 1 } }).toArray();
+    const n = docs.length;
+    if (!n) return;
+    for (let i = 0; i < n; i++) {
+      const frac = n === 1 ? 1 : i / (n - 1);          // 0 (oldest) → 1 (newest)
+      const daysAgo = Math.round((1 - weightFn(frac)) * 56); // recent-weighted
+      const when = new Date(historyNow.getTime() - daysAgo * DAY);
+      await Model.collection.updateOne({ _id: docs[i]._id }, { $set: { createdAt: when } });
+    }
+  };
+  // Bias each series a little differently so the four sparklines don't march in lockstep.
+  await spreadHistory(User, (f) => 0.15 + 0.85 * f);       // move-ins ramp up
+  await spreadHistory(Rent, (f) => f);                      // rents accumulate steadily
+  await spreadHistory(Complaint, (f) => 0.3 + 0.7 * f * f); // complaints cluster recent
+  await spreadHistory(Visitor, (f) => Math.abs(Math.sin(f * 3.14)) * 0.6 + 0.3); // visitors wave
+
   console.log('🌱 Seed complete:');
   console.log('   admin@quarters.app / Admin@123');
   console.log('   tenant@quarters.app / Tenant@123');

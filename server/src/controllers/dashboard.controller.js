@@ -21,12 +21,16 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
   // Keep overdue flags fresh so counts/alerts are accurate.
   await Rent.updateMany({ status: 'pending', dueDate: { $lt: now } }, { $set: { status: 'overdue' } });
 
+  // Last-8-weeks activity window for the KPI sparklines.
+  const eightWeeksAgo = new Date(now); eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 56);
+
   const [
     totalTenants, rooms, monthRents,
     openComplaints, inProgressComplaints, resolvedComplaints, highPriorityComplaints, totalComplaints,
     recentPayments, recentComplaints, complaintByCategory, revenueByMonth,
     visitorsToday, visitorsInside, visitorsPending,
     pendingRentList, recentNotices, foodAgg,
+    tenantDates, complaintDates, visitorDates, rentDates,
   ] = await Promise.all([
     User.countDocuments({ role: 'tenant', isActive: true, 'tenantProfile.status': 'active' }),
     Room.find({}, 'status capacity currentOccupancy'),
@@ -58,7 +62,29 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
       { $unwind: '$feedback' },
       { $group: { _id: null, avg: { $avg: '$feedback.rating' }, count: { $sum: 1 } } },
     ]),
+    // Activity dates for sparklines (minimal projection, last 8 weeks).
+    User.find({ role: 'tenant', createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
+    Complaint.find({ createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
+    Visitor.find({ createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
+    Rent.find({ createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
   ]);
+
+  // Bucket a list of dates into 8 weekly counts (oldest → newest).
+  const weekly = (docs) => {
+    const buckets = Array(8).fill(0);
+    const wkMs = 7 * 24 * 3600 * 1000;
+    for (const d of docs) {
+      const wk = Math.floor((now - new Date(d.createdAt)) / wkMs);
+      if (wk >= 0 && wk < 8) buckets[7 - wk] += 1;
+    }
+    return buckets;
+  };
+  const sparks = {
+    tenants: weekly(tenantDates),
+    complaints: weekly(complaintDates),
+    visitors: weekly(visitorDates),
+    rents: weekly(rentDates),
+  };
 
   const totalRooms = rooms.length;
   const occupiedRooms = rooms.filter((r) => r.status === 'occupied').length;
@@ -134,6 +160,7 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
       recentNotices,
       recentPayments,
       recentComplaints,
+      sparks,
       charts: {
         complaintByCategory: complaintByCategory.map((c) => ({ category: c._id, count: c.count })),
         revenueByMonth: revenueByMonth.map((r) => ({

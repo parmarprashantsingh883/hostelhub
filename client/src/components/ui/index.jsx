@@ -9,6 +9,8 @@ import { Loader2, Inbox, X, AlertTriangle, ChevronLeft, ChevronRight, Eye, EyeOf
 
 /* Motion primitives — re-exported so pages import everything from one place. */
 export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './motion';
+import { Sparkbars, Delta } from './charts.jsx';
+export { Sparkbars, Delta } from './charts.jsx';
 
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
@@ -449,7 +451,12 @@ export function EmptyState({ icon: Icon = Inbox, title = 'Nothing here yet', mes
  * KPI tile — label + icon chip on top, a large tabular value below.
  * `accent` renders the navy hero treatment for a featured metric.
  */
-export function StatCard({ icon: Icon, label, value, sub, accent = false, tone = 'zinc' }) {
+/**
+ * KPI card. `spark` (a real CSS color) + `series` (numbers) render the mini
+ * bar-chart at the foot of the card; `delta` (signed %) shows a trend pill by
+ * the label. `accent` promotes the card to the graphite hero slab.
+ */
+export function StatCard({ icon: Icon, label, value, sub, accent = false, tone = 'zinc', spark, series, delta }) {
   const chipTones = {
     zinc: 'bg-zinc-100 text-zinc-500 ring-zinc-200/70 dark:bg-white/5 dark:text-zinc-400 dark:ring-white/10',
     ember: 'bg-brand-500/10 text-brand-600 ring-brand-500/20 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25',
@@ -464,7 +471,10 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false, tone =
         transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="flex items-start justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/60">{label}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/60">{label}</p>
+            <Delta value={delta} />
+          </div>
           {Icon && (
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-brand-400 ring-1 ring-white/15 shrink-0">
               <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
@@ -473,6 +483,7 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false, tone =
         </div>
         <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums truncate">{value}</p>
         {sub && <p className="mt-2 text-xs font-medium text-brand-300/90">{sub}</p>}
+        {series && <Sparkbars data={series} color={spark || '#fb923c'} className="mt-3.5 opacity-90" />}
       </motion.div>
     );
   }
@@ -485,13 +496,17 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false, tone =
       transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
+          <Delta value={delta} />
+        </div>
         <span className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 shrink-0 transition-transform duration-200 group-hover:scale-105 ${chipTones[tone] || chipTones.zinc}`}>
           <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
         </span>
       </div>
       <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums text-slate-900 truncate dark:text-white">{value}</p>
       {sub && <p className="mt-2 text-xs text-slate-400">{sub}</p>}
+      {series && <Sparkbars data={series} color={spark || '#a1a1aa'} className="mt-3.5" />}
     </motion.div>
   );
 }

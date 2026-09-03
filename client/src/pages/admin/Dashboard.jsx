@@ -74,7 +74,7 @@ export default function AdminDashboard() {
   }
   if (!data) return <EmptyState title="Could not load dashboard" />;
 
-  const { stats: s, health, pendingRent, recentNotices, recentComplaints, charts } = data;
+  const { stats: s, health, pendingRent, recentNotices, recentComplaints, charts, sparks = {} } = data;
   const firstName = user?.name?.split(' ')[0] || 'there';
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long' });
@@ -82,16 +82,26 @@ export default function AdminDashboard() {
   const collectionPct = s.monthBilled > 0 ? Math.round((s.monthCollection / s.monthBilled) * 100) : 100;
   const band = healthBand(health.score);
 
+  // Real revenue trend for the hero card's sparkline + month-over-month delta.
+  const revSeries = rev.map((r) => r.revenue);
+  const revDelta = rev.length >= 2 && rev[rev.length - 2].revenue > 0
+    ? Math.round(((rev[rev.length - 1].revenue - rev[rev.length - 2].revenue) / rev[rev.length - 2].revenue) * 100)
+    : null;
+
+  // Sparkline series (real 8-week activity from the API) + per-metric colors.
+  // Structural point-in-time metrics (rooms/occupied/vacant) carry no trend.
+  const hasSeries = (a) => Array.isArray(a) && a.some((n) => n > 0);
+
   // Summary cards (clickable)
   const cards = [
-    { to: '/admin/tenants', icon: Users, label: 'Total tenants', value: s.totalTenants, sub: 'Active residents' },
+    { to: '/admin/tenants', icon: Users, label: 'Total tenants', value: s.totalTenants, sub: 'Active residents', series: hasSeries(sparks.tenants) ? sparks.tenants : null, spark: '#0d9488' },
     { to: '/admin/rooms', icon: DoorOpen, label: 'Total rooms', value: s.totalRooms, sub: `${s.occupiedBeds}/${s.totalBeds} beds` },
     { to: '/admin/rooms', icon: BedDouble, label: 'Occupied', value: s.occupiedRooms, sub: `${s.occupancyPct}% occupancy` },
     { to: '/admin/rooms', icon: Home, label: 'Vacant', value: s.vacantRooms, sub: s.maintenanceRooms ? `${s.maintenanceRooms} under upkeep` : 'Ready to fill' },
-    { to: '/admin/rents', icon: Banknote, label: 'Revenue (mo)', value: inr(s.monthCollection), sub: `${collectionPct}% collected`, accent: true },
-    { to: '/admin/rents', icon: Clock, label: 'Pending rent', value: inr(s.monthPending), sub: `${s.unpaidCount} unpaid · ${s.overdueCount} overdue`, tone: 'ember' },
-    { to: '/admin/complaints', icon: Wrench, label: 'Open complaints', value: s.openComplaints, sub: `${s.highPriorityComplaints} high priority` },
-    { to: '/admin/visitors', icon: ClipboardList, label: 'Visitors today', value: s.visitorsToday, sub: `${s.visitorsInside} inside now` },
+    { to: '/admin/rents', icon: Banknote, label: 'Revenue (mo)', value: inr(s.monthCollection), sub: `${collectionPct}% collected`, accent: true, series: revSeries.length ? revSeries : null, spark: '#fb923c', delta: revDelta },
+    { to: '/admin/rents', icon: Clock, label: 'Pending rent', value: inr(s.monthPending), sub: `${s.unpaidCount} unpaid · ${s.overdueCount} overdue`, tone: 'ember', series: hasSeries(sparks.rents) ? sparks.rents : null, spark: '#6366f1' },
+    { to: '/admin/complaints', icon: Wrench, label: 'Open complaints', value: s.openComplaints, sub: `${s.highPriorityComplaints} high priority`, series: hasSeries(sparks.complaints) ? sparks.complaints : null, spark: '#f43f5e' },
+    { to: '/admin/visitors', icon: ClipboardList, label: 'Visitors today', value: s.visitorsToday, sub: `${s.visitorsInside} inside now`, series: hasSeries(sparks.visitors) ? sparks.visitors : null, spark: '#0ea5e9' },
   ];
 
   // Alerts (derived from real stats)
@@ -113,7 +123,7 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-400">{dateStr} <span className="text-slate-300">·</span> updated just now</p>
-          <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{greeting()}, {firstName} 👋</h1>
+          <h1 className="mt-1.5 text-[28px] font-bold tracking-tight text-slate-900 dark:text-white">{greeting()}, <span className="font-display font-medium italic text-brand-600 dark:text-brand-400">{firstName}</span>.</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {QUICK_ACTIONS.map((a, i) => (
@@ -131,7 +141,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {cards.map((c) => (
           <Link key={c.label} to={c.to} className="block rounded-2xl outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20">
-            <StatCard icon={c.icon} label={c.label} value={c.value} sub={c.sub} accent={c.accent} tone={c.tone} />
+            <StatCard icon={c.icon} label={c.label} value={c.value} sub={c.sub} accent={c.accent} tone={c.tone} series={c.series} spark={c.spark} delta={c.delta} />
           </Link>
         ))}
       </div>
