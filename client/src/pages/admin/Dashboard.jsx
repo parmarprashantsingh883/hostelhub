@@ -14,7 +14,7 @@ import {
   inr, fmtDate,
 } from '../../components/ui';
 import { CHART, BrandTooltip, axisTick, gridProps } from '../../components/ui/charts';
-import { StatDonut } from '../../components/dashboard/widgets';
+import { StatDonut, SegmentDonut, SegmentLegend } from '../../components/dashboard/widgets';
 import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
 import ActivityFeed from '../../components/dashboard/ActivityFeed';
 import { useAuth } from '../../context/AuthContext';
@@ -81,6 +81,14 @@ export default function AdminDashboard() {
   const rev = charts.revenueByMonth || [];
   const collectionPct = s.monthBilled > 0 ? Math.round((s.monthCollection / s.monthBilled) * 100) : 100;
   const band = healthBand(health.score);
+
+  // Room status breakdown for the "Where they are now." donut.
+  const roomStatus = [
+    { label: 'Occupied', value: s.occupiedRooms || 0, color: '#0d9488' },
+    { label: 'Partially filled', value: s.partialRooms || 0, color: '#f59e0b' },
+    { label: 'Vacant', value: s.vacantRooms || 0, color: '#94a3b8' },
+    { label: 'Maintenance', value: s.maintenanceRooms || 0, color: '#52525b' },
+  ].filter((seg) => seg.value > 0);
 
   // Real revenue trend for the hero card's sparkline + month-over-month delta.
   const revSeries = rev.map((r) => r.revenue);
@@ -197,6 +205,20 @@ export default function AdminDashboard() {
             </div>
           ) : <EmptyState title="No payments yet" message="Revenue appears once rents are paid." />}
         </Card>
+      </div>
+
+      {/* ── Room status breakdown ────────────────────────── */}
+      <div className="rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-card dark:bg-surface dark:border-white/10 dark:shadow-none">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">Rooms</p>
+        <h3 className="mt-0.5 font-display text-xl italic text-slate-900 dark:text-white">Where they are now.</h3>
+        {roomStatus.length ? (
+          <div className="mt-4 flex flex-col items-center gap-8 sm:flex-row sm:gap-12">
+            <SegmentDonut segments={roomStatus} centerLabel="Total rooms" />
+            <SegmentLegend segments={roomStatus} />
+          </div>
+        ) : (
+          <EmptyState title="No rooms yet" message="Add rooms to see the occupancy breakdown." />
+        )}
       </div>
 
       {/* ── Alerts + pending rent ────────────────────────── */}

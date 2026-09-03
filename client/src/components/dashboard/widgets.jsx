@@ -3,6 +3,67 @@ import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const ARC = { brand: 'var(--ring-brand)', green: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
 
+/**
+ * Multi-segment donut — the "status breakdown" ring. `segments` is
+ * [{ label, value, color }]; renders each as an arc, with a big total + label
+ * in the centre. Pair it with a <SegmentLegend> for the count/percent list.
+ */
+export function SegmentDonut({ segments = [], size = 168, stroke = 16, centerLabel = 'TOTAL' }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const sum = segments.reduce((s, seg) => s + (seg.value || 0), 0);
+
+  const [grow, setGrow] = useState(0);
+  useEffect(() => { const id = requestAnimationFrame(() => setGrow(1)); return () => cancelAnimationFrame(id); }, [sum]);
+
+  // Chain each non-empty segment clockwise from the top (svg is -rotate-90).
+  let acc = 0;
+  const arcs = segments.filter((s) => s.value > 0).map((seg) => {
+    const len = sum ? (seg.value / sum) * c : 0;
+    const arc = { color: seg.color, len: len * grow, off: -acc * grow };
+    acc += len;
+    return arc;
+  });
+
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--ring-track)" strokeWidth={stroke} />
+        {arcs.map((a, i) => (
+          <circle
+            key={i}
+            cx={size / 2} cy={size / 2} r={r} fill="none"
+            stroke={a.color} strokeWidth={stroke}
+            strokeDasharray={`${a.len} ${c - a.len}`} strokeDashoffset={a.off}
+            style={{ transition: 'stroke-dasharray .9s cubic-bezier(.16,1,.3,1), stroke-dashoffset .9s cubic-bezier(.16,1,.3,1)' }}
+          />
+        ))}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="font-display text-[36px] font-semibold leading-none tabular-nums text-slate-900 dark:text-white">{sum}</span>
+        <span className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-slate-400">{centerLabel}</span>
+      </div>
+    </div>
+  );
+}
+
+/** The legend rows beside a SegmentDonut: colored dot · label · count · percent. */
+export function SegmentLegend({ segments = [] }) {
+  const sum = segments.reduce((s, seg) => s + (seg.value || 0), 0) || 1;
+  return (
+    <div className="flex-1 divide-y divide-slate-100 dark:divide-white/10">
+      {segments.map((seg) => (
+        <div key={seg.label} className="flex items-center gap-3 py-2.5">
+          <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ backgroundColor: seg.color }} />
+          <span className="flex-1 text-sm text-slate-600 dark:text-slate-300">{seg.label}</span>
+          <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-white">{seg.value}</span>
+          <span className="w-12 text-right text-xs tabular-nums text-slate-400">{Math.round((seg.value / sum) * 100)}%</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** SVG progress donut with a centered value. Works on light or dark cards. */
 export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', track = 'var(--ring-track)', centerClass = 'text-slate-900 dark:text-white', subClass = 'text-slate-400', label }) {
   const r = (size - stroke) / 2;
