@@ -13,7 +13,7 @@ export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
   // Graphite primary (dark mode flips to a white button — sharp, Vercel-style)
-  primary: 'bg-night-900 text-white hover:bg-night-800 shadow-[0_2px_8px_-2px_rgba(24,24,27,0.45)] hover:shadow-[0_6px_16px_-4px_rgba(24,24,27,0.5)] focus-visible:ring-brand-500/40 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200',
+  primary: 'bg-night-900 text-white hover:bg-night-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_2px_8px_-2px_rgba(24,24,27,0.45)] hover:shadow-[0_6px_16px_-4px_rgba(24,24,27,0.5)] focus-visible:ring-brand-500/40 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40 dark:bg-surface2 dark:text-slate-200 dark:border-white/15 dark:hover:bg-white/5 dark:hover:border-white/25 dark:shadow-none',
   danger: 'bg-rose-50 text-rose-600 border border-rose-500/25 hover:bg-rose-100 focus-visible:ring-rose-400/40 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-400/20 dark:hover:bg-rose-500/25',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40 dark:text-slate-300 dark:hover:bg-white/10',
@@ -449,7 +449,11 @@ export function EmptyState({ icon: Icon = Inbox, title = 'Nothing here yet', mes
  * KPI tile — label + icon chip on top, a large tabular value below.
  * `accent` renders the navy hero treatment for a featured metric.
  */
-export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
+export function StatCard({ icon: Icon, label, value, sub, accent = false, tone = 'zinc' }) {
+  const chipTones = {
+    zinc: 'bg-zinc-100 text-zinc-500 ring-zinc-200/70 dark:bg-white/5 dark:text-zinc-400 dark:ring-white/10',
+    ember: 'bg-brand-500/10 text-brand-600 ring-brand-500/20 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25',
+  };
   if (accent) {
     return (
       <motion.div
@@ -468,13 +472,13 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
           )}
         </div>
         <p className="mt-2.5 text-[28px] leading-none font-bold tracking-tight tabular-nums truncate">{value}</p>
-        {sub && <p className="mt-2 text-xs text-white/55">{sub}</p>}
+        {sub && <p className="mt-2 text-xs font-medium text-brand-300/90">{sub}</p>}
       </motion.div>
     );
   }
   return (
     <motion.div
-      className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card transition-shadow duration-200 hover:shadow-soft dark:bg-surface dark:border-white/10 dark:shadow-none"
+      className="group relative overflow-hidden rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-card transition-all duration-200 hover:shadow-soft hover:border-zinc-300 dark:bg-surface dark:border-white/10 dark:shadow-none dark:hover:border-white/20"
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -482,7 +486,7 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
     >
       <div className="flex items-start justify-between gap-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/70 shrink-0 transition-transform duration-200 group-hover:scale-105 dark:bg-white/5 dark:text-zinc-400 dark:ring-white/10">
+        <span className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 shrink-0 transition-transform duration-200 group-hover:scale-105 ${chipTones[tone] || chipTones.zinc}`}>
           <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
         </span>
       </div>

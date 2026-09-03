@@ -16,29 +16,34 @@ import CommandPalette, { openCommandPalette } from '../components/CommandPalette
 const NAV = {
   admin: [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { group: 'Property' },
     { to: '/admin/rooms', label: 'Rooms', icon: DoorOpen },
     { to: '/admin/occupancy', label: 'Occupancy', icon: BedDouble },
+    { to: '/admin/maintenance', label: 'Maintenance', icon: Hammer },
+    { to: '/admin/assets', label: 'Assets', icon: Package },
+    { to: '/admin/inspections', label: 'Inspections', icon: ClipboardCheck },
+    { group: 'People' },
     { to: '/admin/tenants', label: 'Tenants', icon: Users },
     { to: '/admin/leads', label: 'Leads', icon: UserPlus },
     { to: '/admin/bookings', label: 'Bookings', icon: CalendarCheck },
     { to: '/admin/staff', label: 'Staff', icon: UserCog },
     { to: '/admin/attendance', label: 'Attendance', icon: CalendarClock },
     { to: '/admin/access', label: 'Staff Access', icon: ShieldCheck },
+    { to: '/admin/visitors', label: 'Visitors', icon: ClipboardList },
+    { group: 'Money' },
     { to: '/admin/rents', label: 'Rent & Payments', icon: Banknote },
     { to: '/admin/expenses', label: 'Expenses & P&L', icon: Wallet },
-    { to: '/admin/approvals', label: 'Approvals', icon: ListChecks },
     { to: '/admin/settlements', label: 'Settlements', icon: HandCoins },
-    { to: '/admin/inspections', label: 'Inspections', icon: ClipboardCheck },
-    { to: '/admin/agreements', label: 'Agreements', icon: FileSignature },
+    { to: '/admin/approvals', label: 'Approvals', icon: ListChecks },
+    { to: '/admin/billing', label: 'Billing & Plan', icon: CreditCard },
+    { group: 'Operations' },
     { to: '/admin/complaints', label: 'Complaints', icon: Wrench },
-    { to: '/admin/maintenance', label: 'Maintenance', icon: Hammer },
-    { to: '/admin/assets', label: 'Assets', icon: Package },
+    { to: '/admin/agreements', label: 'Agreements', icon: FileSignature },
     { to: '/admin/notices', label: 'Notices', icon: Megaphone },
-    { to: '/admin/visitors', label: 'Visitors', icon: ClipboardList },
     { to: '/admin/food-menu', label: 'Food Menu', icon: UtensilsCrossed },
     { to: '/admin/reports', label: 'Reports', icon: FileBarChart },
+    { group: 'System' },
     { to: '/admin/settings', label: 'Settings', icon: SettingsIcon },
-    { to: '/admin/billing', label: 'Billing & Plan', icon: CreditCard },
     { to: '/admin/audit', label: 'Audit log', icon: ScrollText },
     { to: '/admin/recyclebin', label: 'Recycle bin', icon: Trash2 },
   ],
@@ -144,6 +149,32 @@ function NotificationBell() {
 
 const ROLE_LABEL = { admin: 'Admin', tenant: 'Resident', staff: 'Staff' };
 
+function NavItem({ item, onPick }) {
+  const { to, label, icon: Icon, end } = item;
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      onClick={onPick}
+      className={({ isActive }) =>
+        `group relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium transition-all duration-150 ${
+          isActive
+            ? 'bg-white/[0.07] text-white ring-1 ring-inset ring-white/[0.06]'
+            : 'text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100'
+        }`
+      }
+    >
+      {({ isActive }) => (
+        <>
+          {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4.5 w-[3px] rounded-r-full bg-brand-500 shadow-[0_0_10px_rgba(249,115,22,0.6)]" />}
+          <Icon className={`w-[17px] h-[17px] shrink-0 ${isActive ? 'text-brand-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} strokeWidth={2.1} />
+          {label}
+        </>
+      )}
+    </NavLink>
+  );
+}
+
 /** Admin-only strip under the topbar: trial countdown / lapsed-subscription alert. */
 function SubscriptionBanner() {
   const { user } = useAuth();
@@ -198,11 +229,11 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen flex">
-      <CommandPalette nav={nav} role={user?.role} />
+      <CommandPalette nav={nav.filter((n) => !n.group)} role={user?.role} />
       {sidebarOpen && <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Sidebar — clean light SaaS rail; deep surface in dark mode */}
-      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-[#161618] border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-200 dark:bg-sidebar ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:sticky top-0 h-screen w-64 bg-gradient-to-b from-[#1a1a1d] via-[#161618] to-[#121214] border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-200 dark:bg-sidebar ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Brand */}
         <div className="h-16 flex items-center gap-3 px-5">
           <LogoMark size={40} className="drop-shadow-[0_6px_16px_rgba(49,46,129,0.35)]" />
@@ -214,29 +245,13 @@ export default function DashboardLayout() {
         </div>
 
         <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 pt-2 pb-4 space-y-0.5">
-          {nav.map(({ to, label, icon: Icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) =>
-                `group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] font-medium transition-all duration-150 ${
-                  isActive
-                    ? 'bg-white/[0.08] text-white'
-                    : 'text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-100'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-brand-500" />}
-                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-brand-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} strokeWidth={2.1} />
-                  {label}
-                </>
-              )}
-            </NavLink>
-          ))}
+          {nav.map((item) => (item.group ? (
+            <p key={item.group} className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600 select-none">
+              {item.group}
+            </p>
+          ) : (
+            <NavItem key={item.to} item={item} onPick={() => setSidebarOpen(false)} />
+          )))}
         </nav>
 
         <div className="p-3 border-t border-white/[0.06]">

@@ -88,8 +88,8 @@ export default function AdminDashboard() {
     { to: '/admin/rooms', icon: DoorOpen, label: 'Total rooms', value: s.totalRooms, sub: `${s.occupiedBeds}/${s.totalBeds} beds` },
     { to: '/admin/rooms', icon: BedDouble, label: 'Occupied', value: s.occupiedRooms, sub: `${s.occupancyPct}% occupancy` },
     { to: '/admin/rooms', icon: Home, label: 'Vacant', value: s.vacantRooms, sub: s.maintenanceRooms ? `${s.maintenanceRooms} under upkeep` : 'Ready to fill' },
-    { to: '/admin/rents', icon: Banknote, label: 'Revenue (mo)', value: inr(s.monthCollection), sub: `${collectionPct}% collected` },
-    { to: '/admin/rents', icon: Clock, label: 'Pending rent', value: inr(s.monthPending), sub: `${s.unpaidCount} unpaid · ${s.overdueCount} overdue` },
+    { to: '/admin/rents', icon: Banknote, label: 'Revenue (mo)', value: inr(s.monthCollection), sub: `${collectionPct}% collected`, accent: true },
+    { to: '/admin/rents', icon: Clock, label: 'Pending rent', value: inr(s.monthPending), sub: `${s.unpaidCount} unpaid · ${s.overdueCount} overdue`, tone: 'ember' },
     { to: '/admin/complaints', icon: Wrench, label: 'Open complaints', value: s.openComplaints, sub: `${s.highPriorityComplaints} high priority` },
     { to: '/admin/visitors', icon: ClipboardList, label: 'Visitors today', value: s.visitorsToday, sub: `${s.visitorsInside} inside now` },
   ];
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {cards.map((c) => (
           <Link key={c.label} to={c.to} className="block rounded-2xl outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20">
-            <StatCard icon={c.icon} label={c.label} value={c.value} sub={c.sub} />
+            <StatCard icon={c.icon} label={c.label} value={c.value} sub={c.sub} accent={c.accent} tone={c.tone} />
           </Link>
         ))}
       </div>
