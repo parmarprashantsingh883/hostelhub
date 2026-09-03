@@ -12,7 +12,8 @@ export { Reveal, Stagger, StaggerItem, TableRow, AnimatedNumber, EASE } from './
 
 /* ── Button ─────────────────────────────────────────────────────────── */
 const btnVariants = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-500 shadow-[0_2px_8px_-2px_rgba(79,70,229,0.45)] hover:shadow-[0_6px_16px_-4px_rgba(79,70,229,0.5)] focus-visible:ring-brand-500/40 dark:bg-brand-500 dark:hover:bg-brand-400',
+  // Graphite primary (dark mode flips to a white button — sharp, Vercel-style)
+  primary: 'bg-night-900 text-white hover:bg-night-800 shadow-[0_2px_8px_-2px_rgba(24,24,27,0.45)] hover:shadow-[0_6px_16px_-4px_rgba(24,24,27,0.5)] focus-visible:ring-brand-500/40 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] focus-visible:ring-slate-400/40 dark:bg-surface2 dark:text-slate-200 dark:border-white/15 dark:hover:bg-white/5 dark:hover:border-white/25 dark:shadow-none',
   danger: 'bg-rose-50 text-rose-600 border border-rose-500/25 hover:bg-rose-100 focus-visible:ring-rose-400/40 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-400/20 dark:hover:bg-rose-500/25',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40 dark:text-slate-300 dark:hover:bg-white/10',
@@ -461,7 +462,7 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
         <div className="flex items-start justify-between gap-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/60">{label}</p>
           {Icon && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/20 shrink-0">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-brand-400 ring-1 ring-white/15 shrink-0">
               <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
             </span>
           )}
@@ -481,7 +482,7 @@ export function StatCard({ icon: Icon, label, value, sub, accent = false }) {
     >
       <div className="flex items-start justify-between gap-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100 shrink-0 transition-transform duration-200 group-hover:scale-105 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-white/10">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/70 shrink-0 transition-transform duration-200 group-hover:scale-105 dark:bg-white/5 dark:text-zinc-400 dark:ring-white/10">
           <Icon className="h-[18px] w-[18px]" strokeWidth={2.1} />
         </span>
       </div>

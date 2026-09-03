@@ -25,7 +25,7 @@ function BedPills({ room }) {
       {pills.map((p, i) => {
         if (p.k === 'occ') {
           return (
-            <span key={i} title={p.name} className="grid h-7 w-7 place-items-center rounded-md bg-brand-600 text-[10px] font-bold text-white">
+            <span key={i} title={p.name} className="grid h-7 w-7 place-items-center rounded-md bg-night-900 text-[10px] font-bold text-white">
               {initials(p.name)}
             </span>
           );

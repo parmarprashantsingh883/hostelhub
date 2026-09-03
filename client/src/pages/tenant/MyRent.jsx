@@ -97,7 +97,7 @@ function CheckoutModal({ checkout, onClose, onDone }) {
                         onClick={() => setUpiView(v.id)}
                         className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                           upiView === v.id
-                            ? 'bg-brand-600 text-white'
+                            ? 'bg-night-900 text-white'
                             : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'
                         }`}
                       >

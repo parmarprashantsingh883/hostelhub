@@ -21,7 +21,7 @@ function BedMap({ rooms, onAssign }) {
   return (
     <div className="space-y-7">
       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
-        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-brand-600" /> Occupied</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-night-900" /> Occupied</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md border border-dashed border-slate-300 bg-white dark:bg-surface" /> Vacant</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-amber-100 ring-1 ring-amber-200" /> Maintenance</span>
       </div>
@@ -54,7 +54,7 @@ function BedMap({ rooms, onAssign }) {
                       {Array.from({ length: r.capacity }).map((_, i) => {
                         const t = r.assignedTenants?.[i];
                         if (maint) return <span key={i} className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-500 ring-1 ring-amber-200"><Wrench className="h-4 w-4" /></span>;
-                        if (t) return <span key={i} title={t.name} className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-[11px] font-bold text-white" aria-label={`Bed occupied by ${t.name}`}>{initials(t.name)}</span>;
+                        if (t) return <span key={i} title={t.name} className="flex h-11 w-11 items-center justify-center rounded-xl bg-night-900 text-[11px] font-bold text-white" aria-label={`Bed occupied by ${t.name}`}>{initials(t.name)}</span>;
                         return (
                           <button key={i} onClick={() => onAssign(r)} title="Assign a tenant to this bed" aria-label="Assign a tenant to this bed"
                             className="flex h-11 w-11 items-center justify-center rounded-xl border border-dashed border-slate-300 text-slate-300 transition-colors hover:border-brand-400 hover:bg-brand-50 dark:hover:bg-white/5 hover:text-brand-500">
@@ -201,8 +201,8 @@ export default function Rooms() {
         action={
           <div className="flex items-center gap-2">
             <div className="inline-flex rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface p-1 text-sm">
-              <button onClick={() => setView('beds')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'beds' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Beds</button>
-              <button onClick={() => setView('table')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'table' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Table</button>
+              <button onClick={() => setView('beds')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'beds' ? 'bg-night-900 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Beds</button>
+              <button onClick={() => setView('table')} className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${view === 'table' ? 'bg-night-900 text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}`}>Table</button>
             </div>
             <Button onClick={() => setForm({ ...EMPTY_FORM })}>
               <Plus className="w-4 h-4" /> Add room

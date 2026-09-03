@@ -5,21 +5,21 @@
 
 @theme {
   /* Dark theme surfaces — clear elevation: canvas < sidebar < card < raised */
-  --color-night-950: #0b1018;
-  --color-sidebar: #090b10;
-  --color-surface: #1b212c;   /* cards — clearly lifted off the canvas */
-  --color-surface2: #272e3b;  /* inputs / raised tiles */
+  --color-night-950: #0c0c0e;
+  --color-sidebar: #111113;
+  --color-surface: #1b1b1f;   /* cards — clearly lifted off the canvas */
+  --color-surface2: #26262b;  /* inputs / raised tiles */
   /* Brand — professional blue (replaces the old ink-navy; light surfaces stay white) */
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+  --color-brand-900: #7c2d12;
 
   /* Secondary — cool light surfaces */
   --color-cream-50: #f8fafc;
@@ -42,8 +42,8 @@
   --font-mono: 'Spline Sans Mono', ui-monospace, 'SFMono-Regular', monospace;
 
   /* Navy near-black for buttons / high-contrast bands, and a cool surface */
-  --color-night-900: #161d2b;
-  --color-night-800: #232c3f;
+  --color-night-900: #18181b;
+  --color-night-800: #27272a;
   --color-paper: #eef1f5;
 
   /* Layered shadows (cool slate tint) — more depth, still restrained */
@@ -66,13 +66,13 @@ html {
 /* Data-viz colours — reactive to dark mode via CSS variables (used by charts
    and the SVG progress donut). */
 :root {
-  --chart-line: #4f46e5;
-  --chart-fill: #6366f1;
-  --chart-faint: #c7d2fe;
-  --chart-grid: #eef0f4;
+  --chart-line: #ea580c;
+  --chart-fill: #f97316;
+  --chart-faint: #fed7aa;
+  --chart-grid: #ececea;
   --chart-axis: #94a3b8;
-  --ring-track: #eef0f4;
-  --ring-brand: #4f46e5;
+  --ring-track: #ececea;
+  --ring-brand: #ea580c;
 
   /* Toasts — soft elevated card; flips with .dark so the toaster re-themes. */
   --toast-bg: #ffffff;
@@ -81,13 +81,13 @@ html {
   --toast-shadow: 0 18px 40px -16px rgb(16 24 40 / 0.24), 0 6px 16px -8px rgb(16 24 40 / 0.14);
 }
 .dark {
-  --chart-line: #818cf8;
-  --chart-fill: #3b82f6;
-  --chart-faint: #312e81;
+  --chart-line: #fb923c;
+  --chart-fill: #f97316;
+  --chart-faint: #7c2d12;
   --chart-grid: rgba(255, 255, 255, 0.07);
   --chart-axis: #64748b;
   --ring-track: rgba(255, 255, 255, 0.08);
-  --ring-brand: #818cf8;
+  --ring-brand: #fb923c;
 
   --toast-bg: #272e3b;
   --toast-fg: #e2e8f0;
@@ -97,7 +97,7 @@ html {
 
 body {
   @apply text-slate-900;
-  background-color: #f7f8fa; /* cool near-white canvas — crisp SaaS */
+  background-color: #f5f5f4; /* warm stone canvas — graphite & ember */
   /* Inter: tabular-ish lining, subtle optical tracking for a crisp SaaS feel */
   font-feature-settings: 'cv11', 'ss01';
   letter-spacing: -0.006em;
@@ -110,7 +110,7 @@ h1, h2, h3, h4 {
 
 /* ── Dark theme ───────────────────────────────────────────────── */
 .dark body {
-  background-color: #0c0f15; /* deep, slightly-cool canvas */
+  background-color: #0d0d0f; /* graphite-black canvas */
   @apply text-slate-200;
 }
 .dark ::selection {
@@ -132,8 +132,8 @@ h1, h2, h3 {
 
 /* Light scrollbars */
 .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-.scrollbar-thin::-webkit-scrollbar-thumb { background: #d3d7de; border-radius: 9999px; }
-.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #b3b9c4; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #d6d6d3; border-radius: 9999px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #b3b3af; }
 
 /* Subtle motion */
 @keyframes fade-in-up {
@@ -152,12 +152,13 @@ h1, h2, h3 {
 /* Ink-navy hero surface for featured cards / bands — gradient + faint dot grid
    layered in a single declaration so neither overrides the other. */
 .surface-hero {
-  /* Deep indigo band — the app's one saturated accent card */
-  background-color: #3730a3;
+  /* Graphite slab with a faint ember glow — the app's one dark accent card */
+  background-color: #18181b;
   background-image:
-    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.08) 1px, transparent 0),
-    radial-gradient(125% 140% at 0% 0%, #6366f1 0%, #4f46e5 48%, #312e81 100%);
-  background-size: 22px 22px, 100% 100%;
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.06) 1px, transparent 0),
+    radial-gradient(120% 150% at 100% 0%, rgb(249 115 22 / 0.22) 0%, rgb(24 24 27 / 0) 46%),
+    linear-gradient(135deg, #202024 0%, #18181b 55%, #101012 100%);
+  background-size: 22px 22px, 100% 100%, 100% 100%;
 }
 /* Subtle top-light sheen on light cards */
 .sheen-top::before {
