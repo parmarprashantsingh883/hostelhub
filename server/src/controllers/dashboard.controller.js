@@ -6,6 +6,7 @@ import Visitor from '../models/Visitor.js';
 import Notice from '../models/Notice.js';
 import FoodMenu from '../models/FoodMenu.js';
 import Booking from '../models/Booking.js';
+import Expense from '../models/Expense.js';
 import Organization from '../models/Organization.js';
 import { getSettings } from '../services/settings.service.js';
 import { asyncHandler } from '../middleware/error.middleware.js';
@@ -23,6 +24,8 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
 
   // Last-8-weeks activity window for the KPI sparklines.
   const eightWeeksAgo = new Date(now); eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 56);
+  // 12-month window for the cash-flow chart (client buckets by day/week/month).
+  const yearAgo = new Date(now); yearAgo.setMonth(yearAgo.getMonth() - 12);
 
   const [
     totalTenants, rooms, monthRents,
@@ -31,6 +34,7 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
     visitorsToday, visitorsInside, visitorsPending,
     pendingRentList, recentNotices, foodAgg,
     tenantDates, complaintDates, visitorDates, rentDates,
+    rentFlow, expenseFlow,
   ] = await Promise.all([
     User.countDocuments({ role: 'tenant', isActive: true, 'tenantProfile.status': 'active' }),
     Room.find({}, 'status capacity currentOccupancy'),
@@ -67,7 +71,15 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
     Complaint.find({ createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
     Visitor.find({ createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
     Rent.find({ createdAt: { $gte: eightWeeksAgo } }).select('createdAt').lean(),
+    // Cash-flow events for the movement chart (money in vs out, last 12 months).
+    Rent.find({ status: 'paid', paidAt: { $gte: yearAgo } }).select('paidAt totalAmount').lean(),
+    Expense.find({ date: { $gte: yearAgo } }).select('date amount').lean(),
   ]);
+
+  const cashflow = {
+    in: rentFlow.filter((r) => r.paidAt).map((r) => ({ d: r.paidAt, a: r.totalAmount })),
+    out: expenseFlow.map((e) => ({ d: e.date, a: e.amount })),
+  };
 
   // Bucket a list of dates into 8 weekly counts (oldest → newest).
   const weekly = (docs) => {
@@ -161,6 +173,7 @@ export const adminDashboard = asyncHandler(async (_req, res) => {
       recentPayments,
       recentComplaints,
       sparks,
+      cashflow,
       charts: {
         complaintByCategory: complaintByCategory.map((c) => ({ category: c._id, count: c.count })),
         revenueByMonth: revenueByMonth.map((r) => ({

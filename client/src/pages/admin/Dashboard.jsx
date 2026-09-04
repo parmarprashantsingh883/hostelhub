@@ -15,6 +15,7 @@ import {
 } from '../../components/ui';
 import { CHART, BrandTooltip, axisTick, gridProps } from '../../components/ui/charts';
 import { StatDonut, SegmentDonut, SegmentLegend } from '../../components/dashboard/widgets';
+import CashflowChart from '../../components/dashboard/CashflowChart';
 import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
 import ActivityFeed from '../../components/dashboard/ActivityFeed';
 import { useAuth } from '../../context/AuthContext';
@@ -74,7 +75,7 @@ export default function AdminDashboard() {
   }
   if (!data) return <EmptyState title="Could not load dashboard" />;
 
-  const { stats: s, health, pendingRent, recentNotices, recentComplaints, charts, sparks = {} } = data;
+  const { stats: s, health, pendingRent, recentNotices, recentComplaints, charts, sparks = {}, cashflow = { in: [], out: [] } } = data;
   const firstName = user?.name?.split(' ')[0] || 'there';
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long' });
@@ -174,37 +175,9 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card
-          title="Revenue"
-          className="lg:col-span-2"
-          action={<Link to="/admin/rents" className="font-mono text-[10px] uppercase tracking-wider text-brand-600 hover:text-brand-700">View rents</Link>}
-        >
-          {/* paid vs unpaid chips */}
-          <div className="mb-4 flex flex-wrap gap-2 text-xs">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">{charts.paidVsUnpaid?.[0]?.value || 0} paid</span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 font-semibold text-rose-500 dark:bg-rose-500/15 dark:text-rose-300">{charts.paidVsUnpaid?.[1]?.value || 0} unpaid</span>
-            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 font-semibold text-brand-700 dark:bg-brand-500/20 dark:text-brand-200">{collectionPct}% collected</span>
-          </div>
-          {rev.length ? (
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={rev} margin={{ top: 8, right: 8, left: -6, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={CHART.primarySoft} stopOpacity={0.3} />
-                      <stop offset="100%" stopColor={CHART.primarySoft} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid {...gridProps} />
-                  <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
-                  <YAxis tick={axisTick} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} width={48} />
-                  <Tooltip cursor={{ stroke: CHART.primaryFaint }} content={<BrandTooltip money />} />
-                  <Area type="monotone" dataKey="revenue" stroke={CHART.primary} strokeWidth={2.5} fill="url(#revFill)" dot={{ r: 3, fill: CHART.primary, strokeWidth: 0 }} activeDot={{ r: 5 }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          ) : <EmptyState title="No payments yet" message="Revenue appears once rents are paid." />}
-        </Card>
+        <div className="lg:col-span-2">
+          <CashflowChart inEvents={cashflow.in} outEvents={cashflow.out} />
+        </div>
       </div>
 
       {/* ── Room status breakdown ────────────────────────── */}
