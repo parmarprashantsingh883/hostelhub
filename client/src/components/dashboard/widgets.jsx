@@ -64,11 +64,15 @@ export function SegmentLegend({ segments = [] }) {
   );
 }
 
-/** SVG progress donut with a centered value. Works on light or dark cards. */
-export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', track = 'var(--ring-track)', centerClass = 'text-slate-900 dark:text-white', subClass = 'text-slate-400', label }) {
+/**
+ * SVG progress donut with a centered value. `color` overrides the tone palette
+ * with an explicit stroke (e.g. a semantic health color) and adds a soft glow.
+ */
+export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone = 'brand', color, track = 'var(--ring-track)', centerClass = 'text-slate-900 dark:text-white', subClass = 'text-slate-400', label }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(100, value));
+  const arcColor = color || ARC[tone];
   // Draw the arc in on mount for a premium feel.
   const [drawn, setDrawn] = useState(0);
   useEffect(() => {
@@ -81,13 +85,13 @@ export function StatDonut({ value = 0, unit = '%', size = 140, stroke = 13, tone
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
         <circle
-          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={ARC[tone]} strokeWidth={stroke}
+          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={arcColor} strokeWidth={stroke}
           strokeLinecap="round" strokeDasharray={`${dash} ${c - dash}`}
-          style={{ transition: 'stroke-dasharray 0.9s cubic-bezier(0.16, 1, 0.3, 1)' }}
+          style={{ transition: 'stroke-dasharray 0.9s cubic-bezier(0.16, 1, 0.3, 1)', filter: `drop-shadow(0 0 5px ${arcColor}55)` }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={`font-display text-[28px] font-semibold leading-none tabular-nums ${centerClass}`}>
+        <span className={`font-display text-[32px] font-semibold leading-none tabular-nums ${centerClass}`}>
           {Math.round(value)}<span className="text-base align-top">{unit}</span>
         </span>
         {label && <span className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${subClass}`}>{label}</span>}

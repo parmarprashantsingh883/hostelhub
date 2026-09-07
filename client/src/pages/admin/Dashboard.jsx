@@ -31,10 +31,17 @@ const QUICK_ACTIONS = [
 ];
 
 function healthBand(score) {
-  if (score >= 85) return { label: 'Excellent', tone: 'green' };
-  if (score >= 70) return { label: 'Healthy', tone: 'blue' };
-  if (score >= 55) return { label: 'Fair', tone: 'yellow' };
-  return { label: 'Needs attention', tone: 'red' };
+  if (score >= 85) return { label: 'Excellent', tone: 'green', color: '#10b981' };
+  if (score >= 70) return { label: 'Healthy', tone: 'green', color: '#10b981' };
+  if (score >= 55) return { label: 'Fair', tone: 'yellow', color: '#f59e0b' };
+  return { label: 'Needs attention', tone: 'red', color: '#ef4444' };
+}
+
+// Semantic color for a single health factor (good ≥80 · watch 60–79 · low <60).
+function factorTone(pct) {
+  if (pct >= 80) return { bar: '#10b981', text: 'text-emerald-600 dark:text-emerald-400', chip: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300' };
+  if (pct >= 60) return { bar: '#f59e0b', text: 'text-amber-600 dark:text-amber-400', chip: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300' };
+  return { bar: '#ef4444', text: 'text-rose-500 dark:text-rose-400', chip: 'bg-rose-50 text-rose-500 dark:bg-rose-500/15 dark:text-rose-300' };
 }
 
 function MiniStat({ label, value, tone = 'slate' }) {
@@ -159,20 +166,48 @@ export default function AdminDashboard() {
       <div className="grid gap-5 lg:grid-cols-3">
         <Card title="PG Health Score">
           <div className="flex flex-col items-center">
-            <StatDonut value={health.score} unit="" size={150} stroke={14} label={band.label} />
+            <StatDonut value={health.score} unit="" size={158} stroke={13} color={band.color} label={band.label} />
             <Badge tone={band.tone}>{band.label} · {health.score}/100</Badge>
           </div>
-          <div className="mt-5 space-y-3">
-            {health.breakdown.map((b) => (
-              <div key={b.key}>
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 dark:text-slate-400">{b.key}</span>
-                  <span className="font-semibold tabular-nums text-slate-700 dark:text-slate-200">{b.pct}%</span>
-                </div>
-                <ProgressBar value={b.pct} />
+
+          {/* Auto-derived insight: call out the weakest factor (or celebrate). */}
+          {(() => {
+            const weakest = [...health.breakdown].sort((a, b) => a.pct - b.pct)[0];
+            const t = factorTone(weakest.pct);
+            return weakest.pct < 80 ? (
+              <div className={`mt-4 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium ${t.chip}`}>
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                <span><b>{weakest.key}</b> is dragging your score — {weakest.pct}%</span>
               </div>
-            ))}
+            ) : (
+              <div className="mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Every factor is in good shape.
+              </div>
+            );
+          })()}
+
+          {/* Factor breakdown — semantic colors + weight chip + 80% target tick. */}
+          <div className="mt-5 space-y-3.5">
+            {health.breakdown.map((b) => {
+              const t = factorTone(b.pct);
+              return (
+                <div key={b.key}>
+                  <div className="mb-1.5 flex items-center gap-2 text-xs">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: t.bar }} />
+                    <span className="text-slate-600 dark:text-slate-300">{b.key}</span>
+                    <span className="rounded bg-slate-100 px-1 py-px font-mono text-[9px] font-medium text-slate-400 dark:bg-white/10 dark:text-slate-500">{b.weight}%</span>
+                    <span className={`ml-auto font-semibold tabular-nums ${t.text}`}>{b.pct}%</span>
+                  </div>
+                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${b.pct}%`, background: t.bar }} />
+                    {/* target tick at 80% */}
+                    <span className="absolute top-0 h-full w-px bg-slate-300/70 dark:bg-white/20" style={{ left: '80%' }} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
+          <p className="mt-3 text-[10.5px] text-slate-400">Bars vs the 80% target line · weight = impact on score</p>
         </Card>
 
         <div className="lg:col-span-2">
