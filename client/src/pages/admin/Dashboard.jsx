@@ -31,15 +31,15 @@ const QUICK_ACTIONS = [
 ];
 
 function healthBand(score) {
-  if (score >= 85) return { label: 'Excellent', tone: 'green', color: '#10b981' };
-  if (score >= 70) return { label: 'Healthy', tone: 'green', color: '#10b981' };
+  if (score >= 85) return { label: 'Excellent', tone: 'indigo', color: '#f97316' };
+  if (score >= 70) return { label: 'Healthy', tone: 'indigo', color: '#f97316' };
   if (score >= 55) return { label: 'Fair', tone: 'yellow', color: '#f59e0b' };
   return { label: 'Needs attention', tone: 'red', color: '#ef4444' };
 }
 
 // Semantic color for a single health factor (good ≥80 · watch 60–79 · low <60).
 function factorTone(pct) {
-  if (pct >= 80) return { bar: '#10b981', text: 'text-emerald-600 dark:text-emerald-400', chip: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300' };
+  if (pct >= 80) return { bar: '#f97316', text: 'text-brand-600 dark:text-brand-400', chip: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300' };
   if (pct >= 60) return { bar: '#f59e0b', text: 'text-amber-600 dark:text-amber-400', chip: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300' };
   return { bar: '#ef4444', text: 'text-rose-500 dark:text-rose-400', chip: 'bg-rose-50 text-rose-500 dark:bg-rose-500/15 dark:text-rose-300' };
 }
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
 
   // Room status breakdown for the "Where they are now." donut.
   const roomStatus = [
-    { label: 'Occupied', value: s.occupiedRooms || 0, color: '#0d9488' },
+    { label: 'Occupied', value: s.occupiedRooms || 0, color: '#f97316' },
     { label: 'Partially filled', value: s.partialRooms || 0, color: '#f59e0b' },
     { label: 'Vacant', value: s.vacantRooms || 0, color: '#94a3b8' },
     { label: 'Maintenance', value: s.maintenanceRooms || 0, color: '#52525b' },
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
 
   // Summary cards (clickable)
   const cards = [
-    { to: '/admin/tenants', icon: Users, label: 'Total tenants', value: s.totalTenants, sub: 'Active residents', series: hasSeries(sparks.tenants) ? sparks.tenants : null, spark: '#0d9488' },
+    { to: '/admin/tenants', icon: Users, label: 'Total tenants', value: s.totalTenants, sub: 'Active residents', series: hasSeries(sparks.tenants) ? sparks.tenants : null, spark: '#64748b' },
     { to: '/admin/rooms', icon: DoorOpen, label: 'Total rooms', value: s.totalRooms, sub: `${s.occupiedBeds}/${s.totalBeds} beds` },
     { to: '/admin/rooms', icon: BedDouble, label: 'Occupied', value: s.occupiedRooms, sub: `${s.occupancyPct}% occupancy` },
     { to: '/admin/rooms', icon: Home, label: 'Vacant', value: s.vacantRooms, sub: s.maintenanceRooms ? `${s.maintenanceRooms} under upkeep` : 'Ready to fill' },
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
                 <span><b>{weakest.key}</b> is dragging your score — {weakest.pct}%</span>
               </div>
             ) : (
-              <div className="mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+              <div className="mt-4 flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2 text-xs font-medium text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Every factor is in good shape.
               </div>
             );

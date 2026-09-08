@@ -4,7 +4,7 @@ import { inr } from '../ui/index.jsx';
 
 /**
  * The "Money in, money out." movement chart — modeled on the Signet dashboard.
- * A single smooth teal line = rent collected per period, with a soft gradient
+ * A single smooth ember line = rent collected per period, with a soft gradient
  * fill and hollow dots; the dark tooltip reveals the in/out/net split on hover.
  * Daily / Weekly / Monthly re-bucket the same real events client-side.
  */
@@ -14,7 +14,7 @@ const MODES = [
   { key: 'monthly', label: 'Monthly', unit: 'LAST 12 MONTHS' },
 ];
 
-const IN = '#0d9488';   // teal — money in (collected)
+const IN = '#f97316';   // ember — money in (collected)
 const OUT = '#1e293b';  // slate ink — money out (expenses)
 
 function buildBuckets(mode) {
@@ -76,7 +76,7 @@ function FlowTooltip({ active, payload, label }) {
         </div>
         <div className="mt-1 flex items-center justify-between gap-6 border-t border-white/10 pt-1">
           <span className="text-white/70">Net</span>
-          <span className={`font-bold tabular-nums ${d.net >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>{inr(d.net)}</span>
+          <span className={`font-bold tabular-nums ${d.net >= 0 ? 'text-brand-300' : 'text-rose-300'}`}>{inr(d.net)}</span>
         </div>
       </div>
     </div>

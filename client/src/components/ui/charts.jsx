@@ -13,7 +13,7 @@ export const CHART = {
   grid: 'var(--chart-grid)',
   axis: 'var(--chart-axis)',
   // Categorical series — navy-anchored, cohesive.
-  series: ['var(--chart-line)', '#6e8099', '#f59e0b', '#0ea5e9', '#64748b', '#14b8a6'],
+  series: ['var(--chart-line)', '#6e8099', '#f59e0b', '#0ea5e9', '#64748b', '#8b5cf6'],
   // Occupancy semantics
   occupancy: { Occupied: '#2563eb', Partial: '#f59e0b', Vacant: '#cbd5e1', Maintenance: '#9ca3af' },
 };
