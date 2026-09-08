@@ -51,7 +51,7 @@ export default function MyRoom() {
   const facts = [
     { icon: Layers, label: 'Floor', value: room.floor, tone: 'bg-blue-50 dark:bg-sky-500/15 text-blue-600 dark:text-sky-300' },
     { icon: DoorOpen, label: 'Room type', value: <span className="capitalize">{room.roomType}</span>, tone: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300' },
-    { icon: Wallet, label: 'Monthly rent', value: inr(room.rentAmount), tone: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' },
+    { icon: Wallet, label: 'Monthly rent', value: inr(room.rentAmount), tone: 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300' },
     profile?.securityDeposit != null
       ? { icon: ShieldCheck, label: 'Deposit', value: inr(profile.securityDeposit), tone: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300' }
       : { icon: Calendar, label: 'Move-in', value: profile?.moveInDate ? fmtDate(profile.moveInDate) : '—', tone: 'bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300' },
@@ -61,30 +61,29 @@ export default function MyRoom() {
     <div className="space-y-6">
       <PageHeader title="My Room" subtitle="Everything about your accommodation" />
 
-      {/* ── Room hero ─────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-white shadow-soft">
-        <div className="pointer-events-none absolute -top-16 -right-8 w-64 h-64 rounded-full bg-sun-400/25 blur-3xl" />
-        <Home className="pointer-events-none absolute right-6 bottom-2 w-40 h-40 text-white/[0.04]" strokeWidth={1.5} />
-        <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      {/* ── Room hero — soft warm card (light, ember-tinted) ──────── */}
+      <div className="relative overflow-hidden rounded-3xl border border-brand-200/70 bg-gradient-to-br from-brand-50 to-amber-50/50 shadow-card dark:border-white/10 dark:from-brand-500/10 dark:to-white/[0.02]">
+        <div className="pointer-events-none absolute -top-12 -right-6 h-56 w-56 rounded-full bg-brand-400/15 blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-5 p-6 sm:flex-row sm:items-center sm:p-8">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-[0_8px_20px_-6px_rgba(36,48,71,0.7)]">
-              <DoorOpen className="w-7 h-7" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[0_8px_20px_-6px_rgba(249,115,22,0.55)]">
+              <DoorOpen className="h-7 w-7" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-slate-400">Your room</p>
-              <h2 className="text-3xl font-bold tracking-tight mt-0.5">Room {room.roomNumber}</h2>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-300">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-600/80 dark:text-brand-300/80">Your room</p>
+              <h2 className="mt-0.5 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Room {room.roomNumber}</h2>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <span className="capitalize">{room.roomType}</span>
-                <span className="w-1 h-1 rounded-full bg-slate-500" />
+                <span className="h-1 w-1 rounded-full bg-slate-300" />
                 <span>Floor {room.floor}</span>
-                {profile?.status && <span className="w-1 h-1 rounded-full bg-slate-500" />}
+                {profile?.status && <span className="h-1 w-1 rounded-full bg-slate-300" />}
                 {profile?.status && <StatusBadge status={profile.status} />}
               </div>
             </div>
           </div>
-          <div className="rounded-xl bg-white/10 backdrop-blur ring-1 ring-white/15 px-5 py-4">
-            <p className="text-xs uppercase tracking-wide text-slate-300">Monthly rent</p>
-            <p className="text-2xl font-bold tracking-tight mt-1">{inr(room.rentAmount)}</p>
+          <div className="rounded-xl bg-white/70 px-5 py-4 ring-1 ring-brand-100 dark:bg-white/5 dark:ring-white/10">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">Monthly rent</p>
+            <p className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{inr(room.rentAmount)}</p>
           </div>
         </div>
       </div>

@@ -114,42 +114,40 @@ export default function TenantDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-white shadow-soft">
-        <div className="pointer-events-none absolute -top-20 -right-10 w-72 h-72 rounded-full bg-sun-400/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 left-1/3 w-72 h-72 rounded-full bg-white/15 blur-3xl" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '26px 26px' }} />
-        <div className="relative p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      {/* ── Hero — soft warm card (light, ember-tinted) ──────────── */}
+      <div className="relative overflow-hidden rounded-3xl border border-brand-200/70 bg-gradient-to-br from-brand-50 to-amber-50/50 shadow-card dark:border-white/10 dark:from-brand-500/10 dark:to-white/[0.02]">
+        <div className="pointer-events-none absolute -top-12 -right-10 h-64 w-64 rounded-full bg-brand-400/15 blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 p-6 sm:p-8 lg:flex-row lg:items-center">
           <div>
-            <p className="text-sm text-slate-300">{greeting()},</p>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-0.5">{firstName} 👋</h1>
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-600/80 dark:text-brand-300/80">{greeting()}</p>
+            <h1 className="mt-0.5 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{firstName} 👋</h1>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 ring-1 ring-white/15 text-slate-100">
-                <Home className="w-3.5 h-3.5" /> {room ? `Room ${room.roomNumber} · Floor ${room.floor}` : 'No room assigned'}
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-slate-600 ring-1 ring-brand-100 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10">
+                <Home className="w-3.5 h-3.5 text-brand-500" /> {room ? `Room ${room.roomNumber} · Floor ${room.floor}` : 'No room assigned'}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 ring-1 ring-white/15 text-slate-100">
-                <Calendar className="w-3.5 h-3.5" /> {fmtDate(new Date())}
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-slate-600 ring-1 ring-brand-100 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10">
+                <Calendar className="w-3.5 h-3.5 text-brand-500" /> {fmtDate(new Date())}
               </span>
             </div>
           </div>
-          <div className="w-full lg:w-auto lg:min-w-[300px] rounded-xl bg-white/10 backdrop-blur ring-1 ring-white/15 p-5">
+          <div className="w-full lg:w-auto lg:min-w-[300px] rounded-2xl bg-white/70 p-5 ring-1 ring-brand-100 dark:bg-white/5 dark:ring-white/10">
             {dueRent ? (
               <>
-                <p className="text-xs uppercase tracking-wide text-slate-300">Rent due</p>
-                <p className="text-3xl font-bold tracking-tight mt-1">{inr(dueRent.totalAmount)}</p>
-                <p className="text-xs text-slate-300 mt-1">{MONTHS[dueRent.month - 1]} {dueRent.year} · due {fmtDate(dueRent.dueDate)}</p>
-                <Link to="/tenant/rent" className="mt-4 inline-flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-white text-brand-700 text-sm font-bold hover:bg-brand-50 transition-colors">
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">Rent due</p>
+                <p className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{inr(dueRent.totalAmount)}</p>
+                <p className="mt-1 text-xs text-slate-500">{MONTHS[dueRent.month - 1]} {dueRent.year} · due {fmtDate(dueRent.dueDate)}</p>
+                <Link to="/tenant/rent" className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-sm font-bold text-white transition-colors hover:bg-brand-700">
                   <CreditCard className="w-4 h-4" /> Pay now
                 </Link>
               </>
             ) : (
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-white/15 ring-1 ring-white/25 flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[0_8px_20px_-6px_rgba(249,115,22,0.55)]">
+                  <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-semibold">All dues cleared</p>
-                  <p className="text-xs text-slate-300 mt-0.5">No pending rent. You're all set 🎉</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">All dues cleared 🎉</p>
+                  <p className="mt-0.5 text-xs text-slate-500">No pending rent — you're all set.</p>
                 </div>
               </div>
             )}
