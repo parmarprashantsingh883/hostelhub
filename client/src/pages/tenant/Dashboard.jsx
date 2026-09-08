@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts';
 import {
   Banknote, Home, Wrench, Users, CreditCard, ArrowRight, Plus, UtensilsCrossed,
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { api, errMsg } from '../../api/client';
 import { Card, Skeleton, EmptyState, StatusBadge, StatCard, inr, fmtDate } from '../../components/ui';
+import { StatDonut } from '../../components/dashboard/widgets';
 import { useAuth } from '../../context/AuthContext';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -29,12 +30,24 @@ const QUICK = [
   { to: '/tenant/food-menu', label: 'Food menu', icon: UtensilsCrossed, tone: 'from-blue-500 to-indigo-500' },
 ];
 
-function RentTooltip({ active, payload, label }) {
+// Payment-status colors, reused by the bars and the tooltip.
+const RENT_STATUS = {
+  paid: { color: '#10b981', label: 'Paid' },
+  pending: { color: '#f59e0b', label: 'Pending' },
+  overdue: { color: '#f43f5e', label: 'Overdue' },
+};
+
+function RentTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  const st = RENT_STATUS[d.status] || RENT_STATUS.pending;
   return (
-    <div className="rounded-lg bg-brand-900 text-white text-xs px-3 py-2 shadow-pop">
-      <p className="font-semibold">{label}</p>
-      <p className="text-slate-300">{inr(payload[0].value)}</p>
+    <div className="rounded-xl bg-slate-900 px-3.5 py-2.5 text-white shadow-xl ring-1 ring-white/10">
+      <p className="text-[11px] font-semibold text-white/60">{d.name} {d.year}</p>
+      <p className="mt-1 text-sm font-semibold tabular-nums">{inr(d.amount)}</p>
+      <p className="mt-0.5 flex items-center gap-1.5 text-[11px]">
+        <span className="h-2 w-2 rounded-full" style={{ background: st.color }} /> {st.label}
+      </p>
     </div>
   );
 }
@@ -84,9 +97,11 @@ export default function TenantDashboard() {
   const firstName = user?.name?.split(' ')[0] || 'there';
 
   // Rent trend (chronological) + reliability
-  const rentTrend = [...recentRents].reverse().map((r) => ({ name: `${M3[r.month - 1]}`, amount: r.totalAmount }));
+  const rentTrend = [...recentRents].reverse().map((r) => ({ name: `${M3[r.month - 1]}`, year: r.year, amount: r.totalAmount, status: r.status }));
   const paidCount = recentRents.filter((r) => r.status === 'paid').length;
+  const pendingCount = recentRents.length - paidCount;
   const onTimePct = recentRents.length ? Math.round((paidCount / recentRents.length) * 100) : 100;
+  const payColor = onTimePct >= 80 ? '#10b981' : onTimePct >= 50 ? '#f59e0b' : '#f43f5e';
 
   return (
     <div className="space-y-6">
@@ -160,42 +175,45 @@ export default function TenantDashboard() {
             {rentTrend.length === 0 ? (
               <EmptyState icon={Banknote} title="No rent history yet" message="Your monthly rent trend appears here once generated." />
             ) : (
-              <div className="h-64 -ml-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={rentTrend} margin={{ top: 10, right: 8, left: -8, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="rentFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--chart-fill)" stopOpacity={0.32} />
-                        <stop offset="100%" stopColor="var(--chart-fill)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 12, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} />
-                    <Tooltip content={<RentTooltip />} cursor={{ stroke: 'var(--chart-faint)', strokeWidth: 1 }} />
-                    <Area type="monotone" dataKey="amount" stroke="var(--chart-line)" strokeWidth={2.5} fill="url(#rentFill)" dot={{ r: 3, fill: 'var(--chart-line)', strokeWidth: 0 }} activeDot={{ r: 5 }} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div className="h-56 -ml-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={rentTrend} margin={{ top: 10, right: 8, left: -8, bottom: 0 }} barCategoryGap="28%">
+                      <CartesianGrid strokeDasharray="4 4" stroke="var(--chart-grid)" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 12, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} />
+                      <Tooltip content={<RentTooltip />} cursor={{ fill: 'var(--chart-grid)', fillOpacity: 0.4 }} />
+                      <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={44}>
+                        {rentTrend.map((d, i) => (
+                          <Cell key={i} fill={(RENT_STATUS[d.status] || RENT_STATUS.pending).color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-2 flex items-center gap-4 border-t border-slate-100 pt-3 text-xs font-medium text-slate-600 dark:border-white/10 dark:text-slate-300">
+                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: RENT_STATUS.paid.color }} /> Paid</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: RENT_STATUS.pending.color }} /> Pending</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: RENT_STATUS.overdue.color }} /> Overdue</span>
+                  <span className="ml-auto text-[11px] text-slate-400">Bar color = payment status</span>
+                </div>
+              </>
             )}
           </Card>
         </div>
 
         {/* Payment reliability */}
         <Card title="Payment summary">
-          <div className="flex flex-col items-center text-center py-2">
-            <div className="relative w-28 h-28">
-              <svg viewBox="0 0 36 36" className="w-28 h-28 -rotate-90">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--ring-track)" strokeWidth="3.2" />
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--ring-brand)" strokeWidth="3.2" strokeLinecap="round" strokeDasharray={`${onTimePct} ${100 - onTimePct}`} />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">{onTimePct}%</span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wide">paid</span>
-              </div>
+          <div className="flex flex-col items-center py-2 text-center">
+            <StatDonut value={onTimePct} unit="%" size={128} stroke={12} color={payColor} label="Paid" />
+            <p className="mt-4 text-sm font-semibold text-slate-800 dark:text-slate-100">{paidCount} of {recentRents.length || 0} months cleared</p>
+            <div className="mt-3 flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Paid <b className="tabular-nums">{paidCount}</b></span>
+              {pendingCount > 0 && (
+                <span className="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-amber-500" /> Pending <b className="tabular-nums">{pendingCount}</b></span>
+              )}
             </div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-3">{paidCount} of {recentRents.length || 0} months cleared</p>
-            <p className="text-xs text-slate-400 mt-0.5">{dueRent ? `${MONTHS[dueRent.month - 1]} pending` : 'Great payment record 🎉'}</p>
+            <p className="mt-2 text-xs text-slate-400">{dueRent ? `${MONTHS[dueRent.month - 1]} pending` : 'Great payment record 🎉'}</p>
           </div>
         </Card>
       </div>
