@@ -221,8 +221,9 @@ export function Badge({ tone = 'gray', children }) {
 
 /** Map any status string to a sensible tone. */
 export function StatusBadge({ status }) {
+  // 'indigo' maps to the brand (ember) tone — success reads on-brand, never green.
   const tones = {
-    paid: 'green', resolved: 'green', active: 'green', checked_in: 'green', occupied: 'green', success: 'green',
+    paid: 'indigo', resolved: 'indigo', active: 'indigo', checked_in: 'indigo', occupied: 'indigo', success: 'indigo',
     pending: 'yellow', expected: 'yellow', partially_occupied: 'yellow', in_progress: 'blue', assigned: 'blue',
     overdue: 'red', rejected: 'red', failed: 'red', inactive: 'gray', moved_out: 'gray', maintenance: 'red',
     vacant: 'gray', checked_out: 'gray', urgent: 'red', high: 'red', medium: 'yellow', low: 'gray',

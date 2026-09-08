@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
-  ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts';
 import {
   Banknote, Home, Wrench, Users, CreditCard, ArrowRight, Plus, UtensilsCrossed,
@@ -30,24 +30,28 @@ const QUICK = [
   { to: '/tenant/food-menu', label: 'Food menu', icon: UtensilsCrossed, tone: 'from-blue-500 to-indigo-500' },
 ];
 
-// Payment-status colors, reused by the bars and the tooltip.
+const EMBER = '#f97316';
 const RENT_STATUS = {
-  paid: { color: '#10b981', label: 'Paid' },
-  pending: { color: '#f59e0b', label: 'Pending' },
-  overdue: { color: '#f43f5e', label: 'Overdue' },
+  paid: 'Paid', pending: 'Pending', overdue: 'Overdue',
 };
 
+// Dark split tooltip — matches the admin cash-flow chart.
 function RentTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
-  const st = RENT_STATUS[d.status] || RENT_STATUS.pending;
   return (
     <div className="rounded-xl bg-slate-900 px-3.5 py-2.5 text-white shadow-xl ring-1 ring-white/10">
       <p className="text-[11px] font-semibold text-white/60">{d.name} {d.year}</p>
-      <p className="mt-1 text-sm font-semibold tabular-nums">{inr(d.amount)}</p>
-      <p className="mt-0.5 flex items-center gap-1.5 text-[11px]">
-        <span className="h-2 w-2 rounded-full" style={{ background: st.color }} /> {st.label}
-      </p>
+      <div className="mt-1.5 space-y-1 text-[12.5px]">
+        <div className="flex items-center justify-between gap-6">
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: EMBER }} /> Paid to date</span>
+          <span className="font-semibold tabular-nums">{inr(d.paidToDate)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-1 text-white/70">
+          <span>{d.name}</span>
+          <span className="tabular-nums">{inr(d.amount)} · {RENT_STATUS[d.status] || 'Pending'}</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -97,11 +101,16 @@ export default function TenantDashboard() {
   const firstName = user?.name?.split(' ')[0] || 'there';
 
   // Rent trend (chronological) + reliability
-  const rentTrend = [...recentRents].reverse().map((r) => ({ name: `${M3[r.month - 1]}`, year: r.year, amount: r.totalAmount, status: r.status }));
+  // Cumulative rent paid over time → a steadily-rising ember area; the line
+  // plateaus on any unpaid month, so payment consistency reads at a glance.
+  let _run = 0;
+  const rentTrend = [...recentRents].reverse().map((r) => {
+    if (r.status === 'paid') _run += r.totalAmount;
+    return { name: `${M3[r.month - 1]}`, year: r.year, amount: r.totalAmount, status: r.status, paidToDate: _run };
+  });
   const paidCount = recentRents.filter((r) => r.status === 'paid').length;
   const pendingCount = recentRents.length - paidCount;
   const onTimePct = recentRents.length ? Math.round((paidCount / recentRents.length) * 100) : 100;
-  const payColor = onTimePct >= 80 ? '#10b981' : onTimePct >= 50 ? '#f59e0b' : '#f43f5e';
 
   return (
     <div className="space-y-6">
@@ -171,33 +180,29 @@ export default function TenantDashboard() {
       {/* ── Rent overview (chart) + payment summary ──────────── */}
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Card title="Rent overview" action={<span className="inline-flex items-center gap-1 text-xs font-medium text-slate-400"><TrendingUp className="w-3.5 h-3.5" /> last {rentTrend.length || 0} months</span>}>
+          <Card title="Rent overview" action={<span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-slate-400"><TrendingUp className="w-3.5 h-3.5" /> paid to date · {rentTrend.length || 0} mo</span>}>
             {rentTrend.length === 0 ? (
               <EmptyState icon={Banknote} title="No rent history yet" message="Your monthly rent trend appears here once generated." />
             ) : (
-              <>
-                <div className="h-56 -ml-2">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={rentTrend} margin={{ top: 10, right: 8, left: -8, bottom: 0 }} barCategoryGap="28%">
-                      <CartesianGrid strokeDasharray="4 4" stroke="var(--chart-grid)" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} width={50} tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} />
-                      <Tooltip content={<RentTooltip />} cursor={{ fill: 'var(--chart-grid)', fillOpacity: 0.4 }} />
-                      <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={44}>
-                        {rentTrend.map((d, i) => (
-                          <Cell key={i} fill={(RENT_STATUS[d.status] || RENT_STATUS.pending).color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-2 flex items-center gap-4 border-t border-slate-100 pt-3 text-xs font-medium text-slate-600 dark:border-white/10 dark:text-slate-300">
-                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: RENT_STATUS.paid.color }} /> Paid</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: RENT_STATUS.pending.color }} /> Pending</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: RENT_STATUS.overdue.color }} /> Overdue</span>
-                  <span className="ml-auto text-[11px] text-slate-400">Bar color = payment status</span>
-                </div>
-              </>
+              <div className="h-60 -ml-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={rentTrend} margin={{ top: 10, right: 8, left: -6, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="rentPaidFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={EMBER} stopOpacity={0.24} />
+                        <stop offset="100%" stopColor={EMBER} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="4 4" stroke="var(--chart-grid)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--chart-axis)' }} axisLine={false} tickLine={false} width={48} tickFormatter={(v) => (v >= 1000 ? `₹${Math.round(v / 1000)}k` : `₹${v}`)} />
+                    <Tooltip content={<RentTooltip />} cursor={{ stroke: 'var(--chart-axis)', strokeDasharray: '4 4' }} />
+                    <Area type="monotone" dataKey="paidToDate" stroke={EMBER} strokeWidth={2.5} fill="url(#rentPaidFill)"
+                      dot={{ r: 3.5, fill: '#fff', stroke: EMBER, strokeWidth: 2 }} activeDot={{ r: 5, fill: '#fff', stroke: EMBER, strokeWidth: 2.5 }}
+                      isAnimationActive animationDuration={700} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             )}
           </Card>
         </div>
@@ -205,13 +210,11 @@ export default function TenantDashboard() {
         {/* Payment reliability */}
         <Card title="Payment summary">
           <div className="flex flex-col items-center py-2 text-center">
-            <StatDonut value={onTimePct} unit="%" size={128} stroke={12} color={payColor} label="Paid" />
+            <StatDonut value={onTimePct} unit="%" size={132} stroke={12} color={EMBER} label="Paid" />
             <p className="mt-4 text-sm font-semibold text-slate-800 dark:text-slate-100">{paidCount} of {recentRents.length || 0} months cleared</p>
-            <div className="mt-3 flex items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Paid <b className="tabular-nums">{paidCount}</b></span>
-              {pendingCount > 0 && (
-                <span className="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-amber-500" /> Pending <b className="tabular-nums">{pendingCount}</b></span>
-              )}
+            <div className="mt-3 flex items-center gap-5 font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm" style={{ background: EMBER }} /> Paid <b className="tabular-nums text-slate-800 dark:text-slate-200">{paidCount}</b></span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-slate-300 dark:bg-white/20" /> Pending <b className="tabular-nums text-slate-800 dark:text-slate-200">{pendingCount}</b></span>
             </div>
             <p className="mt-2 text-xs text-slate-400">{dueRent ? `${MONTHS[dueRent.month - 1]} pending` : 'Great payment record 🎉'}</p>
           </div>
@@ -242,7 +245,7 @@ export default function TenantDashboard() {
         <Card title="Recent complaints" action={<Link to="/tenant/complaints" className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700">View all <ArrowRight className="w-3 h-3" /></Link>}>
           {recentComplaints.length === 0 ? (
             <div className="flex flex-col items-center py-6 text-center">
-              <Sparkles className="w-7 h-7 text-emerald-400 mb-2" />
+              <Sparkles className="w-7 h-7 text-brand-400 mb-2" />
               <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Nothing to report</p>
               <p className="text-xs text-slate-400 mt-0.5">No complaints raised.</p>
             </div>

@@ -59,15 +59,15 @@ export default function StaffDashboard() {
         <div className="flex flex-col rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-6 shadow-card lg:col-span-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Your queue</p>
           <div className="mt-1">
-            <Stat icon={ClipboardList} tile="bg-sky-50 dark:bg-sky-500/15 text-sky-600 dark:text-sky-300" label="Assigned" value={stats.assigned} />
-            <Stat icon={Loader2} tile="bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-300" label="In progress" value={stats.inProgress} />
-            <Stat icon={CheckCircle2} tile="bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300" label="Resolved today" value={stats.resolvedToday} />
+            <Stat icon={ClipboardList} tile="bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300" label="Assigned" value={stats.assigned} />
+            <Stat icon={Loader2} tile="bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300" label="In progress" value={stats.inProgress} />
+            <Stat icon={CheckCircle2} tile="bg-slate-200/70 dark:bg-white/10 text-slate-600 dark:text-slate-300" label="Resolved today" value={stats.resolvedToday} />
           </div>
           <div className="mt-auto pt-5">
             <SegmentBar segments={[
-              { label: 'Assigned', value: stats.assigned, color: '#0ea5e9' },
-              { label: 'In progress', value: stats.inProgress, color: '#f59e0b' },
-              { label: 'Resolved', value: stats.resolvedToday, color: '#10b981' },
+              { label: 'Assigned', value: stats.assigned, color: '#94a3b8' },
+              { label: 'In progress', value: stats.inProgress, color: '#f97316' },
+              { label: 'Resolved', value: stats.resolvedToday, color: '#475569' },
             ]} />
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function StaffDashboard() {
         {/* Progress donut */}
         <div className="flex flex-col items-center rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-surface p-6 shadow-card lg:col-span-4">
           <p className="self-start font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">Today's progress</p>
-          <div className="my-3"><StatDonut value={pct} size={148} stroke={14} color={pct >= 100 ? '#10b981' : pct > 0 ? '#f59e0b' : '#94a3b8'} label="Cleared" /></div>
+          <div className="my-3"><StatDonut value={pct} size={148} stroke={14} color="#f97316" label="Cleared" /></div>
           <p className="text-sm text-slate-500">{stats.resolvedToday} of {total || 0} cleared</p>
         </div>
 
